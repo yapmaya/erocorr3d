@@ -1,35 +1,35 @@
 // packages/engine/tests/orchestrate/assessScenario.test.ts
 //
-// Uçtan uca doğrulama: gerçek (BOTAŞ fixture) Geometry/Mitigation/
+// Uçtan uca doğrulama: gerçek (referans tesis fixture) Geometry/Mitigation/
 // OperatingProfile verisinden GERÇEK, sentetik-olmayan bir SpatialDamageField
 // üretilebiliyor mu — bu, "MechanismResult[]→SpatialDamageField üretim
 // katmanı" boşluğunun kapandığının uçtan uca kanıtıdır.
 
 import { describe, expect, it } from "vitest";
 import { assessComponentScenario } from "../../src/orchestrate/assessScenario";
-import { BOTAS_FIXTURES, botasStream1030 } from "../../src/fixtures/botas";
+import { REFERENCE_FACILITY_FIXTURES, referenceLine1 } from "../../src/fixtures/referenceFacility";
 import { SpatialDamageFieldSchema } from "../../src/types/results";
 
-describe("assessComponentScenario — BOTAŞ fixture ile uçtan uca", () => {
+describe("assessComponentScenario — referans tesis fixture ile uçtan uca", () => {
   it("Stream 1030: iki senaryo (çekiş+enjeksiyon) da değerlendirilir", () => {
     const scenario = assessComponentScenario(
-      botasStream1030.geometry,
-      botasStream1030.mitigation,
-      botasStream1030.operatingProfile,
+      referenceLine1.geometry,
+      referenceLine1.mitigation,
+      referenceLine1.operatingProfile,
     );
     expect(scenario.perCase).toHaveLength(2);
     expect(scenario.perCase.map((c) => c.caseName)).toEqual(
-      botasStream1030.operatingProfile.cases.map((c) => c.name),
+      referenceLine1.operatingProfile.cases.map((c) => c.name),
     );
   });
 
   it("Kış Çekiş Modu (ıslak/ekşi): gerçek, sıfır-olmayan bir hasar alanı üretir — sentetik demo DEĞİLDİR", () => {
     const scenario = assessComponentScenario(
-      botasStream1030.geometry,
-      botasStream1030.mitigation,
-      botasStream1030.operatingProfile,
+      referenceLine1.geometry,
+      referenceLine1.mitigation,
+      referenceLine1.operatingProfile,
       {},
-      "Stream 1030",
+      "Reference Line 1",
       { resolutionU: 48, resolutionV: 32 },
     );
     const withdrawal = scenario.perCase.find((c) => c.caseName.includes("Çekiş"))!;
@@ -45,11 +45,11 @@ describe("assessComponentScenario — BOTAŞ fixture ile uçtan uca", () => {
 
   it("Yaz Enjeksiyon Modu (kurutulmuş kuru gaz): hasar alanı sıfırdır (korozyon riski yok)", () => {
     const scenario = assessComponentScenario(
-      botasStream1030.geometry,
-      botasStream1030.mitigation,
-      botasStream1030.operatingProfile,
+      referenceLine1.geometry,
+      referenceLine1.mitigation,
+      referenceLine1.operatingProfile,
       {},
-      "Stream 1030",
+      "Reference Line 1",
       { resolutionU: 32, resolutionV: 24 },
     );
     const injection = scenario.perCase.find((c) => c.caseName.includes("Enjeksiyon"))!;
@@ -60,17 +60,17 @@ describe("assessComponentScenario — BOTAŞ fixture ile uçtan uca", () => {
 
   it("belirleyici (governing) senaryo, daha yüksek yıllık kayıplı çekiş modudur ve toplam metal kaybı pozitiftir", () => {
     const scenario = assessComponentScenario(
-      botasStream1030.geometry,
-      botasStream1030.mitigation,
-      botasStream1030.operatingProfile,
+      referenceLine1.geometry,
+      referenceLine1.mitigation,
+      referenceLine1.operatingProfile,
     );
     expect(scenario.governingCaseName).toContain("Çekiş");
     expect(scenario.metalLoss.totalAnnualLossMmPerYear.p50).toBeGreaterThan(0);
     expect(scenario.metalLoss.totalServiceLifeCorrosionMm.p50).toBeGreaterThan(0);
   });
 
-  it("her iki BOTAŞ hattı da (1030 gömülü, 1130 yer üstü) hatasız uçtan uca çalışır", () => {
-    for (const fixture of BOTAS_FIXTURES) {
+  it("her iki referans hat da (L1 gömülü, L2 yer üstü) hatasız uçtan uca çalışır", () => {
+    for (const fixture of REFERENCE_FACILITY_FIXTURES) {
       expect(() =>
         assessComponentScenario(fixture.geometry, fixture.mitigation, fixture.operatingProfile, {}, fixture.streamId, {
           resolutionU: 24,

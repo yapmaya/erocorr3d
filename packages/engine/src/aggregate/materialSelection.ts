@@ -1,11 +1,12 @@
 // packages/engine/src/aggregate/materialSelection.ts
 //
 // Proses borusu ve ekipman için malzeme seçimi karar merdivenleri —
-// BOTAŞ F3-500-ME-SPC-PSS-0002 §10.1/§10.3.2-§10.3.7/§10.4/Tablo 8-1'den
-// BİREBİR (bkz. registry/coefficients/materialSelection.ts). Bu, kullanıcının
-// "yüklediğim doküman" dediği ve bir önceki oturumda (data/materials.ts)
-// diskte BULUNAMAYAN belge — bu oturumda /home/aliattar/İndirilenler/
-// F3-500-ME-SPC-PSS-0002_AE.pdf olarak BULUNDU ve doğrudan okundu.
+// kullanıcının kendi iç proje dokümanının §10.1/§10.3.2-§10.3.7/§10.4/
+// Tablo 8-1 bölümlerinden BİREBİR (bkz. registry/coefficients/
+// materialSelection.ts). Bu, kullanıcının "yüklediğim doküman" dediği ve
+// bir önceki oturumda (data/materials.ts) diskte BULUNAMAYAN belge — bu
+// oturumda kullanıcının diskinde BULUNDU ve doğrudan okundu; kimliği
+// izlenebilirlik amacıyla bu kod tabanında paylaşılmıyor.
 //
 // Beş AYRI karar merdiveni (piping, basınçlı kap, ısı değiştirici, hava
 // soğutmalı eşanjör, depolama tankı) + çapraz-kesen kontroller (min tasarım
@@ -54,7 +55,7 @@ export interface MaterialSelectionResult {
 /**
  * Minimum tasarım sıcaklığına göre temel malzeme ailesini seçer.
  *
- * Model adı: BOTAŞ F3-500-ME-SPC-PSS-0002 §10.3.1 (bkz. registry/
+ * Model adı: kullanıcının kendi iç proje dokümanı, §10.3.1 (bkz. registry/
  * coefficients/materialSelection.ts::materialSelection.minDesignTempLadder).
  */
 export function selectMinDesignTempMaterial(minDesignTemperatureC: number): MinDesignTempStep {
@@ -214,7 +215,7 @@ export interface PipingMaterialSelectionInput {
 /**
  * Proses borusu için malzeme seçer.
  *
- * Model adı: BOTAŞ F3-500-ME-SPC-PSS-0002 §10.3.2 (bkz. registry
+ * Model adı: kullanıcının kendi iç proje dokümanı, §10.3.2 (bkz. registry
  * materialSelection.pipingCaLadder).
  * Girdi/çıktı birimleri: mm → çıktı malzeme önerisi (Türkçe).
  * Geçerlilik aralığı: yalnızca proses borusu için (basınçlı kap/ekipman

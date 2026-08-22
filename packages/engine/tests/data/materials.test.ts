@@ -123,26 +123,15 @@ describe("materials — KDP kayıt defteri entegrasyonu", () => {
     }
   });
 
-  it("316L/2205/2507 DIŞINDA hiçbir malzeme confidence:HIGH taşımaz (hepsi en az bir tahmini/çapraz-doğrulanmamış alan içeriyor)", () => {
-    // Bu test KDP dürüstlüğünü doğrular: bu oturumda (materials.ts'in ilk yazıldığı oturumda)
-    // hiçbir malzeme iki tamamen bağımsız kaynakla eksiksiz doğrulanmadı. İSTİSNA: 316L/2205/2507
-    // — bir SONRAKİ oturumda (aggregate/materialSelection.ts görevi sırasında) "yüklediğim
-    // korozyon dokümanı"nın kendisi (BOTAŞ F3-500-ME-SPC-PSS-0002, Tablo 8-1) kullanıcının
-    // diskinde BULUNDU ve PREN/CPT/CCT/CSCC/kaplama değerlerinin bu birincil kaynaktan geldiği
-    // doğrulandı — bu üç malzeme meşru şekilde HIGH'a yükseltildi (bkz. data/materials.ts
-    // SRC_BOTAS_PSS0002_TABLE81 notu).
+  it("hiçbir malzeme confidence:HIGH taşımaz (hepsi en az bir tahmini/çapraz-doğrulanmamış alan içeriyor)", () => {
+    // Bu test KDP dürüstlüğünü doğrular: hiçbir malzeme iki tamamen bağımsız kaynakla eksiksiz
+    // doğrulanmadı. 316L/2205/2507 için PREN/CPT/CCT/CSCC/kaplama değerleri kullanıcının kendi iç
+    // proje dokümanından geldi, ama o dokümanın kimliği izlenebilirlik amacıyla anonim tutulduğundan
+    // (bkz. data/materials.ts SRC_ANONYMIZED_PROJECT_DOC_TABLE81 notu) dış doğrulama tamamlanamadı —
+    // bu üç malzeme de UNVERIFIED olarak işaretli kalır.
     const registered = listCoefficients().filter((c) => c.module === "materials");
-    const highConfidenceExceptions = new Set([
-      "data.materials.ss-316-316l",
-      "data.materials.duplex-2205",
-      "data.materials.super-duplex-2507",
-    ]);
     for (const entry of registered) {
-      if (highConfidenceExceptions.has(entry.id)) {
-        expect(entry.confidence).toBe("HIGH");
-      } else {
-        expect(entry.confidence).not.toBe("HIGH");
-      }
+      expect(entry.confidence).not.toBe("HIGH");
     }
   });
 

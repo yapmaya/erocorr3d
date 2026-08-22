@@ -1,12 +1,12 @@
 // apps/web/tests/projects/compareRuns.test.ts
 
 import { describe, expect, it } from "vitest";
-import { BOTAS_FIXTURES, assessComponentScenario, ENGINE_VERSION } from "@erocorr3d/engine";
+import { REFERENCE_FACILITY_FIXTURES, assessComponentScenario, ENGINE_VERSION } from "@erocorr3d/engine";
 import { compareAssessmentRuns } from "../../src/features/projects/compareRuns";
 import type { AssessmentRunRecord } from "../../src/features/projects/types";
 
 function buildRun(fixtureIndex: number, overrides: Partial<AssessmentRunRecord> = {}): AssessmentRunRecord {
-  const fixture = BOTAS_FIXTURES[fixtureIndex]!;
+  const fixture = REFERENCE_FACILITY_FIXTURES[fixtureIndex]!;
   const assessment = assessComponentScenario(fixture.geometry, fixture.mitigation, fixture.operatingProfile, {}, fixture.streamId, {
     resolutionU: 8,
     resolutionV: 8,

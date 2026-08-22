@@ -36,9 +36,9 @@ import { useDemoHotspots } from "./hotspots/useDemoHotspots";
 import { buildDemoHotspotDetail, type DemoHotspotDetail } from "./hotspots/hotspotDetail";
 import { HotspotMarker } from "./hotspots/HotspotMarker";
 import { HotspotPanel } from "./hotspots/HotspotPanel";
-import { BOTAS_SCENARIO_TABS, getBotasFixture, getBotasScenarioAssessment } from "./botas/botasScenarios";
-import { computeBotasBreachYears, computeBotasHotspotsAtYears, computeBotasTimeDependentField } from "./botas/botasFieldSampling";
-import { buildBotasHotspotDetail } from "./botas/botasHotspotDetail";
+import { REFERENCE_FACILITY_SCENARIO_TABS, getReferenceFacilityFixture, getReferenceFacilityScenarioAssessment } from "./referenceFacility/referenceFacilityScenarios";
+import { computeReferenceFacilityBreachYears, computeReferenceFacilityHotspotsAtYears, computeReferenceFacilityTimeDependentField } from "./referenceFacility/referenceFacilityFieldSampling";
+import { buildReferenceFacilityHotspotDetail } from "./referenceFacility/referenceFacilityHotspotDetail";
 import { useMeasurementState } from "./measurement/useMeasurementState";
 import { computeWallProbeResult } from "./measurement/measurementMath";
 import { MeasurementToolbar } from "./measurement/MeasurementToolbar";
@@ -59,9 +59,9 @@ const DEFAULT_HOTSPOT_COUNT = 5;
 const DESIGN_LIFE_YEARS = 20;
 const HEATMAP_COLORMAP = "corrosion" as const;
 
-// DEMO modunun (bkz. dosya başı BOTAŞ/Özel Veri notu) girdi sihirbazından
+// DEMO modunun (bkz. dosya başı Referans Tesis/Özel Veri notu) girdi sihirbazından
 // bağımsız, sabit gösterim geometrisi — sihirbazda seçilen bileşen tipi
-// yalnızca "Gerçek Veri (BOTAŞ)"/"Özel Veri" modlarında yansıtılır.
+// yalnızca "Gerçek Veri (Referans Tesis)"/"Özel Veri" modlarında yansıtılır.
 const DEFAULT_GEOMETRY_SOURCE: PipeGeometrySource = {
   componentType: "STRAIGHT_PIPE",
   odMm: DEFAULT_OUTER_DIAMETER_MM,
@@ -77,17 +77,17 @@ export function PipeViewer() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [fpsVisible, setFpsVisible] = useState(false);
   const [comparisonMode, setComparisonMode] = useState(false);
-  // "Gerçek Veri (BOTAŞ)" / "Özel Veri" modları: ısı haritası/hotspot/
+  // "Gerçek Veri (Referans Tesis)" / "Özel Veri" modları: ısı haritası/hotspot/
   // duvar-delinme-yılı artık sentetik demo desen DEĞİL,
   // @erocorr3d/engine'in orkestrasyon katmanının (assessComponentScenario)
-  // ürettiği GERÇEK hesap sonucudur — BOTAŞ sabit fixture'dan (bkz.
-  // botas/botasScenarios.ts), CUSTOM ise girdi sihirbazının "Hesapla"
+  // ürettiği GERÇEK hesap sonucudur — referans tesis sabit fixture'dan (bkz.
+  // referenceFacility/referenceFacilityScenarios.ts), CUSTOM ise girdi sihirbazının "Hesapla"
   // eyleminden (bkz. store/assessmentStore.ts) gelir. İkisi de AYNI
-  // jenerik `CaseAssessment` şeklini paylaştığından botasFieldSampling.ts'in
+  // jenerik `CaseAssessment` şeklini paylaştığından referenceFacilityFieldSampling.ts'in
   // fonksiyonları HER İKİSİ için de değişmeden yeniden kullanılır. Ölçüm
   // probu (duvar kalınlığı) bu sürümde HENÜZ bu modlara bağlanmadı —
-  // bilinen sınırlama, bkz. botasFieldSampling.ts'in dosya başı notu.
-  const [dataSource, setDataSource] = useState<"DEMO" | "BOTAS" | "CUSTOM">("DEMO");
+  // bilinen sınırlama, bkz. referenceFacilityFieldSampling.ts'in dosya başı notu.
+  const [dataSource, setDataSource] = useState<"DEMO" | "REFERENCE" | "CUSTOM">("DEMO");
 
   if (comparisonMode) {
     return <ComparisonViewer onClose={() => setComparisonMode(false)} />;
@@ -114,12 +114,12 @@ export function PipeViewer() {
         <button
           type="button"
           className={`pointer-events-auto rounded px-1.5 py-0.5 text-[10px] normal-case tracking-normal ${
-            dataSource === "BOTAS" ? "bg-emerald-700 text-white" : "bg-neutral-800/70 text-neutral-300 hover:bg-neutral-700"
+            dataSource === "REFERENCE" ? "bg-emerald-700 text-white" : "bg-neutral-800/70 text-neutral-300 hover:bg-neutral-700"
           }`}
-          onClick={() => setDataSource((v) => (v === "BOTAS" ? "DEMO" : "BOTAS"))}
-          title={dataSource === "BOTAS" ? t("viewer3dRealDataToggleOnTitle") : t("viewer3dRealDataToggleOffTitle")}
+          onClick={() => setDataSource((v) => (v === "REFERENCE" ? "DEMO" : "REFERENCE"))}
+          title={dataSource === "REFERENCE" ? t("viewer3dRealDataToggleOnTitle") : t("viewer3dRealDataToggleOffTitle")}
         >
-          {dataSource === "BOTAS" ? `✓ ${t("viewer3dRealDataToggle")}` : t("viewer3dRealDataToggle")}
+          {dataSource === "REFERENCE" ? `✓ ${t("viewer3dRealDataToggle")}` : t("viewer3dRealDataToggle")}
         </button>
         <button
           type="button"
@@ -154,7 +154,7 @@ export function PipeViewer() {
 }
 
 interface SceneRootProps {
-  dataSource: "DEMO" | "BOTAS" | "CUSTOM";
+  dataSource: "DEMO" | "REFERENCE" | "CUSTOM";
 }
 
 function SceneRoot({ dataSource }: SceneRootProps) {
@@ -165,15 +165,15 @@ function SceneRoot({ dataSource }: SceneRootProps) {
   const [scenarioId, setScenarioId] = useState(DEMO_SCENARIOS[0].id);
   const scenario = DEMO_SCENARIOS.find((s) => s.id === scenarioId) ?? DEMO_SCENARIOS[0];
 
-  // ── "Gerçek Veri (BOTAŞ)" modu — bkz. PipeViewer()'ın dosya başı notu ──
-  const [botasScenarioTabId, setBotasScenarioTabId] = useState(BOTAS_SCENARIO_TABS[0].id);
-  const botasTab = BOTAS_SCENARIO_TABS.find((t) => t.id === botasScenarioTabId) ?? BOTAS_SCENARIO_TABS[0];
-  const botasFixture = useMemo(() => getBotasFixture(botasTab.streamId), [botasTab.streamId]);
-  const botasScenario = useMemo(() => getBotasScenarioAssessment(botasTab.streamId), [botasTab.streamId]);
-  const botasCase = botasScenario.perCase[botasTab.caseIndex];
+  // ── "Gerçek Veri (Referans Tesis)" modu — bkz. PipeViewer()'ın dosya başı notu ──
+  const [referenceScenarioTabId, setReferenceScenarioTabId] = useState(REFERENCE_FACILITY_SCENARIO_TABS[0].id);
+  const referenceTab = REFERENCE_FACILITY_SCENARIO_TABS.find((t) => t.id === referenceScenarioTabId) ?? REFERENCE_FACILITY_SCENARIO_TABS[0];
+  const referenceFixture = useMemo(() => getReferenceFacilityFixture(referenceTab.streamId), [referenceTab.streamId]);
+  const referenceScenario = useMemo(() => getReferenceFacilityScenarioAssessment(referenceTab.streamId), [referenceTab.streamId]);
+  const referenceCase = referenceScenario.perCase[referenceTab.caseIndex];
 
   // ── "Özel Veri" modu — girdi sihirbazının "Hesapla" eyleminin sonucu
-  // (bkz. store/assessmentStore.ts). BOTAŞ'ın AKSİNE bu veri KULLANICI
+  // (bkz. store/assessmentStore.ts). Referans Tesis'in AKSİNE bu veri KULLANICI
   // eylemine bağlı olarak boş olabilir (henüz hiç hesaplanmamış) — bu
   // yüzden `customCase` null olabilir, çağıran taraf DEMO'ya güvenli
   // şekilde geri düşer (bkz. aşağıdaki `isCustomReady`).
@@ -189,15 +189,15 @@ function SceneRoot({ dataSource }: SceneRootProps) {
     ? (customAssessment.perCase.find((c) => c.caseName === customScenarioTabId) ?? customAssessment.perCase[0])
     : null;
 
-  const isBotas = dataSource === "BOTAS";
+  const isReference = dataSource === "REFERENCE";
   const isCustomReady = dataSource === "CUSTOM" && customCase !== null && customGeometry !== null && customOperatingProfile !== null;
 
-  // Görüntülenen ŞEKİL (düz boru/dirsek/te/redüksiyon/...) — BOTAŞ/Özel Veri
+  // Görüntülenen ŞEKİL (düz boru/dirsek/te/redüksiyon/...) — Referans Tesis/Özel Veri
   // modlarında ilgili fixture/sihirbaz `componentType`'ını takip eder; bkz.
   // usePipeGeometry.ts'in dosya başı notu (önceki hata: bu hook seçilen
   // bileşen tipini HİÇ okumuyordu, HER ZAMAN düz boru çiziyordu).
-  const geometrySource: PipeGeometrySource = isBotas
-    ? botasFixture.geometry
+  const geometrySource: PipeGeometrySource = isReference
+    ? referenceFixture.geometry
     : isCustomReady && customGeometry
       ? customGeometry
       : DEFAULT_GEOMETRY_SOURCE;
@@ -209,19 +209,19 @@ function SceneRoot({ dataSource }: SceneRootProps) {
   const camera = useCameraController({ targetM, boundingRadiusM });
   const sectionPlane = useSectionPlane({ lengthM, outerRadiusM });
 
-  const effectiveDesignLifeYears = isBotas
-    ? botasFixture.operatingProfile.designLifeYears
+  const effectiveDesignLifeYears = isReference
+    ? referenceFixture.operatingProfile.designLifeYears
     : isCustomReady && customOperatingProfile
       ? customOperatingProfile.designLifeYears
       : DESIGN_LIFE_YEARS;
-  const effectiveWallThicknessMm = isBotas
-    ? botasFixture.geometry.wallThicknessMm
+  const effectiveWallThicknessMm = isReference
+    ? referenceFixture.geometry.wallThicknessMm
     : isCustomReady && customGeometry
       ? customGeometry.wallThicknessMm
       : DEFAULT_WALL_THICKNESS_MM;
 
   const timePlayback = useTimePlaybackState({ designLifeYears: effectiveDesignLifeYears });
-  // Demo↔BOTAŞ geçişinde tasarım ömrü değişir (20↔30 yıl) — mevcut elapsedYears
+  // Demo↔Referans Tesis geçişinde tasarım ömrü değişir (20↔30 yıl) — mevcut elapsedYears
   // yeni üst sınırı aşıyorsa (input[type=range] görsel olarak kırpsa da state
   // kırpılmaz) bir kereliğine kırp, aksi halde ısı haritası/duvar-delinme
   // hesapları geçici olarak tutarsız bir "aralık dışı" yılla çalışır.
@@ -233,16 +233,16 @@ function SceneRoot({ dataSource }: SceneRootProps) {
   }, [effectiveDesignLifeYears]);
   const [heatmapEnabled, setHeatmapEnabled] = useState(true);
 
-  // BOTAŞ ve Özel Veri AYNI jenerik `CaseAssessment` şeklini paylaştığı için
+  // Referans Tesis ve Özel Veri AYNI jenerik `CaseAssessment` şeklini paylaştığı için
   // (bkz. yukarıdaki dosya başı notu) tek bir `realCase` değişkeninde
-  // birleştirilebilir — botasFieldSampling.ts'in fonksiyonları İKİSİ için
+  // birleştirilebilir — referenceFacilityFieldSampling.ts'in fonksiyonları İKİSİ için
   // de değişmeden çalışır.
-  const realCase = isBotas ? botasCase : isCustomReady ? customCase : null;
+  const realCase = isReference ? referenceCase : isCustomReady ? customCase : null;
 
   const breachYears = useMemo(
     () =>
       realCase
-        ? computeBotasBreachYears(realCase, effectiveWallThicknessMm, effectiveDesignLifeYears)
+        ? computeReferenceFacilityBreachYears(realCase, effectiveWallThicknessMm, effectiveDesignLifeYears)
         : computeDemoBreachYear(DEFAULT_WALL_THICKNESS_MM, scenario),
     [realCase, effectiveWallThicknessMm, effectiveDesignLifeYears, scenario],
   );
@@ -250,7 +250,7 @@ function SceneRoot({ dataSource }: SceneRootProps) {
   const heatmapValues = useMemo(
     () =>
       realCase
-        ? computeBotasTimeDependentField(geometry, realCase, timePlayback.elapsedYears, effectiveDesignLifeYears)
+        ? computeReferenceFacilityTimeDependentField(geometry, realCase, timePlayback.elapsedYears, effectiveDesignLifeYears)
         : computeDemoTimeDependentField(geometry, timePlayback.elapsedYears, scenario),
     [realCase, geometry, timePlayback.elapsedYears, effectiveDesignLifeYears, scenario],
   );
@@ -296,14 +296,14 @@ function SceneRoot({ dataSource }: SceneRootProps) {
   // React hook kuralı gereği useDemoHotspots KOŞULSUZ çağrılır (realCase mevcutken sonucu kullanılmaz).
   const demoHotspots = useDemoHotspots({ scenario, elapsedYears: timePlayback.elapsedYears, maxCount: hotspotMaxCount });
   const realHotspots = useMemo(
-    () => (realCase ? computeBotasHotspotsAtYears(realCase, timePlayback.elapsedYears, effectiveDesignLifeYears, hotspotMaxCount) : []),
+    () => (realCase ? computeReferenceFacilityHotspotsAtYears(realCase, timePlayback.elapsedYears, effectiveDesignLifeYears, hotspotMaxCount) : []),
     [realCase, timePlayback.elapsedYears, effectiveDesignLifeYears, hotspotMaxCount],
   );
   const hotspots = realCase ? realHotspots : demoHotspots;
   const selectedHotspot = selectedHotspotIndex !== null ? (hotspots[selectedHotspotIndex] ?? null) : null;
   const selectedHotspotDetail: DemoHotspotDetail | null = selectedHotspot
     ? realCase
-      ? buildBotasHotspotDetail(selectedHotspot, realCase, effectiveWallThicknessMm)
+      ? buildReferenceFacilityHotspotDetail(selectedHotspot, realCase, effectiveWallThicknessMm)
       : buildDemoHotspotDetail(selectedHotspot, scenario, DEFAULT_WALL_THICKNESS_MM)
     : null;
 
@@ -531,9 +531,9 @@ function SceneRoot({ dataSource }: SceneRootProps) {
           speed={timePlayback.speed}
           onSetSpeed={timePlayback.setSpeed}
           breachYears={breachYears}
-          scenarios={isBotas ? BOTAS_SCENARIO_TABS : isCustomReady ? customScenarioTabs : DEMO_SCENARIOS}
-          selectedScenarioId={isBotas ? botasScenarioTabId : isCustomReady ? (customCase?.caseName ?? "") : scenarioId}
-          onSelectScenario={isBotas ? setBotasScenarioTabId : isCustomReady ? setCustomScenarioTabId : setScenarioId}
+          scenarios={isReference ? REFERENCE_FACILITY_SCENARIO_TABS : isCustomReady ? customScenarioTabs : DEMO_SCENARIOS}
+          selectedScenarioId={isReference ? referenceScenarioTabId : isCustomReady ? (customCase?.caseName ?? "") : scenarioId}
+          onSelectScenario={isReference ? setReferenceScenarioTabId : isCustomReady ? setCustomScenarioTabId : setScenarioId}
           heatmapEnabled={heatmapEnabled}
           onToggleHeatmap={() => setHeatmapEnabled((v) => !v)}
         />

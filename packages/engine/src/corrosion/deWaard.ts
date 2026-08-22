@@ -12,8 +12,8 @@
 //        Fcond = 0,1 (varsayılan, 0,1-0,33 arası ayarlanabilir) — serbest su İÇERMEYEN ıslak
 //                gaz akışlarında, buhardan yoğuşma ile oluşan korozyon için
 //
-// Kaynak: temel nomogram HEM kullanıcının BOTAŞ Silivri proje dokümanından HEM bağımsız
-// literatürden (Aalborg Üniversitesi tezi) doğrulandı. Fscale ve Vm için GERÇEK kaynak
+// Kaynak: temel nomogram bağımsız literatürden (Aalborg Üniversitesi tezi +
+// genel mühendislik referans sentezi) doğrulandı. Fscale ve Vm için GERÇEK kaynak
 // çatışmaları bulundu, kullanıcı onayıyla üniversite tezi kaynaklı versiyonlar esas alındı.
 // Tüm sabitler packages/engine/src/registry/coefficients/deWaard.ts içinde belgelenmiştir.
 //

@@ -3,8 +3,8 @@
 // Girdi sihirbazının "Hesapla" eyleminin sonucu — viewer3d/PipeViewer.tsx,
 // viewer2d/dataSource.ts ve features/results/ResultsPanel.tsx bu store'u
 // OKUR (üçü de WorkspaceLayout'ta kardeş panellerdir, aralarında local
-// hook state paylaşılamaz — bkz. mevcut `botasScenarios.ts` deseninin
-// AKSİNE, BOTAŞ sabit/statik olduğu için lazy+cache yeterliydi; burada
+// hook state paylaşılamaz — bkz. mevcut `referenceFacilityScenarios.ts` deseninin
+// AKSİNE, referans tesis verisi sabit/statik olduğu için lazy+cache yeterliydi; burada
 // kullanıcı girdisi DEĞİŞKEN olduğundan global bir store gerekiyor).
 //
 // Yalnızca `computeAssessment.ts` tarafından YAZILIR (bkz. o dosya).

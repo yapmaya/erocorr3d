@@ -98,9 +98,9 @@ describe("computeTotalMetalLoss — PSS-0002 örnek doğrulama (91 gün/yıl, 30
 });
 
 describe("metalLoss — KDP kayıt defteri entegrasyonu", () => {
-  it("SLC formülü kayıtlıdır ve HIGH confidence taşır (birincil BOTAŞ dokümanı)", () => {
+  it("SLC formülü kayıtlıdır ve UNVERIFIED confidence taşır (kimliği anonim iç proje dokümanı)", () => {
     const entry = listCoefficients().find((c) => c.id === "metalLoss.slcFormula");
-    expect(entry?.confidence).toBe("HIGH");
+    expect(entry?.confidence).toBe("UNVERIFIED");
     expect(entry?.source.type).toBe("PROJECT_DOCUMENT");
   });
 });

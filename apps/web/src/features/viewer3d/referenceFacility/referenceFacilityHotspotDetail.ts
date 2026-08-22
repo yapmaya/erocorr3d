@@ -1,4 +1,4 @@
-// apps/web/src/features/viewer3d/botas/botasHotspotDetail.ts
+// apps/web/src/features/viewer3d/referenceFacility/referenceFacilityHotspotDetail.ts
 //
 // Seçili bir hotspot'un GERÇEK detayını üretir — hotspots/hotspotDetail.ts
 // ile AYNI çıktı şeklini (DemoHotspotDetail — HotspotPanel.tsx başka bir
@@ -25,7 +25,7 @@ function pickDominantMechanism(applicable: MechanismResult[]): MechanismResult |
  * birleştirir ve birden fazla mekanizma varsa bunu AÇIKÇA belirtir (hiçbir
  * katkı sessizce gizlenmez).
  */
-export function buildBotasHotspotDetail(hotspot: Hotspot, caseAssessment: CaseAssessment, wallThicknessMm: number): DemoHotspotDetail {
+export function buildReferenceFacilityHotspotDetail(hotspot: Hotspot, caseAssessment: CaseAssessment, wallThicknessMm: number): DemoHotspotDetail {
   if (wallThicknessMm <= 0) throw new Error("wallThicknessMm pozitif olmalıdır.");
 
   const applicable = caseAssessment.mechanismResults.filter((r) => r.isApplicable);

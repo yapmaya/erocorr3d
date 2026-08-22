@@ -1,26 +1,20 @@
 // packages/engine/src/registry/coefficients/ctlAtl.ts
 //
 // CTL/ATL oranı (Corroded Total Loss / Allowance Total Loss — "korozyon
-// olasılığı" göstergesi) kategori sınırları — BOTAŞ F3-500-ME-SPC-PSS-0002
-// Tablo 10-4'ten BİREBİR okundu (kullanıcının diskinde bulunan birincil
-// proje dokümanı).
+// olasılığı" göstergesi) kategori sınırları — kullanıcının kendi iç proje
+// dokümanının bir tablosundan BİREBİR okundu.
+//
+// KDP NOTU: bu dokümanın kimliği (kurum, doküman no, revizyon) izlenebilirlik
+// amacıyla bu kod tabanında paylaşılmıyor — bu yüzden dış kaynakla çapraz
+// doğrulanamıyor ve confidence=UNVERIFIED işaretlidir (bkz. aşağıdaki notes).
 
 import type { Coefficient, Source } from "../types";
 
 const MODULE = "ctlAtl";
 
-const SRC_BOTAS_PSS0002_TABLE104: Source = {
+const SRC_ANONYMIZED_PROJECT_DOC_TABLE104: Source = {
   type: "PROJECT_DOCUMENT",
-  citation:
-    "BOTAŞ, \"Corrosion Assessment and Materials Selection Onshore (KMGS&NSP)\", Doküman No: " +
-    "F3-500-ME-SPC-PSS-0002, Rev. AE (18.08.2021) — Tablo 10-4 \"Evaluation of the Likelihood of " +
-    "Corrosion Categories\": CTL/ATL≤0,5→Negligible (\"System will last longer than required with no " +
-    "failures\"), 0,5<r≤1,0→Low (\"System will reach its design life without a failure\"), " +
-    "1,0<r≤4,0→Medium (\"System will only reach 25% of its design life before a failure occurs\"), " +
-    "r>4,0→High (\"A failure will occur before the system reaches 25% of its design life\"). CTL/ATL'in " +
-    "kendisi §Kısaltmalar bölümünde \"the likelihood of corrosion, based on the predicted corrosion " +
-    "divided by the proposed corrosion allowance\" olarak tanımlanır. Bu oturumda dosyanın tam metninden " +
-    "(pdftotext ile) doğrudan okundu.",
+  citation: "Kullanıcının kendi iç proje dokümanı — dış kaynakla çapraz doğrulanmamış, izlenebilirlik amacıyla kimliği paylaşılmıyor.",
   accessedDate: "2026-08-12",
 };
 
@@ -35,12 +29,14 @@ const CATEGORY_THRESHOLDS: Coefficient<CtlAtlCategoryThresholds> = {
   module: MODULE,
   value: { negligibleMax: 0.5, lowMax: 1.0, mediumMax: 4.0 },
   unit: "-",
-  description: "CTL/ATL oranı kategori sınırları — bkz. Tablo 10-4.",
-  source: SRC_BOTAS_PSS0002_TABLE104,
+  description: "CTL/ATL oranı kategori sınırları — kullanıcının kendi iç proje dokümanının bir tablosundan.",
+  source: SRC_ANONYMIZED_PROJECT_DOC_TABLE104,
   crossChecked: false,
   crossCheckSources: [],
-  confidence: "HIGH",
-  notes: "Standardın kendi Tablo 10-4'ünden BİREBİR okundu — dört kategori sınırı ve etki açıklamaları da dahil.",
+  confidence: "UNVERIFIED",
+  notes:
+    "Kaynak dokümanın kimliği izlenebilirlik amacıyla anonim tutulduğundan dış kaynakla çapraz " +
+    "doğrulanamadı — kullanılmadan önce bağımsız bir kaynakla veya yetkin bir mühendisle doğrulanmalıdır.",
 };
 
 export const CTL_ATL_COEFFICIENTS: Coefficient[] = [CATEGORY_THRESHOLDS as Coefficient];

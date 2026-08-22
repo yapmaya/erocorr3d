@@ -39,13 +39,13 @@ export function Viewer2dPanel() {
         <button
           type="button"
           className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${
-            dataSource.isBotas
+            dataSource.isReference
               ? "bg-emerald-700 text-white"
               : "bg-neutral-200 text-neutral-700 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
           }`}
-          onClick={() => dataSource.setDataSourceKind(dataSource.isBotas ? "DEMO" : "BOTAS")}
+          onClick={() => dataSource.setDataSourceKind(dataSource.isReference ? "DEMO" : "REFERENCE")}
         >
-          {dataSource.isBotas ? `✓ ${t("viewer3dRealDataToggle")}` : t("viewer3dRealDataToggle")}
+          {dataSource.isReference ? `✓ ${t("viewer3dRealDataToggle")}` : t("viewer3dRealDataToggle")}
         </button>
         <button
           type="button"

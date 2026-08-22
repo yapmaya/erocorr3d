@@ -142,10 +142,10 @@ const dictionary = {
   viewer3dExportCopyLink: { tr: "Kamera Bağlantısı Kopyala", en: "Copy Camera Link" },
   viewer3dExportLinkCopied: { tr: "Kopyalandı ✓", en: "Copied ✓" },
   viewer3dComparisonToggle: { tr: "Karşılaştır", en: "Compare" },
-  viewer3dRealDataToggle: { tr: "Gerçek Veri (BOTAŞ)", en: "Real Data (BOTAS)" },
+  viewer3dRealDataToggle: { tr: "Gerçek Veri (Referans Tesis)", en: "Real Data (Reference Facility)" },
   viewer3dRealDataToggleOnTitle: {
-    tr: "Gerçek motor hesabı (BOTAŞ Silivri fixture) gösteriliyor — tıklayınca sentetik demoya dön",
-    en: "Showing a real engine calculation (BOTAS Silivri fixture) — click to switch back to synthetic demo",
+    tr: "Gerçek motor hesabı (referans tesis fixture) gösteriliyor — tıklayınca sentetik demoya dön",
+    en: "Showing a real engine calculation (reference facility fixture) — click to switch back to synthetic demo",
   },
   viewer3dRealDataToggleOffTitle: {
     tr: "Sentetik demo desen gösteriliyor — gerçek veriye geçmek için tıkla",

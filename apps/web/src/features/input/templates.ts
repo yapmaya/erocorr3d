@@ -3,7 +3,7 @@
 // Adım 1'in "hazır şablonlar" özelliği. ÖNEMLİ (KDP ile ilişkisi): buradaki
 // sayılar motor sabiti/katsayısı DEĞİLDİR — yalnızca kullanıcının hızlı
 // başlayabilmesi için seçilmiş, kaba mertebede TEMSİLİ başlangıç
-// değerleridir (tıpkı `fixtures/botas.ts`'in "Temsili" olarak işaretlediği
+// değerleridir (tıpkı `fixtures/referenceFacility.ts`'in "Temsili" olarak işaretlediği
 // alanlar gibi). Şablon uygulandıktan sonra her alan formda görünür ve
 // kullanıcı SAHAYA ÖZGÜ gerçek verisiyle değiştirmesi beklenir; motor
 // hesaplaması yalnızca formdaki (kullanıcı onayından geçmiş) son değerleri

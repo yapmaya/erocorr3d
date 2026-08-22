@@ -5,12 +5,12 @@
 // (ASME B31G/Modified B31G kalan dayanım hesabı) ve ASME B31.8 et kalınlığı
 // tasarım formülünün S girdisi için kullanılır.
 //
-// KAYNAK NOTU: BOTAŞ fixture'ları (fixtures/botas.ts) boru çelik DERECESİNİ
+// KAYNAK NOTU: referans tesis fixture'ları (fixtures/referenceFacility.ts) boru çelik DERECESİNİ
 // (grade) İÇERMEZ — kaynak belge (bkz. o dosyanın başlık notu) yalnızca
 // NPS/schedule/et kalınlığını temsili olarak doldurur, malzeme sertifikası
 // içermez. Bu YÜZDEN bu modül kullanıcının/mühendisin SEÇTİĞİ bir derece
 // listesi sunar (gerçek B31G değerlendirmesinde de derece her zaman saha
-// malzeme sertifikasından ALINIR, otomatik varsayılmaz) — hiçbir BOTAŞ
+// malzeme sertifikasından ALINIR, otomatik varsayılmaz) — hiçbir referans tesis
 // hattına "şu derecedir" diye bir atama UYDURULMAZ.
 
 import { registerCoefficient } from "../registry";

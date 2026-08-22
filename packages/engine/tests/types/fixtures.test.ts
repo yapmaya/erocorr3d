@@ -6,20 +6,20 @@ import { MitigationSchema } from "../../src/types/mitigation";
 import { OperatingProfileSchema } from "../../src/types/operating";
 import { MechanismResultSchema } from "../../src/types/results";
 import {
-  BOTAS_FIXTURES,
-  botasStream1030,
-  botasStream1130,
-  stream1030DocumentedResult,
-  stream1130DocumentedResult,
-} from "../../src/fixtures/botas";
+  REFERENCE_FACILITY_FIXTURES,
+  referenceLine1,
+  referenceLine2,
+  referenceLine1DocumentedResult,
+  referenceLine2DocumentedResult,
+} from "../../src/fixtures/referenceFacility";
 
-describe("BOTAŞ fixture'ları — şema geçerliliği", () => {
-  it("BOTAS_FIXTURES iki akışı da içerir", () => {
-    expect(BOTAS_FIXTURES).toHaveLength(2);
-    expect(BOTAS_FIXTURES.map((f) => f.streamId)).toEqual(["Stream 1030", "Stream 1130"]);
+describe("Referans tesis fixture'ları — şema geçerliliği", () => {
+  it("REFERENCE_FACILITY_FIXTURES iki akışı da içerir", () => {
+    expect(REFERENCE_FACILITY_FIXTURES).toHaveLength(2);
+    expect(REFERENCE_FACILITY_FIXTURES.map((f) => f.streamId)).toEqual(["Reference Line 1", "Reference Line 2"]);
   });
 
-  for (const fixture of [botasStream1030, botasStream1130]) {
+  for (const fixture of [referenceLine1, referenceLine2]) {
     describe(fixture.streamId, () => {
       it("geometrisi GeometrySchema'ya uyar", () => {
         expect(GeometrySchema.safeParse(fixture.geometry).success).toBe(true);
@@ -48,39 +48,39 @@ describe("BOTAŞ fixture'ları — şema geçerliliği", () => {
   }
 });
 
-describe("BOTAŞ fixture'ları — kaynaktan gelen somut değerler", () => {
-  it("Stream 1030: tasarım ömrü ve korozyon payı kaynakla eşleşir", () => {
-    expect(botasStream1030.operatingProfile.designLifeYears).toBe(30);
-    expect(botasStream1030.operatingProfile.corrosionAllowanceMm).toBe(3);
+describe("Referans tesis fixture'ları — kaynaktan gelen somut değerler", () => {
+  it("Hat 1: tasarım ömrü ve korozyon payı kaynakla eşleşir", () => {
+    expect(referenceLine1.operatingProfile.designLifeYears).toBe(30);
+    expect(referenceLine1.operatingProfile.corrosionAllowanceMm).toBe(3);
   });
 
-  it("Stream 1130: korozyon payı kaynakla eşleşir (sözleşme gereği 6 mm)", () => {
-    expect(botasStream1130.operatingProfile.corrosionAllowanceMm).toBe(6);
+  it("Hat 2: korozyon payı kaynakla eşleşir (sözleşme gereği 6 mm)", () => {
+    expect(referenceLine2.operatingProfile.corrosionAllowanceMm).toBe(6);
   });
 
-  it("Stream 1030: inhibitörlü hız (Cri=0.148) uninhibited (Cru=0.43) değerinden düşüktür", () => {
-    expect(stream1030DocumentedResult.governingParameters.Cri_mmPerYear).toBeLessThan(
-      stream1030DocumentedResult.governingParameters.Cru_mmPerYear,
+  it("Hat 1: inhibitörlü hız (Cri=0.148) uninhibited (Cru=0.43) değerinden düşüktür", () => {
+    expect(referenceLine1DocumentedResult.governingParameters.Cri_mmPerYear).toBeLessThan(
+      referenceLine1DocumentedResult.governingParameters.Cru_mmPerYear,
     );
-    expect(stream1030DocumentedResult.rateMmPerYear).toBeCloseTo(0.148, 6);
+    expect(referenceLine1DocumentedResult.rateMmPerYear).toBeCloseTo(0.148, 6);
   });
 
-  it("Stream 1130: inhibitör gaz fazına taşınmadığı için Cru=Cri", () => {
-    expect(stream1130DocumentedResult.governingParameters.Cru_mmPerYear).toBe(
-      stream1130DocumentedResult.governingParameters.Cri_mmPerYear,
+  it("Hat 2: inhibitör gaz fazına taşınmadığı için Cru=Cri", () => {
+    expect(referenceLine2DocumentedResult.governingParameters.Cru_mmPerYear).toBe(
+      referenceLine2DocumentedResult.governingParameters.Cri_mmPerYear,
     );
-    expect(botasStream1130.mitigation.inhibitorUsed).toBe(false);
+    expect(referenceLine2.mitigation.inhibitorUsed).toBe(false);
   });
 
-  it("Stream 1030 'Ekşi Gaz' (sour) olarak H2S içerir, Stream 1130 içermez", () => {
-    const case1030 = botasStream1030.operatingProfile.cases[0];
-    const case1130 = botasStream1130.operatingProfile.cases[0];
-    expect(case1030.chemistry.h2sPpmMole).toBeGreaterThan(0);
-    expect(case1130.chemistry.h2sPpmMole).toBe(0);
+  it("Hat 1 'Ekşi Gaz' (sour) olarak H2S içerir, Hat 2 içermez", () => {
+    const line1Case = referenceLine1.operatingProfile.cases[0];
+    const line2Case = referenceLine2.operatingProfile.cases[0];
+    expect(line1Case.chemistry.h2sPpmMole).toBeGreaterThan(0);
+    expect(line2Case.chemistry.h2sPpmMole).toBe(0);
   });
 
   it("her iki akış da dokümante edilmiş sonuçlarında düşük güven (LOW) taşır (harici/doğrulanmamış kaynak)", () => {
-    expect(stream1030DocumentedResult.confidence).toBe("LOW");
-    expect(stream1130DocumentedResult.confidence).toBe("LOW");
+    expect(referenceLine1DocumentedResult.confidence).toBe("LOW");
+    expect(referenceLine2DocumentedResult.confidence).toBe("LOW");
   });
 });

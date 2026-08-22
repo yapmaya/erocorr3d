@@ -1,7 +1,7 @@
 // apps/web/src/features/viewer2d/dataSource.ts
 //
 // viewer2d'nin (2B tamamlayıcı görünümler) veri kaynağı hook'u. viewer3d/
-// PipeViewer.tsx'in "DEMO ↔ Gerçek Veri (BOTAŞ)" desenini AYNEN izler, ama
+// PipeViewer.tsx'in "DEMO ↔ Gerçek Veri (Referans Tesis)" desenini AYNEN izler, ama
 // KENDİ bağımsız state'iyle (bkz. master görev: "tamamlayıcı" görünüm —
 // bilinen sınırlama: bu panel 3B görünümle SENKRONİZE DEĞİLDİR, kendi
 // senaryo/zaman seçimini taşır).
@@ -12,18 +12,18 @@
 // t anındaki hasar = tasarım-ömrü-SONUNDAKİ hasar × (t/tasarım_ömrü). Bu
 // yüzden bu modül yalnızca "tasarım ömrü sonundaki" bir örnekleme
 // fonksiyonu tutar (sampleFullLifeMm) ve zamanı BASİT bir çarpanla uygular
-// — botasFieldSampling.ts'in scaleSpatialDamageField+sampleSpatialDamageFieldMm
+// — referenceFacilityFieldSampling.ts'in scaleSpatialDamageField+sampleSpatialDamageFieldMm
 // çağrısıyla SAYISAL OLARAK ÖZDEŞTİR (yalnızca ara SpatialDamageField nesnesi
 // oluşturmadan, doğrudan çarpar).
 
 import { useMemo, useState } from "react";
 import { sampleSpatialDamageFieldMm, vToClockPosition, type CaseAssessment, type SpatialDamageField } from "@erocorr3d/engine";
-import { BOTAS_SCENARIO_TABS, getBotasFixture, getBotasScenarioAssessment } from "../viewer3d/botas/botasScenarios";
+import { REFERENCE_FACILITY_SCENARIO_TABS, getReferenceFacilityFixture, getReferenceFacilityScenarioAssessment } from "../viewer3d/referenceFacility/referenceFacilityScenarios";
 import { DEMO_SCENARIOS, computeDemoTimeDependentDamageMm, type DemoScenario } from "../viewer3d/timeSlider/demoTimeDependentField";
 import { DEFAULT_LENGTH_MM, DEFAULT_OUTER_DIAMETER_MM, DEFAULT_WALL_THICKNESS_MM } from "../viewer3d/PipeMesh";
 import { useAssessmentStore } from "../../store/assessmentStore";
 
-export type Viewer2dDataSourceKind = "DEMO" | "BOTAS" | "CUSTOM";
+export type Viewer2dDataSourceKind = "DEMO" | "REFERENCE" | "CUSTOM";
 
 /**
  * RadialSection/TimeSeries sekmelerinin t_min çizgisi için kullandığı
@@ -66,7 +66,7 @@ export interface Viewer2dScenarioTab {
 export interface Viewer2dDataSource {
   dataSourceKind: Viewer2dDataSourceKind;
   setDataSourceKind: (kind: Viewer2dDataSourceKind) => void;
-  isBotas: boolean;
+  isReference: boolean;
   /** CUSTOM seçili VE girdi sihirbazında en az bir "Hesapla" çalıştırılmış mı. */
   isCustomReady: boolean;
   scenarioTabs: Viewer2dScenarioTab[];
@@ -89,7 +89,7 @@ function clampFraction(elapsedYears: number, designLifeYears: number): number {
   return Math.min(Math.max(elapsedYears, 0), designLifeYears) / designLifeYears;
 }
 
-/** DEMO alanının tasarım-ömrü-sonu tepe değerini KABA bir ızgara taramasıyla bulur (BOTAŞ modunda motor bunu zaten SpatialDamageField.maxValueMm olarak verir, DEMO'da böyle bir yapı yok). */
+/** DEMO alanının tasarım-ömrü-sonu tepe değerini KABA bir ızgara taramasıyla bulur (Referans Tesis modunda motor bunu zaten SpatialDamageField.maxValueMm olarak verir, DEMO'da böyle bir yapı yok). */
 function scanDemoFullLifeMax(scenario: DemoScenario, designLifeYears: number): { maxMm: number; peakV: number } {
   const RESOLUTION_U = 48;
   const RESOLUTION_V = 32;
@@ -110,7 +110,7 @@ function scanDemoFullLifeMax(scenario: DemoScenario, designLifeYears: number): {
 }
 
 const DEMO_SCENARIO_TABS: Viewer2dScenarioTab[] = DEMO_SCENARIOS.map((s) => ({ id: s.id, labelTr: s.labelTr }));
-const BOTAS_TABS: Viewer2dScenarioTab[] = BOTAS_SCENARIO_TABS.map((t) => ({ id: t.id, labelTr: t.labelTr }));
+const REFERENCE_TABS: Viewer2dScenarioTab[] = REFERENCE_FACILITY_SCENARIO_TABS.map((t) => ({ id: t.id, labelTr: t.labelTr }));
 
 /**
  * RemainingStrengthTab (ASME B31G) için `sampleMm`'i (mevcut elapsedYears
@@ -119,8 +119,8 @@ const BOTAS_TABS: Viewer2dScenarioTab[] = BOTAS_SCENARIO_TABS.map((t) => ({ id: 
  * fonksiyonların kullanabileceği bir nesne üretir. Bu panel DEMO'da bile
  * (gerçek bir SpatialDamageField nesnesi taşımadığı için) B31G'nin kusur
  * uzunluğu çıkarımını çalıştırabilsin diye AYNI ızgara-tarama tekniğini
- * (bkz. scanDemoFullLifeMax) hem DEMO hem BOTAŞ için TEK TİP uygular —
- * BOTAŞ modunda motorun kendi (daha yüksek çözünürlüklü, 96×64) alanından
+ * (bkz. scanDemoFullLifeMax) hem DEMO hem Referans Tesis için TEK TİP uygular —
+ * Referans Tesis modunda motorun kendi (daha yüksek çözünürlüklü, 96×64) alanından
  * BİLE KASITLI olarak YENİDEN örnekler (tutarlı, mod-bağımsız bir kod yolu
  * için) — küçük bir çözünürlük kaybı pahasına (96×64 → varsayılan 96×64,
  * pratikte fark YOKTUR).
@@ -164,21 +164,21 @@ export function buildSampledField(
 export function useViewer2dDataSource(): Viewer2dDataSource {
   const [dataSourceKind, setDataSourceKind] = useState<Viewer2dDataSourceKind>("DEMO");
   const [demoScenarioId, setDemoScenarioId] = useState(DEMO_SCENARIOS[0].id);
-  const [botasScenarioId, setBotasScenarioId] = useState(BOTAS_SCENARIO_TABS[0].id);
+  const [referenceScenarioId, setReferenceScenarioId] = useState(REFERENCE_FACILITY_SCENARIO_TABS[0].id);
   const [elapsedYears, setElapsedYearsRaw] = useState(DEMO_DESIGN_LIFE_YEARS / 2);
 
-  const isBotas = dataSourceKind === "BOTAS";
+  const isReference = dataSourceKind === "REFERENCE";
   const isCustom = dataSourceKind === "CUSTOM";
 
   const demoScenario = DEMO_SCENARIOS.find((s) => s.id === demoScenarioId) ?? DEMO_SCENARIOS[0];
-  const botasTab = BOTAS_SCENARIO_TABS.find((t) => t.id === botasScenarioId) ?? BOTAS_SCENARIO_TABS[0];
-  const botasFixture = useMemo(() => getBotasFixture(botasTab.streamId), [botasTab.streamId]);
-  const botasScenario = useMemo(() => getBotasScenarioAssessment(botasTab.streamId), [botasTab.streamId]);
-  const botasCase: CaseAssessment = botasScenario.perCase[botasTab.caseIndex];
-  const botasOperatingCase = botasFixture.operatingProfile.cases[botasTab.caseIndex];
+  const referenceTab = REFERENCE_FACILITY_SCENARIO_TABS.find((t) => t.id === referenceScenarioId) ?? REFERENCE_FACILITY_SCENARIO_TABS[0];
+  const referenceFixture = useMemo(() => getReferenceFacilityFixture(referenceTab.streamId), [referenceTab.streamId]);
+  const referenceScenario = useMemo(() => getReferenceFacilityScenarioAssessment(referenceTab.streamId), [referenceTab.streamId]);
+  const referenceCase: CaseAssessment = referenceScenario.perCase[referenceTab.caseIndex];
+  const referenceOperatingCase = referenceFixture.operatingProfile.cases[referenceTab.caseIndex];
 
   // ── "Özel Veri" — girdi sihirbazının "Hesapla" eyleminin sonucu (bkz.
-  // store/assessmentStore.ts). BOTAŞ'ın AKSİNE boş olabilir (henüz
+  // store/assessmentStore.ts). Referans Tesis'in AKSİNE boş olabilir (henüz
   // hesaplanmamış) — `isCustomReady` bunu yansıtır, hazır değilken DEMO'ya
   // güvenli şekilde geri düşülür.
   const customAssessment = useAssessmentStore((s) => s.assessment);
@@ -197,21 +197,21 @@ export function useViewer2dDataSource(): Viewer2dDataSource {
     ? customAssessment.perCase.map((c) => ({ id: c.caseName, labelTr: c.caseName }))
     : [];
 
-  const designLifeYears = isBotas
-    ? botasFixture.operatingProfile.designLifeYears
+  const designLifeYears = isReference
+    ? referenceFixture.operatingProfile.designLifeYears
     : isCustomReady && customOperatingProfile
       ? customOperatingProfile.designLifeYears
       : DEMO_DESIGN_LIFE_YEARS;
 
-  const geometry: Viewer2dGeometryInfo = isBotas
+  const geometry: Viewer2dGeometryInfo = isReference
     ? {
-        odMm: botasFixture.geometry.odMm,
-        wallThicknessMm: botasFixture.geometry.wallThicknessMm,
-        lengthMm: botasFixture.geometry.lengthMm,
-        corrosionAllowanceMm: botasFixture.operatingProfile.corrosionAllowanceMm,
-        designPressurePa: botasOperatingCase.process.pressureBara * PA_PER_BAR,
-        temperatureC: botasOperatingCase.process.temperatureC,
-        caseNameTr: botasCase.caseName,
+        odMm: referenceFixture.geometry.odMm,
+        wallThicknessMm: referenceFixture.geometry.wallThicknessMm,
+        lengthMm: referenceFixture.geometry.lengthMm,
+        corrosionAllowanceMm: referenceFixture.operatingProfile.corrosionAllowanceMm,
+        designPressurePa: referenceOperatingCase.process.pressureBara * PA_PER_BAR,
+        temperatureC: referenceOperatingCase.process.temperatureC,
+        caseNameTr: referenceCase.caseName,
         isRepresentative: false,
       }
     : isCustomReady && customGeometry && customOperatingProfile && customOperatingCase
@@ -236,7 +236,7 @@ export function useViewer2dDataSource(): Viewer2dDataSource {
           isRepresentative: true,
         };
 
-  const realCase = isBotas ? botasCase : isCustomReady ? customCase : null;
+  const realCase = isReference ? referenceCase : isCustomReady ? customCase : null;
 
   const sampleFullLifeMm = useMemo(() => {
     if (realCase) {
@@ -271,18 +271,18 @@ export function useViewer2dDataSource(): Viewer2dDataSource {
     setDataSourceKind: (kind) => {
       setDataSourceKind(kind);
       const nextDesignLife =
-        kind === "BOTAS"
-          ? botasFixture.operatingProfile.designLifeYears
+        kind === "REFERENCE"
+          ? referenceFixture.operatingProfile.designLifeYears
           : kind === "CUSTOM" && customOperatingProfile
             ? customOperatingProfile.designLifeYears
             : DEMO_DESIGN_LIFE_YEARS;
       setElapsedYearsRaw((prev) => Math.min(prev, nextDesignLife));
     },
-    isBotas,
+    isReference,
     isCustomReady,
-    scenarioTabs: isBotas ? BOTAS_TABS : isCustom ? customTabs : DEMO_SCENARIO_TABS,
-    scenarioId: isBotas ? botasScenarioId : isCustom ? (customScenarioId ?? customTabs[0]?.id ?? "") : demoScenarioId,
-    setScenarioId: isBotas ? setBotasScenarioId : isCustom ? setCustomScenarioId : setDemoScenarioId,
+    scenarioTabs: isReference ? REFERENCE_TABS : isCustom ? customTabs : DEMO_SCENARIO_TABS,
+    scenarioId: isReference ? referenceScenarioId : isCustom ? (customScenarioId ?? customTabs[0]?.id ?? "") : demoScenarioId,
+    setScenarioId: isReference ? setReferenceScenarioId : isCustom ? setCustomScenarioId : setDemoScenarioId,
     designLifeYears,
     elapsedYears,
     setElapsedYears,

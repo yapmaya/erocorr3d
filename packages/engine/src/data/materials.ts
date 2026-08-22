@@ -63,25 +63,22 @@ const SRC_USER_PROJECT_DOCUMENT: Source = {
 };
 
 // SONRAKİ OTURUM GÜNCELLEMESİ (2026-08-12): "yüklediğim korozyon dokümanı" bu oturumda
-// KULLANICININ DİSKİNDE BULUNDU — /home/aliattar/İndirilenler/F3-500-ME-SPC-PSS-0002_AE.pdf,
-// gerçek bir BOTAŞ proje dokümanı ("Corrosion Assessment and Materials Selection Onshore
-// (KMGS&NSP)", Rev AE, 18.08.2021, Andrei Iorga/Jochen Heins/Ion Marinescu tarafından
-// hazırlanmış). Doğrudan pdftotext ile okundu — Tablo 8-1 "Critical Temperature for External
-// Corrosion Evaluation", 316L/22Cr/25Cr satırları için PREN/CPT/CCT/CSCC/kaplama eşiği
-// SAYILARI, aşağıdaki üç malzeme girdisinde ZATEN kayıtlı olan (kullanıcı talimatından bir
-// önceki oturumda alınmış) değerlerle BİREBİR eşleşti — bu, kullanıcının o oturumda verdiği
-// değerlerin bu belgeden geldiğini doğruluyor. Bu üç girdi artık SRC_BOTAS_PSS0002_TABLE81'e
-// güncellendi, confidence MEDIUM'dan HIGH'a yükseltildi.
-const SRC_BOTAS_PSS0002_TABLE81: Source = {
+// kullanıcının kendi iç proje dokümanı olarak BULUNDU (kimliği izlenebilirlik amacıyla
+// paylaşılmıyor) — Tablo 8-1 "Critical Temperature for External Corrosion Evaluation",
+// 316L/22Cr/25Cr satırları için PREN/CPT/CCT/CSCC/kaplama eşiği SAYILARI, aşağıdaki üç
+// malzeme girdisinde ZATEN kayıtlı olan (kullanıcı talimatından bir önceki oturumda alınmış)
+// değerlerle BİREBİR eşleşti — bu, kullanıcının o oturumda verdiği değerlerin bu belgeden
+// geldiğini doğruluyor. Bu üç girdi artık SRC_ANONYMIZED_PROJECT_DOC_TABLE81'e güncellendi;
+// kaynağın kimliği paylaşılamadığından dış doğrulama tamamlanamıyor ve confidence
+// UNVERIFIED olarak işaretli kalıyor (yalnızca üç girdinin İÇ TUTARLILIĞI doğrulanabildi).
+const SRC_ANONYMIZED_PROJECT_DOC_TABLE81: Source = {
   type: "PROJECT_DOCUMENT",
   citation:
-    "BOTAŞ, \"Corrosion Assessment and Materials Selection Onshore (KMGS&NSP)\", Doküman No: " +
-    "F3-500-ME-SPC-PSS-0002, Rev. AE (18.08.2021) — Kuzey Marmara Yeraltı Doğalgaz Depolama " +
-    "Tesisi Faz III projesi. Tablo 8-1 \"Critical Temperature for External Corrosion Evaluation\" " +
-    "— 316L (PREN=23, CPT=15°C, CCT=5°C, CSCC=60°C, ≥50°C'de kaplama), 22Cr/2205 (PREN=35, " +
-    "CPT=30°C, CCT=18°C, CSCC=100°C, ≥90°C'de kaplama), 25Cr/2507 (PREN=43, CPT=80°C, CCT=50°C, " +
-    "CSCC=110°C, ≥100°C'de kaplama). Bu oturumda dosyanın tam metninden (pdftotext ile) doğrudan " +
-    "okundu — kullanıcının diskinde bulundu (bkz. yukarıdaki SRC_USER_PROJECT_DOCUMENT notu).",
+    "Kullanıcının kendi iç proje dokümanı — dış kaynakla çapraz doğrulanmamış, izlenebilirlik " +
+    "amacıyla kimliği paylaşılmıyor. Tablo 8-1 \"Critical Temperature for External Corrosion " +
+    "Evaluation\" — 316L (PREN=23, CPT=15°C, CCT=5°C, CSCC=60°C, ≥50°C'de kaplama), 22Cr/2205 " +
+    "(PREN=35, CPT=30°C, CCT=18°C, CSCC=100°C, ≥90°C'de kaplama), 25Cr/2507 (PREN=43, CPT=80°C, " +
+    "CCT=50°C, CSCC=110°C, ≥100°C'de kaplama).",
   accessedDate: "2026-08-12",
 };
 
@@ -286,12 +283,18 @@ const MATERIAL_DEFINITIONS: MaterialDefinition[] = [
         "Mo içeriği sayesinde 304L'ye göre belirgin şekilde daha iyi çukurlaşma direnci sunan, en yaygın kullanılan CRA (korozyona dayanıklı alaşım)." +
         COST_INDEX_CAVEAT,
     },
-    source: SRC_BOTAS_PSS0002_TABLE81,
+    source: SRC_ANONYMIZED_PROJECT_DOC_TABLE81,
     crossChecked: true,
     crossCheckSources: [SRC_ISSF_DUPLEX],
-    confidence: "HIGH",
+    confidence: "UNVERIFIED",
     notes:
-      "PREN/CPT/CCT/CSCC/kaplama eşiği artık BİRİNCİL kaynaktan (BOTAŞ F3-500-ME-SPC-PSS-0002, Tablo 8-1, bu oturumda diskte bulunup doğrudan okundu — bkz. SRC_BOTAS_PSS0002_TABLE81 notu) doğrulandı, önceki oturumun kullanıcı-talimatı değeriyle BİREBİR eşleşiyor. Çapraz kontrol: ASTM A240 316/316L minimum kompozisyonuyla (Cr16%, Mo2%, N~0.03) PREN=%Cr+3.3×%Mo+16×%N formülü ≈23.1 verir — PREN=23 değeriyle BİREBİR örtüşüyor (güçlü doğrulama). ISSF Şekil 3.8 grafiğinde 316L için CPT görsel olarak ~10°C civarında (birincil kaynağın 15°C değerine yakın, görsel okumanın doğal belirsizliği içinde tutarlı).",
+      "PREN/CPT/CCT/CSCC/kaplama eşiği anonim tutulan bir iç proje dokümanından okundu, önceki oturumun " +
+      "kullanıcı-talimatı değeriyle BİREBİR eşleşiyor. Çapraz kontrol: ASTM A240 316/316L minimum " +
+      "kompozisyonuyla (Cr16%, Mo2%, N~0.03) PREN=%Cr+3.3×%Mo+16×%N formülü ≈23.1 verir — PREN=23 " +
+      "değeriyle BİREBİR örtüşüyor (güçlü doğrulama). ISSF Şekil 3.8 grafiğinde 316L için CPT görsel " +
+      "olarak ~10°C civarında (birincil kaynağın 15°C değerine yakın, görsel okumanın doğal belirsizliği " +
+      "içinde tutarlı) — ancak bu yalnızca GÖRSEL/yaklaşık bir doğrulamadır, kaynağın kimliği anonim " +
+      "tutulduğundan tam bir dış doğrulama yapılamadı.",
   },
   {
     spec: {
@@ -312,12 +315,18 @@ const MATERIAL_DEFINITIONS: MaterialDefinition[] = [
         "Standart duplex aile (PREN 28-38 aralığında, ISSF sınıflandırması); yüksek mukavemet ve iyi klorür direnci bir arada. 475°C gevrekleşmesi ve sigma faz riski nedeniyle üst sıcaklık sınırı östenitiklerden daha düşüktür." +
         COST_INDEX_CAVEAT,
     },
-    source: SRC_BOTAS_PSS0002_TABLE81,
+    source: SRC_ANONYMIZED_PROJECT_DOC_TABLE81,
     crossChecked: true,
     crossCheckSources: [SRC_ISSF_DUPLEX],
-    confidence: "HIGH",
+    confidence: "UNVERIFIED",
     notes:
-      "PREN/CPT/CCT/CSCC/kaplama eşiği artık BİRİNCİL kaynaktan (BOTAŞ F3-500-ME-SPC-PSS-0002, Tablo 8-1 \"22Cr\" satırı, bu oturumda diskte bulunup doğrudan okundu) doğrulandı, önceki oturumun kullanıcı-talimatı değeriyle BİREBİR eşleşiyor (35/30/18/100/90). ISSF Şekil 3.7, standart duplex ailesini PREN 28-38 aralığında sınıflandırıyor — 35 değeri bu aralığın içinde, tutarlı. ÖNEMLİ DÜZELTME: bir önceki oturumda ISSF Şekil 3.8'in GÖRSEL okumasıyla CPT'nin ~40-42°C \"göründüğü\" ve kullanıcının 30°C değerinden \"belirgin şekilde farklı\" olduğu not edilmişti — artık BİRİNCİL kaynağın kendisi 30°C'yi doğruladığından, o zamanki ISSF görsel okumasının imprecise olduğu (grafikten göz kararı okumanın doğal hata payı) sonucuna varılmıştır, gerçek bir standart/ortam farkı DEĞİL. 250°C maksimum servis sıcaklığı bu oturumda da doğrudan doğrulanmadı (PSS-0002 malzeme seçim tablosu bu üst sıcaklık sınırını içermiyor), UNVERIFIED kalmaya devam ediyor.",
+      "PREN/CPT/CCT/CSCC/kaplama eşiği anonim tutulan bir iç proje dokümanından (\"22Cr\" satırı) okundu, " +
+      "önceki oturumun kullanıcı-talimatı değeriyle BİREBİR eşleşiyor (35/30/18/100/90). ISSF Şekil 3.7, " +
+      "standart duplex ailesini PREN 28-38 aralığında sınıflandırıyor — 35 değeri bu aralığın içinde, " +
+      "tutarlı. ISSF Şekil 3.8'in GÖRSEL okumasıyla CPT'nin ~40-42°C \"göründüğü\" not edilmişti; kaynak " +
+      "dokümanın kendisi 30°C değerini veriyor — bu farkın görsel okuma belirsizliğinden mi yoksa gerçek " +
+      "bir standart/ortam farkından mı kaynaklandığı, kaynağın kimliği anonim tutulduğundan tam olarak " +
+      "doğrulanamadı. 250°C maksimum servis sıcaklığı bu oturumda da doğrudan doğrulanmadı.",
   },
   {
     spec: {
@@ -338,12 +347,18 @@ const MATERIAL_DEFINITIONS: MaterialDefinition[] = [
         "Süper duplex aile (PREN 39-45 aralığında); en agresif deniz suyu/klorürlü ortamlar için seçilir, Ni bazlı alaşımlara ekonomik bir alternatiftir." +
         COST_INDEX_CAVEAT,
     },
-    source: SRC_BOTAS_PSS0002_TABLE81,
+    source: SRC_ANONYMIZED_PROJECT_DOC_TABLE81,
     crossChecked: true,
     crossCheckSources: [SRC_ISSF_DUPLEX],
-    confidence: "HIGH",
+    confidence: "UNVERIFIED",
     notes:
-      "PREN/CPT/CCT/CSCC/kaplama eşiği artık BİRİNCİL kaynaktan (BOTAŞ F3-500-ME-SPC-PSS-0002, Tablo 8-1 \"25Cr\" satırı, bu oturumda diskte bulunup doğrudan okundu) doğrulandı, önceki oturumun kullanıcı-talimatı değeriyle BİREBİR eşleşiyor (43/80/50/110/100). ISSF Şekil 3.7, süper duplex ailesini PREN 39-45 aralığında sınıflandırıyor — 43 değeri tam bu aralıkta. ISSF Şekil 3.8 grafiğinde 2507 için CPT görsel olarak ~80°C civarında görünüyor — BİREBİR ÖRTÜŞÜYOR (güçlü ek doğrulama). CCT için grafikte ~40°C görünüyor, birincil kaynağın 50°C değerinden bir miktar farklı — bu küçük fark görsel okuma belirsizliği olarak değerlendirildi, birincil kaynağın 50°C değeri korundu. 250°C maksimum servis sıcaklığı bu oturumda da doğrudan doğrulanmadı, UNVERIFIED kalmaya devam ediyor.",
+      "PREN/CPT/CCT/CSCC/kaplama eşiği anonim tutulan bir iç proje dokümanından (\"25Cr\" satırı) okundu, " +
+      "önceki oturumun kullanıcı-talimatı değeriyle BİREBİR eşleşiyor (43/80/50/110/100). ISSF Şekil 3.7, " +
+      "süper duplex ailesini PREN 39-45 aralığında sınıflandırıyor — 43 değeri tam bu aralıkta. ISSF " +
+      "Şekil 3.8 grafiğinde 2507 için CPT görsel olarak ~80°C civarında görünüyor — BİREBİR ÖRTÜŞÜYOR " +
+      "(güçlü ek doğrulama). CCT için grafikte ~40°C görünüyor, kaynağın 50°C değerinden bir miktar " +
+      "farklı — kaynağın kimliği anonim tutulduğundan bu farkın nedeni tam olarak doğrulanamadı. 250°C " +
+      "maksimum servis sıcaklığı bu oturumda da doğrudan doğrulanmadı.",
   },
   {
     spec: {

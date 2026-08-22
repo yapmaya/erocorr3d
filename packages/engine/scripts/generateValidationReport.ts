@@ -12,7 +12,7 @@
 // bundler-tarzı çözümlemeyi kullandığından src'yi doğrudan çalıştırabilir.
 //
 // Bu betik, tests/validation/*.test.ts ile AYNI referans veriyi ve AYNI
-// motor fonksiyonlarını kullanır (src/fixtures/botasPss0002ValidationData.ts)
+// motor fonksiyonlarını kullanır (src/fixtures/referenceFacilityValidationData.ts)
 // — testler ve rapor birbirinden BAĞIMSIZ sayı üretmez, tek doğruluk kaynağı
 // paylaşılır.
 

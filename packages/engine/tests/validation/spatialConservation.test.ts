@@ -14,7 +14,7 @@
 // DamageField ÖRNEĞİ değil, onun .toSpatialDamageField() çıktısını döner).
 
 import { describe, expect, it } from "vitest";
-import { botasStream1030 } from "../../src/fixtures/botas";
+import { referenceLine1 } from "../../src/fixtures/referenceFacility";
 import { runMechanismAssessment } from "../../src/orchestrate/assessComponent";
 import { computeDamageField } from "../../src/spatial/index";
 
@@ -26,10 +26,10 @@ function meanValueMm(valuesMm: Float32Array): number {
 
 describe("Kütle korunumu — ızgara ortalaması = Σ(hız) × süre", () => {
   it("Stream 1030 çekiş senaryosu: gerçek mekanizma sonuçlarıyla üretilen alan, korunumu sağlar", () => {
-    const operatingCase = botasStream1030.operatingProfile.cases[0]!; // Kış Çekiş Modu
+    const operatingCase = referenceLine1.operatingProfile.cases[0]!; // Kış Çekiş Modu
     const assessment = runMechanismAssessment(
-      botasStream1030.geometry,
-      botasStream1030.mitigation,
+      referenceLine1.geometry,
+      referenceLine1.mitigation,
       operatingCase,
       {},
     );
@@ -43,7 +43,7 @@ describe("Kütle korunumu — ızgara ortalaması = Σ(hız) × süre", () => {
     // İnce ızgara (200×200) — normalizeShapeFn'in kendi iç normalizasyon
     // çözünürlüğüne (400) yakın, ayrıklaştırma hatasını küçültmek için
     // görselleştirme varsayılanından (96×64) daha yüksek seçildi.
-    const field = computeDamageField(botasStream1030.geometry, assessment.mechanismResults, elapsedYears, {
+    const field = computeDamageField(referenceLine1.geometry, assessment.mechanismResults, elapsedYears, {
       resolutionU: 200,
       resolutionV: 200,
     });
@@ -57,14 +57,14 @@ describe("Kütle korunumu — ızgara ortalaması = Σ(hız) × süre", () => {
   });
 
   it("elapsedYears=0 iken alan tamamen sıfırdır (kütle korunumunun dejenere hali)", () => {
-    const operatingCase = botasStream1030.operatingProfile.cases[0]!;
+    const operatingCase = referenceLine1.operatingProfile.cases[0]!;
     const assessment = runMechanismAssessment(
-      botasStream1030.geometry,
-      botasStream1030.mitigation,
+      referenceLine1.geometry,
+      referenceLine1.mitigation,
       operatingCase,
       {},
     );
-    const field = computeDamageField(botasStream1030.geometry, assessment.mechanismResults, 0, {
+    const field = computeDamageField(referenceLine1.geometry, assessment.mechanismResults, 0, {
       resolutionU: 50,
       resolutionV: 50,
     });

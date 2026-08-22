@@ -26,7 +26,7 @@ function baseInput(overrides: Partial<DeWaardInput> = {}): DeWaardInput {
 }
 
 describe("computeDeWaardNomogramRateMmPerYear — model sadakati", () => {
-  it("40°C, 2 bar fCO2 için bağımsız kaynaklarla (BOTAŞ dokümanı + Aalborg tezi) tutarlı elle hesaplanmış referans değerle eşleşir", () => {
+  it("40°C, 2 bar fCO2 için bağımsız kaynaklarla (Aalborg tezi + genel literatür) tutarlı elle hesaplanmış referans değerle eşleşir", () => {
     // log10(Vcor) = 5.8 - 1710/(40+273) + 0.67*log10(2) = 5.8 - 5.4632 + 0.2017 = 0.5385
     // Vcor = 10^0.5385 ≈ 3.456 mm/yıl
     const rate = computeDeWaardNomogramRateMmPerYear(313.15, 2e5);

@@ -8,15 +8,14 @@
 //
 // ÖNEMLİ İSİMLENDİRME NOTU: bu dosyanın ESKİ (bu oturumdan önceki) taslağı
 // CTL/ATL'yi "Critical Thickness Limit / Alarm Thickness Limit" (et kalınlığı
-// eşikleri) olarak yorumluyordu — bu YANLIŞ bir varsayımdı. Kaynak dokümanın
-// (BOTAŞ F3-500-ME-SPC-PSS-0002) kendi kısaltmalar listesi CTL="Corroded
+// eşikleri) olarak yorumluyordu — bu YANLIŞ bir varsayımdı. Kaynak dokümanın (kimliği izlenebilirlik amacıyla anonim tutulan iç proje dokümanı) kendi kısaltmalar listesi CTL="Corroded
 // total loss", ATL="Allowance total loss" olarak TANIMLAR — tamamen farklı
 // bir kavram (metal kaybı / korozyon payı ORANI, et kalınlığı eşiği DEĞİL).
 // Dosya adı (mevcut kod tabanındaki diğer dosyalarla aynı isimlendirme
 // gerekçesiyle) KORUNDU, ancak içerik BAŞTAN yazıldı.
 //
-// Kaynak: BOTAŞ F3-500-ME-SPC-PSS-0002 Tablo 10-4 (bkz. registry/coefficients/
-// ctlAtl.ts) — kullanıcının diskinde bulunan birincil proje dokümanı.
+// Kaynak: kullanıcının kendi iç proje dokümanının bir tablosu (bkz. registry/coefficients/
+// ctlAtl.ts) — kimliği izlenebilirlik amacıyla anonim tutuluyor.
 
 import { getCoefficient } from "../registry";
 import type { CtlAtlCategoryThresholds } from "../registry/coefficients/ctlAtl";
@@ -69,8 +68,8 @@ const CATEGORY_IMPACT_TR: Record<CtlAtlCategory, string> = {
 /**
  * CTL/ATL oranını ve kategorisini hesaplar.
  *
- * Model adı: BOTAŞ F3-500-ME-SPC-PSS-0002 Tablo 10-4 "Evaluation of the
- * Likelihood of Corrosion Categories" (bkz. registry/coefficients/ctlAtl.ts).
+ * Model adı: kullanıcının kendi iç proje dokümanının bir tablosu, "Evaluation of the
+ * Likelihood of Corrosion Categories" (bkz. registry/coefficients/ctlAtl.ts) — kimliği izlenebilirlik amacıyla anonim tutuluyor.
  * Girdi/çıktı birimleri: mm → çıktı boyutsuz oran.
  * Geçerlilik aralığı: kaynak dokümanda açık bir üst/alt sınır belirtilmemiş
  * — oran tanım gereği ≥0'dır.

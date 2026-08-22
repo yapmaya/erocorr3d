@@ -14,7 +14,7 @@ import {
 } from "../../src/mechanicalIntegrity/b31g";
 import type { SpatialDamageField } from "../../src/types/results";
 
-// NPS16 STD boru (BOTAŞ Stream 1030 fixture geometrisiyle aynı mertebe) — bkz. fixtures/botas.ts
+// NPS16 STD boru (referans tesis fixture geometrisiyle aynı mertebe) — bkz. fixtures/referenceFacility.ts
 const OD_M = 0.4064;
 const WT_M = 0.00953;
 const SMYS_PA = 360e6; // API 5L X52

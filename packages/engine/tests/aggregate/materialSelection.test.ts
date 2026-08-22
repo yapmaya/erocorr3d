@@ -274,17 +274,17 @@ describe("getBoltingRecommendation", () => {
 });
 
 describe("materialSelection — KDP kayıt defteri entegrasyonu", () => {
-  it("piping CA merdiveni ve bolting tablosu HIGH confidence taşır (birincil BOTAŞ dokümanı)", () => {
+  it("piping CA merdiveni ve bolting tablosu UNVERIFIED confidence taşır (kimliği anonim iç proje dokümanı)", () => {
     const pipingEntry = listCoefficients().find((c) => c.id === "materialSelection.pipingCaLadder");
     const boltingEntry = listCoefficients().find((c) => c.id === "materialSelection.boltingTable");
-    expect(pipingEntry?.confidence).toBe("HIGH");
-    expect(boltingEntry?.confidence).toBe("HIGH");
+    expect(pipingEntry?.confidence).toBe("UNVERIFIED");
+    expect(boltingEntry?.confidence).toBe("UNVERIFIED");
     expect(pipingEntry?.source.type).toBe("PROJECT_DOCUMENT");
   });
 
-  it("kıyı mesafesi eşiği sahaya özgü olduğu için MEDIUM confidence taşır", () => {
+  it("kıyı mesafesi eşiği anonim iç proje dokümanına dayandığı için UNVERIFIED confidence taşır", () => {
     const entry = listCoefficients().find((c) => c.id === "materialSelection.coastalDistanceThresholdKm");
-    expect(entry?.confidence).toBe("MEDIUM");
+    expect(entry?.confidence).toBe("UNVERIFIED");
   });
 });
 

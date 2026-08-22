@@ -59,9 +59,9 @@ describe("computeCtlAtl — Tablo 10-4 sınır değerleri", () => {
 });
 
 describe("ctlAtl — KDP kayıt defteri entegrasyonu", () => {
-  it("kategori sınırları kayıtlıdır ve HIGH confidence taşır (birincil BOTAŞ Tablo 10-4)", () => {
+  it("kategori sınırları kayıtlıdır ve UNVERIFIED confidence taşır (kimliği anonim iç proje dokümanı)", () => {
     const entry = listCoefficients().find((c) => c.id === "ctlAtl.categoryThresholds");
-    expect(entry?.confidence).toBe("HIGH");
+    expect(entry?.confidence).toBe("UNVERIFIED");
     expect(entry?.source.type).toBe("PROJECT_DOCUMENT");
   });
 });

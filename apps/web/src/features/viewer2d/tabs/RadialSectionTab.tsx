@@ -6,7 +6,7 @@
 // sınırı (CA) ve minimum gerekli kalınlık (t_min) çizgileri.
 //
 // GEOMETRİK VARSAYIM: hasar İÇ yüzeyden (bore) metal kaybı olarak
-// görselleştirilir (BOTAŞ senaryolarının ikisi de İÇ CO2 korozyonudur) —
+// görselleştirilir (referans tesis senaryolarının ikisi de İÇ CO2 korozyonudur) —
 // dış yüzey (OD) sabit kalır, iç sınır (aşınmış duvar) her açıda
 // damage(θ) kadar DIŞA doğru (merkeze uzaklaşarak) büyür.
 

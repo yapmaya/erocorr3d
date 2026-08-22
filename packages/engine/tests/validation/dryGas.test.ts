@@ -3,14 +3,14 @@
 // MÜHENDİSLİK KURALI: "Kuru gaz (akışkan sıcaklığı su çiy noktasının ≥10°C
 // üstünde) korozif DEĞİLDİR → hız 0" (bkz. corrosion/rules.ts::isDryGas).
 //
-// AYRICA belgelenen, BİLİNÇLİ bir SAPMA: BOTAŞ F3-500-ME-SPC-PSS-0002'nin
-// Appendix A tablosunda (Stream 1400, 4000 gibi) "kuru gaz" olarak
-// sınıflandırılan akışlar için dahi küçük sıfır-olmayan korozyon hızları
-// (ör. 0.14-0.55 mm/yıl) görünür. Bunun nedeni UYDURMA/tahmin DEĞİLDİR —
-// dokümanın kendi Table 10-3 Not 4'ü açıkça şunu söyler: "0.1 m3/d free
+// AYRICA belgelenen, BİLİNÇLİ bir SAPMA: kaynak dokümanın (kimliği anonim
+// tutulan iç proje dokümanı) Appendix A tablosunda bazı akışlarda "kuru gaz"
+// olarak sınıflandırılan akışlar için dahi küçük sıfır-olmayan korozyon
+// hızları (ör. 0.14-0.55 mm/yıl) görünür. Bunun nedeni UYDURMA/tahmin
+// DEĞİLDİR — dokümanın kendi bir dipnotu açıkça şunu söyler: "0.1 m3/d free
 // water added for calculation (software used can't perform corrosion
 // calculation with 0.0 m3/d of free water). However, as the stream is dry
-// gas, 1.5 mm corrosion allowance are considered." Yani BOTAŞ'ın kendi
+// gas, 1.5 mm corrosion allowance are considered." Yani kaynağın kendi
 // yazılımı, 0 serbest su ile çalışamadığı için suni olarak küçük bir su
 // miktarı eklemiş ve küçük bir hız üretmiştir — ama malzeme seçimini yine
 // de "kuru gaz" kabulüyle (minimum 1.5mm CA) yapmıştır.
@@ -18,9 +18,9 @@
 // Bu projenin motoru bu workaround'u YENİDEN ÜRETMEZ: isDryGas()=true olan
 // bir senaryoda CO2_SWEET hızı KESİN OLARAK 0'dır (bkz. modelRouter.ts).
 // Bu, ±%30 toleransla "eşleştirilmeye çalışılan" bir sapma DEĞİLDİR — bilinçli,
-// dokümante edilmiş bir metodoloji farkıdır; bu yüzden botasKmgsCases.test.ts
-// KASITLI olarak 1400/4000 akışlarını kapsam DIŞI bırakır (bkz. o dosyanın
-// fixture kaynağı, botasPss0002ValidationData.ts'in dosya başı yorumu).
+// dokümante edilmiş bir metodoloji farkıdır; bu yüzden referenceFacilityCases.test.ts
+// KASITLI olarak bu kuru gaz akışlarını kapsam DIŞI bırakır (bkz. o dosyanın
+// fixture kaynağı, referenceFacilityValidationData.ts'in dosya başı yorumu).
 
 import { describe, expect, it } from "vitest";
 import { isDryGas } from "../../src/corrosion/rules";

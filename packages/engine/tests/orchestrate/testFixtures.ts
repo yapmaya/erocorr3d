@@ -2,7 +2,7 @@
 //
 // orchestrate/ testlerinin paylaştığı, gerçekçi ama TEMSİLİ (uydurma
 // olmayan, yalnızca şema-geçerli) Geometry/Mitigation/OperatingCase
-// oluşturucuları — fixtures/botas.ts::buildOperatingCase ile AYNI kalıp.
+// oluşturucuları — fixtures/referenceFacility.ts::buildOperatingCase ile AYNI kalıp.
 
 import type { Geometry } from "../../src/types/geometry";
 import type { Mitigation } from "../../src/types/mitigation";
@@ -73,7 +73,7 @@ export function buildOperatingCase(overrides: OperatingCaseOverrides = {}): Oper
   // yalnızca temperatureC değiştirilip waterDewpointC unutulduğunda senaryo
   // YANLIŞLIKLA "kuru gaz" (bkz. corrosion/rules.ts::isDryGas) olmaz. Gerçek
   // kuru-gaz testleri waterDewpointC'yi AÇIKÇA çok daha düşük vermelidir (bkz.
-  // fixtures/botas.ts'in enjeksiyon senaryosu, ΔT=52°C).
+  // fixtures/referenceFacility.ts'in enjeksiyon senaryosu, ΔT=52°C).
   const waterDewpointC = overrides.waterDewpointC ?? temperatureC - 3;
   return {
     name: overrides.name ?? "Test Senaryosu",

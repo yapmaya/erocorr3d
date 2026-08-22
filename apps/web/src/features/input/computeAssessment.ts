@@ -19,8 +19,8 @@ export type ComputeAssessmentResult = { ok: true } | { ok: false; messageTr: str
 /**
  * Taslağı motor girdilerine çevirip `assessComponentScenario`'yu çalıştırır
  * ve sonucu (veya hatayı) `useAssessmentStore`'a yazar. Motor SAF/senkron
- * olduğundan (bkz. BOTAŞ fixture'ının aynı şekilde ana thread'de çalışan
- * `getBotasScenarioAssessment`'ı) Web Worker'a gerek yoktur.
+ * olduğundan (bkz. referans tesis fixture'ının aynı şekilde ana thread'de çalışan
+ * `getReferenceFacilityScenarioAssessment`'ı) Web Worker'a gerek yoktur.
  */
 export function computeAssessment(draft: WizardDraft): ComputeAssessmentResult {
   const store = useAssessmentStore.getState();

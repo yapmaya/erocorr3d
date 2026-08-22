@@ -2,10 +2,10 @@
 
 import { describe, expect, it } from "vitest";
 import { OperatingProfileSchema } from "../../src/types/operating";
-import { botasStream1030 } from "../../src/fixtures/botas";
+import { referenceLine1 } from "../../src/fixtures/referenceFacility";
 
 function cloneCase(durationDaysPerYear: number, name: string) {
-  const base = botasStream1030.operatingProfile.cases[0];
+  const base = referenceLine1.operatingProfile.cases[0];
   return { ...base, name, durationDaysPerYear };
 }
 

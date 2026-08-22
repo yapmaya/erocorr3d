@@ -158,8 +158,8 @@ const LONGITUDINAL_JOINT_FACTOR_SEAMLESS_ERW: Coefficient<number> = {
     "siteleri kullanıldı, standardın kendisine bu oturumda doğrudan erişilemedi — üç bağımsız site aynı " +
     "değeri (E=1,0, dikişsiz/ERW) verdiği için MEDIUM (HIGH değil) güven atandı. NOT: ORNL raporunun " +
     "kendi B31G güvenli-basınç formülü (Eq.2/5/6, P=2StFT/D) AYRI bir E terimi TAŞIMAZ — bu, o formülün " +
-    "E=1 (dikişsiz/ERW) varsaydığı ANLAMINA gelir; bu proje bu varsayımı KORUR (BOTAŞ fixture'ları da " +
-    "dikişsiz/STD boru cetveli temsilidir, bkz. fixtures/botas.ts).",
+    "E=1 (dikişsiz/ERW) varsaydığı ANLAMINA gelir; bu proje bu varsayımı KORUR (referans tesis fixture'ları da " +
+    "dikişsiz/STD boru cetveli temsilidir, bkz. fixtures/referenceFacility.ts).",
 };
 
 /** ASME B31.8 sıcaklık türetme faktörü T — verilen sıcaklık eşiklerinde, aralar arası DOĞRUSAL enterpolasyon bu projenin kendi tercihidir (standart yalnızca ayrık eşikler verir). */
@@ -189,7 +189,7 @@ const TEMPERATURE_DERATING_FACTOR_TABLE: Coefficient<TemperatureDeratingFactorRo
   notes:
     "Üç bağımsız ikincil kaynak (midstreamcalculator.com, piping-world.com, eng-tips.com) BİREBİR aynı " +
     "5 satırlık tabloyu veriyor — ancak hiçbiri ASME B31.8'in kendisi değil, MEDIUM güven atandı. " +
-    "121,1°C (250°F) ALTINDA T=1,0 sabit kabul edilir (tablo bunun altına inmez); BOTAŞ fixture " +
+    "121,1°C (250°F) ALTINDA T=1,0 sabit kabul edilir (tablo bunun altına inmez); referans tesis fixture " +
     "senaryolarının ikisi de (15°C ve -8°C) bu aralıktadır.",
 };
 

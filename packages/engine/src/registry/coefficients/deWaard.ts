@@ -2,9 +2,8 @@
 //
 // de Waard-Milliams(-Lotz-Dugstad) CO2 korozyon modeli sabitleri.
 //
-// KAYNAK DURUMU: Temel nomogram denklemi HEM kullanıcının kendi proje
-// dokümanından (BOTAŞ Silivri prompt paketi) HEM bağımsız literatürden
-// (Aalborg Üniversitesi yüksek lisans tezi + genel mühendislik referansları)
+// KAYNAK DURUMU: Temel nomogram denklemi İKİ bağımsız kaynaktan (Aalborg
+// Üniversitesi yüksek lisans tezi + genel mühendislik referans sentezi)
 // aynı sayısal değerlerle doğrulandı. Fscale ve Vm (kütle transferi)
 // sabitleri için GERÇEK kaynak çatışmaları bulundu ve kullanıcı onayıyla
 // tez kaynaklı versiyon esas alındı — çatışan alternatif değerler her
@@ -17,16 +16,6 @@ const MODULE = "deWaard";
 // ─────────────────────────────────────────────────────────────────────────
 // Kaynaklar
 // ─────────────────────────────────────────────────────────────────────────
-
-const SRC_BOTAS_PROJECT_DOC: Source = {
-  type: "PROJECT_DOCUMENT",
-  citation:
-    "Kullanıcının kendi proje dokümanı: \"botas_silivri_prompts.zip\" arşivi, " +
-    "prompt_9_boru_korozyonu.txt (\"CO2 INTERNAL CORROSION RATE (de Waard & Milliams 1991): " +
-    "log10(CR_base) = 5.8 - 1710/T_K + 0.67*log10(f_CO2_bar)\") — bu oturumda kullanıcının " +
-    "diskinde arama yapılarak bulundu (/home/aliattar/İndirilenler/botas_silivri_prompts.zip).",
-  accessedDate: "2026-08-11",
-};
 
 const SRC_AAU_THESIS: Source = {
   type: "THESIS",
@@ -90,16 +79,15 @@ const DEWAARD_NOMOGRAM: Coefficient<DeWaardNomogramConstants> = {
   description:
     "de Waard-Milliams (revize, 1991) temel nomogram denklemi: log10(Vcor)=5,8-1710/(T+273)+" +
     "0,67×log10(pCO2) [Vcor: mm/yıl, T: °C, pCO2: bar]",
-  source: SRC_BOTAS_PROJECT_DOC,
+  source: SRC_AAU_THESIS,
   crossChecked: true,
-  crossCheckSources: [SRC_AAU_THESIS, SRC_GENERAL_LIT_SYNTHESIS],
+  crossCheckSources: [SRC_GENERAL_LIT_SYNTHESIS],
   confidence: "HIGH",
   notes:
-    "Kullanıcının kendi BOTAŞ proje dokümanı, Aalborg Üniversitesi tezi (Eq.3.2) ve genel " +
-    "mühendislik literatürü (midstreamcalculator) ÜÇÜ DE aynı üç sabiti (5,8 / 1710 / 0,67) " +
-    "veriyor — güçlü bir çapraz doğrulama. Aalborg tezi ayrıca ORİJİNAL 1975 formunu da veriyor " +
-    "(Eq.3.1: log(Vcor)=7,96-2320/(T+273)-5,55e-3×T+0,67×log(pCO2), pCO2 MPa) — bu proje " +
-    "kasıtlı olarak REVİZE (1991) formunu kullanır, orijinal 1975 formu değil.",
+    "Aalborg Üniversitesi tezi (Eq.3.2) ve genel mühendislik literatürü (midstreamcalculator) İKİSİ " +
+    "DE aynı üç sabiti (5,8 / 1710 / 0,67) veriyor — güçlü bir çapraz doğrulama. Aalborg tezi ayrıca " +
+    "ORİJİNAL 1975 formunu da veriyor (Eq.3.1: log(Vcor)=7,96-2320/(T+273)-5,55e-3×T+0,67×log(pCO2), " +
+    "pCO2 MPa) — bu proje kasıtlı olarak REVİZE (1991) formunu kullanır, orijinal 1975 formu değil.",
 };
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -257,7 +245,7 @@ const DEWAARD_FCOND: Coefficient<DeWaardFcondConstants> = {
   ],
   confidence: "MEDIUM",
   notes:
-    "Bu oturumda kullanıcının diskindeki BOTAŞ belgelerinde bu SAYISAL değer (1/3-1/10, 0,25mL/m²/s) " +
+    "Bu oturumda kullanıcının kendi iç proje dokümanlarında bu SAYISAL değer (1/3-1/10, 0,25mL/m²/s) " +
     "birebir bulunamadı (yalnızca temel nomogram denklemi bulundu, bkz. deWaard.nomogram) — ancak " +
     "görev talimatının kendisi bu değerleri doğrudan veriyor VE bağımsız genel literatür taraması " +
     "(de Waard & Lotz 1993'e atıfla, birden fazla arama sonucunda tutarlı şekilde tekrarlanan " +

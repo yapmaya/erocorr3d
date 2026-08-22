@@ -1,23 +1,21 @@
 // packages/engine/src/registry/coefficients/materialSelection.ts
 //
-// Proses boru/ekipman malzeme seçimi karar merdivenleri — BOTAŞ
-// F3-500-ME-SPC-PSS-0002 §10.1/§10.3.2-§10.3.7/§10.4/Tablo 8-1'den BİREBİR
-// okundu (kullanıcının diskinde bulunan birincil proje dokümanı,
-// /home/aliattar/İndirilenler/F3-500-ME-SPC-PSS-0002_AE.pdf).
+// Proses boru/ekipman malzeme seçimi karar merdivenleri — kullanıcının
+// kendi iç proje dokümanından (§10.1/§10.3.2-§10.3.7/§10.4 ve bir kıyı/
+// deniz etkisi tablosu) BİREBİR okundu.
+//
+// KDP NOTU: bu dokümanın kimliği (kurum, doküman no, revizyon, saha kod
+// adları) izlenebilirlik amacıyla bu kod tabanında paylaşılmıyor — bu
+// yüzden dış kaynakla çapraz doğrulanamıyor ve aşağıdaki tüm katsayılar
+// confidence=UNVERIFIED işaretlidir (bkz. her katsayının kendi notes'u).
 
 import type { Coefficient, Source } from "../types";
 
 const MODULE = "materialSelection";
 
-const SRC_BOTAS_PSS0002: Source = {
+const SRC_ANONYMIZED_PROJECT_DOC: Source = {
   type: "PROJECT_DOCUMENT",
-  citation:
-    "BOTAŞ, \"Corrosion Assessment and Materials Selection Onshore (KMGS&NSP)\", Doküman No: " +
-    "F3-500-ME-SPC-PSS-0002, Rev. AE (18.08.2021), Kuzey Marmara Yeraltı Doğalgaz Depolama Tesisi Faz III " +
-    "projesi — §10.3.1 (min. tasarım sıcaklığı merdiveni), §10.3.2 (Piping), §10.3.3 (Pressure Vessels), " +
-    "§10.3.4 (Heat Exchangers), §10.3.5 (Air Cooled Heat Exchangers), §10.3.6 (Shell and Tube Heat " +
-    "Exchangers), §10.3.7 (Storage Tanks), §10.4/Tablo 10-2 (Bolting), §8.1/8.2 (kıyı/CSCC). Bu oturumda " +
-    "dosyanın tam metninden (pdftotext ile) doğrudan okundu.",
+  citation: "Kullanıcının kendi iç proje dokümanı — dış kaynakla çapraz doğrulanmamış, izlenebilirlik amacıyla kimliği paylaşılmıyor.",
   accessedDate: "2026-08-12",
 };
 
@@ -56,14 +54,13 @@ const MIN_DESIGN_TEMP_LADDER_COEFFICIENT: Coefficient<MinDesignTempStep[]> = {
   value: MIN_DESIGN_TEMP_LADDER,
   unit: "°C",
   description: "§10.3.1 minimum tasarım sıcaklığına göre malzeme ailesi seçimi merdiveni.",
-  source: SRC_BOTAS_PSS0002,
+  source: SRC_ANONYMIZED_PROJECT_DOC,
   crossChecked: false,
   crossCheckSources: [],
-  confidence: "HIGH",
+  confidence: "UNVERIFIED",
   notes:
-    "Standardın kendi metninden BİREBİR okundu: \"CS + 1.5mm CA (-29°C≤Min T)\", \"LTCS + 1.5mm CA " +
-    "(-45°C≤Min T≤-29°C)\", \"316L externally coated or 3½ Nickel alloy steel + 1.5mm CA (-100°C≤Min T≤-46°C)\", " +
-    "\"At temperatures lower than -100°C CRA materials shall be selected.\"",
+    "Kaynak dokümanın kimliği izlenebilirlik amacıyla anonim tutulduğundan dış kaynakla çapraz " +
+    "doğrulanamadı — kullanılmadan önce bağımsız bir kaynakla veya yetkin bir mühendisle doğrulanmalıdır.",
 };
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -104,15 +101,15 @@ const PIPING_CA_LADDER_COEFFICIENT: Coefficient<CorrosionAllowanceLadderStep[]> 
   value: PIPING_CA_LADDER,
   unit: "mm",
   description: "§10.3.2 gerekli korozyon payına göre proses borusu malzeme seçimi merdiveni.",
-  source: SRC_BOTAS_PSS0002,
+  source: SRC_ANONYMIZED_PROJECT_DOC,
   crossChecked: false,
   crossCheckSources: [],
-  confidence: "HIGH",
+  confidence: "UNVERIFIED",
   notes:
-    "Standardın kendi metninden BİREBİR okundu: <1,5mm→CS+1,5mm; 1,5-3mm→CS+3mm; 3,0-6mm→CS+6mm (servis " +
-    "içi muayene mümkünse 3mm yeterli); >6mm→minimum SS316L CRA + intergranular korozyon testi. Bu tam " +
-    "olarak görev tanımının kendi 'karar merdiveni' örneğidir (CA=1.49/1.50/2.99/3.00/5.99/6.00/6.01 sınır " +
-    "testleri bu tabloyu hedefler).",
+    "Kaynak dokümanın kimliği izlenebilirlik amacıyla anonim tutulduğundan dış kaynakla çapraz " +
+    "doğrulanamadı — kullanılmadan önce bağımsız bir kaynakla veya yetkin bir mühendisle doğrulanmalıdır. " +
+    "Bu tam olarak görev tanımının kendi 'karar merdiveni' örneğidir (CA=1.49/1.50/2.99/3.00/5.99/6.00/6.01 " +
+    "sınır testleri bu tabloyu hedefler).",
 };
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -140,17 +137,21 @@ const BOLTING_TABLE_COEFFICIENT: Coefficient<BoltingOption[]> = {
   value: BOLTING_TABLE,
   unit: "-",
   description: "§10.4 Tablo 10-2 — kabul edilebilir cıvatalama, sıcaklığa göre.",
-  source: SRC_BOTAS_PSS0002,
+  source: SRC_ANONYMIZED_PROJECT_DOC,
   crossChecked: true,
   crossCheckSources: [
     {
       type: "STANDARD",
-      citation: "ISO 21457 — dokümanın kendisi bu tablonun ISO 21457 gereksinimlerine uygun olduğunu belirtiyor (\"Bolting for process pipework shall comply with requirements of ISO 21457\").",
+      citation: "ISO 21457 — kaynak dokümanın kendisi bu tablonun ISO 21457 gereksinimlerine uygun olduğunu belirtiyor (\"Bolting for process pipework shall comply with requirements of ISO 21457\").",
       accessedDate: "2026-08-12",
     },
   ],
-  confidence: "HIGH",
-  notes: "Tablo 10-2'den BİREBİR okundu, ayrıca ISO 21457'ye (uluslararası standart) atıfla çapraz doğrulanmış.",
+  confidence: "UNVERIFIED",
+  notes:
+    "ISO 21457'ye (uluslararası standart) atıfla çapraz kontrol edildi, ancak bu yalnızca GENEL " +
+    "çerçevenin uygulandığını doğrular — spesifik cıvata/somun standardı EŞLEŞTİRMELERİ hâlâ anonim " +
+    "tutulan iç proje dokümanına dayanır ve dış kaynakla ayrıca doğrulanmadı — kullanılmadan önce " +
+    "bağımsız bir kaynakla veya yetkin bir mühendisle doğrulanmalıdır.",
 };
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -165,18 +166,19 @@ const BOLTING_TABLE_COEFFICIENT: Coefficient<BoltingOption[]> = {
 const PSS_DOCUMENT_REFERENCE: Coefficient<string> = {
   id: "materialSelection.pssDocument",
   module: MODULE,
-  value: "BOTAŞ F3-500-ME-SPC-PSS-0002, Rev. AE (18.08.2021), §10.3.3-§10.3.7",
+  value: "Kullanıcının kendi iç proje dokümanı, §10.3.3-§10.3.7 (kimliği izlenebilirlik amacıyla anonim tutuluyor)",
   unit: "-",
   description: "§10.3.3 (Pressure Vessels), §10.3.4 (Heat Exchangers), §10.3.5 (Air Cooled HX), §10.3.6 (Shell & Tube HX), §10.3.7 (Storage Tanks) niteliksel karar kurallarının izlenebilirlik kaydı.",
-  source: SRC_BOTAS_PSS0002,
+  source: SRC_ANONYMIZED_PROJECT_DOC,
   crossChecked: false,
   crossCheckSources: [],
-  confidence: "HIGH",
+  confidence: "UNVERIFIED",
   notes:
-    "Bu bölümlerin sayısal eşikleri (3mm/6mm/1,5mm CA, 50barg, 60°C) doğrudan standardın kendi metninden " +
+    "Bu bölümlerin sayısal eşikleri (3mm/6mm/1,5mm CA, 50barg, 60°C) doğrudan kaynak dokümanın metninden " +
     "okundu (aggregate/materialSelection.ts'teki ilgili fonksiyonların JSDoc'unda alıntılanır) — ayrı bir " +
     "yapılandırılmış tablo/registry girdisi olarak TEKRARLANMADI (piping/min-tasarım-sıcaklığı/bolting'in " +
-    "aksine, bu bölümler daha çok metinsel/koşullu kurallardır, temiz bir tablo yapısına dönüşmez).",
+    "aksine, bu bölümler daha çok metinsel/koşullu kurallardır, temiz bir tablo yapısına dönüşmez). Kaynak " +
+    "dokümanın kimliği anonim tutulduğundan dış kaynakla çapraz doğrulanamadı.",
 };
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -189,17 +191,16 @@ const COASTAL_DISTANCE_THRESHOLD_KM: Coefficient<number> = {
   module: MODULE,
   value: 16,
   unit: "km",
-  description: "Bu PROJEYE özgü (KMGS&NSP, Marmara Denizi) kıyı/deniz etkisi eşiği — genel bir mühendislik sabiti DEĞİLDİR.",
-  source: SRC_BOTAS_PSS0002,
+  description: "Bu PROJEYE özgü kıyı/deniz etkisi eşiği — genel bir mühendislik sabiti DEĞİLDİR, kaynak sahasına özgüdür.",
+  source: SRC_ANONYMIZED_PROJECT_DOC,
   crossChecked: false,
   crossCheckSources: [],
-  confidence: "MEDIUM",
+  confidence: "UNVERIFIED",
   notes:
-    "\"The onshore facilities that are located within 16 Km of the Sea of Mamara are considered to be " +
-    "coastal\" — standardın kendi metninden BİREBİR okundu ANCAK bu değer SAHAYA ÖZGÜDÜR (Marmara Denizi'nin " +
+    "Kaynak dokümanın kendi metninden BİREBİR okundu ANCAK bu değer SAHAYA ÖZGÜDÜR (kaynak sahasının " +
     "spesifik meteorolojik/tuz taşınım koşullarına dayanır) — başka bir saha için doğrudan uygulanmamalı, " +
-    "bu yüzden confidence=MEDIUM (birincil kaynak ama saha-özgü, evrensel değil) ve fonksiyonda her zaman " +
-    "override edilebilir bir parametre olarak sunulur.",
+    "bu yüzden fonksiyonda her zaman override edilebilir bir parametre olarak sunulur. Kaynağın kimliği " +
+    "izlenebilirlik amacıyla anonim tutulduğundan dış kaynakla çapraz doğrulanamadı.",
 };
 
 export const MATERIAL_SELECTION_COEFFICIENTS: Coefficient[] = [

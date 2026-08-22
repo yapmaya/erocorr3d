@@ -1,7 +1,7 @@
-// apps/web/src/features/viewer3d/botas/botasFieldSampling.ts
+// apps/web/src/features/viewer3d/referenceFacility/referenceFacilityFieldSampling.ts
 //
-// Motorun GERÇEK SpatialDamageField'ını (bkz. botasScenarios.ts), pipe
-// mesh'inin (demo geometrisiyle AYNI şekle sahip, bkz. bilinen sınırlama
+// Motorun GERÇEK SpatialDamageField'ını (bkz. referenceFacilityScenarios.ts),
+// pipe mesh'inin (demo geometrisiyle AYNI şekle sahip, bkz. bilinen sınırlama
 // notu) `uv` attribute'una örnekler. `timeSlider/demoTimeDependentField.ts`
 // ile AYNI sözleşimi (BufferGeometry + elapsedYears → Float32Array) taşır
 // ki `PipeMesh`'in `values` girdisine doğrudan bağlanabilsin — ama ARTIK
@@ -11,11 +11,11 @@
 // fonksiyonlarını kullanır.
 //
 // ⚠ BİLİNEN SINIRLAMA: gösterilen boru mesh'i hâlâ PipeViewer'ın demo
-// boyutlarındadır (gerçek BOTAŞ NPS16/NPS8 geometrisine göre yeniden
-// şekillendirme bu oturumun kapsamı DIŞINDA) — yalnızca üzerindeki
+// boyutlarındadır (gerçek referans tesis NPS16/NPS8 geometrisine göre
+// yeniden şekillendirme bu oturumun kapsamı DIŞINDA) — yalnızca üzerindeki
 // hasar DEĞERLERİ gerçek hesaptan gelir. Et kalınlığı eşiği (duvar
 // delinme yılı) ise o hattın GERÇEK wallThicknessMm'i ile hesaplanır
-// (bkz. computeBotasBreachYears çağıranı, PipeViewer.tsx).
+// (bkz. computeReferenceFacilityBreachYears çağıranı, PipeViewer.tsx).
 
 import type { BufferGeometry } from "three";
 import { scaleSpatialDamageField, sampleSpatialDamageFieldMm, type CaseAssessment, type Hotspot } from "@erocorr3d/engine";
@@ -30,7 +30,7 @@ function clampedFraction(elapsedYears: number, designLifeYears: number): number 
  * hasar değerlerini (mm) örnekler — `demoTimeDependentField.ts::
  * computeDemoTimeDependentField`in gerçek-veri eşdeğeri.
  */
-export function computeBotasTimeDependentField(
+export function computeReferenceFacilityTimeDependentField(
   geometry: BufferGeometry,
   caseAssessment: CaseAssessment,
   elapsedYears: number,
@@ -53,7 +53,7 @@ export function computeBotasTimeDependentField(
 }
 
 /** "Duvar delinme yılı" — hız×süre modeli DOĞRUSAL olduğundan kapalı-form (kaydırma/arama gerekmez). */
-export function computeBotasBreachYears(caseAssessment: CaseAssessment, wallThicknessMm: number, designLifeYears: number): number {
+export function computeReferenceFacilityBreachYears(caseAssessment: CaseAssessment, wallThicknessMm: number, designLifeYears: number): number {
   if (wallThicknessMm <= 0) throw new Error("wallThicknessMm pozitif olmalıdır.");
   const maxAtFullLife = caseAssessment.spatialDamageFieldFullLife.maxValueMm;
   if (maxAtFullLife <= 0) return Infinity;
@@ -61,7 +61,7 @@ export function computeBotasBreachYears(caseAssessment: CaseAssessment, wallThic
 }
 
 /** Verilen andaki (elapsedYears) GERÇEK hotspot listesi — computeDamageField'ın ZATEN hesapladığı listenin ölçeklenmiş hâli. */
-export function computeBotasHotspotsAtYears(
+export function computeReferenceFacilityHotspotsAtYears(
   caseAssessment: CaseAssessment,
   elapsedYears: number,
   designLifeYears: number,

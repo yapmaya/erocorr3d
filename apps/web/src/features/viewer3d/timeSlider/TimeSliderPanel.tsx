@@ -9,7 +9,7 @@
 import { PLAYBACK_SPEEDS, type PlaybackSpeed } from "./useTimePlaybackState";
 import { useTranslation } from "../../../i18n/translations";
 
-/** Sekme olarak gösterilebilecek her şeyin ortak şekli — DemoScenario VE BotasScenarioTab bu şekli sağlar (bkz. botas/botasScenarios.ts). */
+/** Sekme olarak gösterilebilecek her şeyin ortak şekli — DemoScenario VE ReferenceFacilityScenarioTab bu şekli sağlar (bkz. referenceFacility/referenceFacilityScenarios.ts). */
 export interface ScenarioTab {
   id: string;
   labelTr: string;

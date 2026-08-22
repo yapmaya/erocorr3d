@@ -7,10 +7,10 @@
 // burada TEKRAR EDİLMEZ), senaryolar toplanarak birleşik yıllık kayıp elde
 // edilir, × tasarım ömrü = SLC.
 //
-// Kaynak: BOTAŞ F3-500-ME-SPC-PSS-0002 (Tablo 10-3, SLC=(gün/365)×ömür×CR
-// — bkz. registry/coefficients/metalLoss.ts) — bu oturumda kullanıcının
-// diskinde bulunan BİRİNCİL proje dokümanı. Örnek doğrulama (dosyanın
-// kendi §10.2 metninden): 91 gün/yıl çekiş işletmesi, 30 yıl tasarım ömrü
+// Kaynak: kullanıcının kendi iç proje dokümanı (bir tabloda SLC=(gün/365)×ömür×CR
+// — bkz. registry/coefficients/metalLoss.ts) — kimliği izlenebilirlik
+// amacıyla anonim tutuluyor. Örnek doğrulama (dosyanın kendi metninden):
+// 91 gün/yıl çekiş işletmesi, 30 yıl tasarım ömrü
 // → SLC = (91/365)×30×CR ≈ 0,25×30×CR (test dosyasında bu örnek BİREBİR
 // doğrulanır).
 
@@ -82,8 +82,8 @@ export function computeScenarioAnnualLoss(scenario: MetalLossScenario): Scenario
  * Tüm senaryoların birleşik yıllık kaybını ve tasarım ömrü boyunca toplam
  * metal kaybını (SLC) hesaplar.
  *
- * Model adı: BOTAŞ F3-500-ME-SPC-PSS-0002 Tablo 10-3 SLC formülü (bkz.
- * registry/coefficients/metalLoss.ts) — SLC=(gün/365)×tasarım ömrü×CR,
+ * Model adı: kullanıcının kendi iç proje dokümanının bir tablosu, SLC formülü
+ * (bkz. registry/coefficients/metalLoss.ts) — SLC=(gün/365)×tasarım ömrü×CR,
  * çoklu senaryo için toplamsal olarak genişletildi (her senaryo kendi
  * gün/365 oranını taşır, "Tüm senaryoların toplamı = yıllık kayıp" — bu
  * projenin görev tanımının kendi kuralı, standardın TEK senaryo formülünün

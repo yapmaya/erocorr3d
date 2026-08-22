@@ -32,7 +32,7 @@ import type { CaseAssessment, ScenarioAssessment } from "./types";
  * yıl için alan istediğinde çağıran taraf computeDamageField'ı (bu fonksiyonun
  * kendisinin de kullandığı, spatial/index.ts'ten re-export edilen) aynı
  * mechanismResults ile FARKLI bir elapsedYears değeriyle tekrar çağırmalıdır
- * (bkz. apps/web/src/features/viewer3d/botas/botasFieldSampling.ts).
+ * (bkz. apps/web/src/features/viewer3d/referenceFacility/referenceFacilityFieldSampling.ts).
  */
 export function assessComponentScenario(
   component: Geometry,

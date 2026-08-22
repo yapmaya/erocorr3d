@@ -13,6 +13,21 @@
 //
 // KAPSAM DIŞI (bilinçli): Stream 1400/4000 (kuru gaz sınıflandırması) — bkz.
 // dryGas.test.ts'in kendi, ayrı ve dokümante sapma notu.
+//
+// BİLİNEN, KALICI OLARAK DOKÜMANTE EDİLMİŞ 2 SAPMA (2026-08-22 itibarıyla,
+// 12 vakadan 10'u ±%30 içinde): Akış 1040/W3A ve Akış 1130/W1A toleransı
+// aşıyor VE düzeltilmeyecek — bkz. botasPss0002ValidationData.ts'in
+// buildRepresentativeWetGasCase üzerindeki "REPRESENTATIVE_TEMPERATURE_C"
+// notu. Özet: bu oturumda yapılan duyarlılık analizi, Akış 1130'un kendi
+// içinde W1A'nın YÜKSELMESİ, W5A'nın ise DÜŞMESİ gerektiğini gösterdi — aynı
+// akış için birbirine ZIT yönde düzeltme. Tek bir temsili parametre seti
+// (sıcaklık, hız, ne denenirse) ikisini AYNI ANDA karşılayamaz; bu, gerçek
+// H&MB (Heat & Material Balance) verisinde bu iki HMB-senaryosu arasında
+// bizim şu an modelleyemediğimiz gerçek bir fark olduğunun İŞARETİDİR, motor
+// hatası değildir. "Hangi parametre 12/12 verir" diye aramak burada KDP'nin
+// yasakladığı şeye (sonuca göre veri uydurmaya) denk gelir — bu yüzden
+// BİLEREK yapılmadı. Gerçek çözüm F3-000-PR-RPT-HMB-0001 raporunun (bu
+// oturumda bulunamadı) gerçek verisidir.
 
 import { describe, expect, it } from "vitest";
 import {

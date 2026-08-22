@@ -15,6 +15,7 @@ import {
   selectShellAndTubeHeatExchangerMaterial,
   selectStorageTankMaterial,
 } from "../../src/aggregate/materialSelection";
+import type { CustomMaterial } from "../../src/types/customMaterial";
 
 // ═══════════════════════════════════════════════════════════════════════
 // §10.3.2 Piping — KARAR MERDİVENİNİN HER SINIR DEĞERİ (görev tanımının
@@ -284,5 +285,44 @@ describe("materialSelection — KDP kayıt defteri entegrasyonu", () => {
   it("kıyı mesafesi eşiği sahaya özgü olduğu için MEDIUM confidence taşır", () => {
     const entry = listCoefficients().find((c) => c.id === "materialSelection.coastalDistanceThresholdKm");
     expect(entry?.confidence).toBe("MEDIUM");
+  });
+});
+
+describe("selectPipingMaterial — customMaterials (kullanıcı tanımlı alternatifler)", () => {
+  const customMaterial: CustomMaterial = {
+    id: "custom-1",
+    nameTr: "Özel Alaşım X",
+    notesTr: "Tedarikçi verisi",
+    sourceNoteTr: "Tedarikçi X'in 2024 test raporu (bağımsız doğrulanmadı)",
+    minRequiredCaMm: 3,
+    maxRequiredCaMm: 6,
+    relativeCostIndex: 4.2,
+  };
+
+  it("parametre verilmezse davranış AYNI kalır (geriye dönük uyumlu)", () => {
+    const withoutParam = selectPipingMaterial({ requiredCorrosionAllowanceMm: 4, inServiceInspectionPossible: false });
+    const withEmptyArray = selectPipingMaterial({ requiredCorrosionAllowanceMm: 4, inServiceInspectionPossible: false }, []);
+    expect(withoutParam).toEqual(withEmptyArray);
+  });
+
+  it("gerekli CA aralığına uyan kullanıcı malzemesi 'doğrulanmamış' etiketiyle alternatiflere eklenir", () => {
+    const result = selectPipingMaterial({ requiredCorrosionAllowanceMm: 4, inServiceInspectionPossible: false }, [customMaterial]);
+    const match = result.alternativeMaterialsTr.find((a) => a.includes("Özel Alaşım X"));
+    expect(match).toBeDefined();
+    expect(match).toContain("Kullanıcı Tanımlı");
+    expect(match).toContain("doğrulanmamış");
+  });
+
+  it("gerekli CA aralığının DIŞINDAKİ kullanıcı malzemesi eklenmez", () => {
+    const result = selectPipingMaterial({ requiredCorrosionAllowanceMm: 1, inServiceInspectionPossible: false }, [customMaterial]);
+    expect(result.alternativeMaterialsTr.some((a) => a.includes("Özel Alaşım X"))).toBe(false);
+  });
+
+  it("kullanıcı malzemesi birincil öneriyi VEYA confidence'ı DEĞİŞTİRMEZ", () => {
+    const withoutCustom = selectPipingMaterial({ requiredCorrosionAllowanceMm: 4, inServiceInspectionPossible: false });
+    const withCustom = selectPipingMaterial({ requiredCorrosionAllowanceMm: 4, inServiceInspectionPossible: false }, [customMaterial]);
+    expect(withCustom.primaryMaterialTr).toBe(withoutCustom.primaryMaterialTr);
+    expect(withCustom.confidence).toBe(withoutCustom.confidence);
+    expect(withCustom.sourcesUsed).toEqual(withoutCustom.sourcesUsed);
   });
 });

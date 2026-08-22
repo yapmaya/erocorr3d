@@ -5,7 +5,7 @@ import { persist } from "zustand/middleware";
 
 export type Theme = "dark" | "light";
 export type Locale = "tr" | "en";
-export type Page = "workspace" | "registry" | "geometryLab";
+export type Page = "workspace" | "registry" | "geometryLab" | "projects";
 export type UnitSystemPreference = "SI" | "IMPERIAL";
 
 interface UiState {

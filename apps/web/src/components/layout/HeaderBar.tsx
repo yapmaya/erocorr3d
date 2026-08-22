@@ -40,6 +40,7 @@ function NavMenu() {
 
   const items: { page: Page; label: string }[] = [
     { page: "workspace", label: t("navWorkspace") },
+    { page: "projects", label: t("navProjects") },
     { page: "registry", label: t("navRegistry") },
     { page: "geometryLab", label: t("navGeometryLab") },
   ];

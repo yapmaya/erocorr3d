@@ -66,13 +66,15 @@ export const IMPORT_TARGETS: ImportTargetDef[] = [
 
 export type ColumnMapping = Partial<Record<ImportTargetField, number>>;
 
-function cellToNumber(cell: string | number | undefined): number | undefined {
+/** Ayrıştırılmış bir Excel/CSV hücresini sayıya çevirir — projects/importLineList.ts (çoklu bileşen içe aktarma) İLE PAYLAŞILIR. */
+export function cellToNumber(cell: string | number | undefined): number | undefined {
   if (cell === undefined || cell === "") return undefined;
   const value = typeof cell === "number" ? cell : Number(cell);
   return Number.isFinite(value) ? value : undefined;
 }
 
-function cellToString(cell: string | number | undefined): string | undefined {
+/** Ayrıştırılmış bir Excel/CSV hücresini metne çevirir — projects/importLineList.ts İLE PAYLAŞILIR. */
+export function cellToString(cell: string | number | undefined): string | undefined {
   if (cell === undefined || cell === "") return undefined;
   return String(cell);
 }

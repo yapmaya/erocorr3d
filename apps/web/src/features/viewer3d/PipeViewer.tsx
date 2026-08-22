@@ -52,6 +52,7 @@ import { ComparisonViewer } from "./comparison/ComparisonViewer";
 import { useTranslation } from "../../i18n/translations";
 import { useUiStore } from "../../store/uiStore";
 import { useAssessmentStore } from "../../store/assessmentStore";
+import { useViewer3dCaptureStore } from "../../store/viewer3dCaptureStore";
 
 const DEFAULT_HOTSPOT_COUNT = 5;
 
@@ -335,6 +336,16 @@ function SceneRoot({ dataSource }: SceneRootProps) {
     const dataUrl = capturePngDataUrl({ gl, scene, camera: threeCamera, transparentBackground });
     downloadDataUrl(dataUrl, "erocorr3d-boru.png");
   };
+
+  // Rapor üretimi (features/report/) Canvas ağacı DIŞINDA çalıştığı için
+  // "o anki görünümü PNG olarak ver" ihtiyacını bir closure üzerinden
+  // viewer3dCaptureStore'a kaydeder — bkz. o dosyanın başlık notu.
+  const registerCapture = useViewer3dCaptureStore((s) => s.registerCapture);
+  const unregisterCapture = useViewer3dCaptureStore((s) => s.unregisterCapture);
+  useEffect(() => {
+    registerCapture(() => capturePngDataUrl({ gl, scene, camera: threeCamera, transparentBackground: false }));
+    return unregisterCapture;
+  }, [gl, scene, threeCamera, registerCapture, unregisterCapture]);
 
   const handleExportGlb = () => {
     exportPipeAsGlb({

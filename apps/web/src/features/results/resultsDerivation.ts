@@ -22,6 +22,7 @@ import {
   type Coefficient,
   type ConfidenceLevel,
   type CtlAtlResult,
+  type CustomMaterial,
   type MaterialSelectionResult,
   type ScenarioAssessment,
 } from "@erocorr3d/engine";
@@ -66,14 +67,25 @@ export function deriveCtlAtl(entry: Pick<AssessmentHistoryEntry, "assessment" | 
   });
 }
 
+/**
+ * `customMaterials` opsiyoneldir (varsayılan boş) — Proje kütüphanesinin
+ * (features/projects/) kullanıcı tanımlı malzemeleri buradan geçirilebilir;
+ * mevcut çağıranlar (SummaryCards/ResultsTable/rapor, oturum-içi Sonuç
+ * Tablosu) parametreyi ATLAYARAK AYNI davranışı korur (bkz. materialSelection.
+ * ts::selectPipingMaterial'ın geriye dönük uyumlu 3. parametresi).
+ */
 export function deriveMaterialRecommendation(
   entry: { assessment: Pick<ScenarioAssessment, "metalLoss"> },
   inServiceInspectionPossible: boolean,
+  customMaterials: CustomMaterial[] = [],
 ): MaterialSelectionResult {
-  return selectPipingMaterial({
-    requiredCorrosionAllowanceMm: entry.assessment.metalLoss.totalServiceLifeCorrosionMm.p50,
-    inServiceInspectionPossible,
-  });
+  return selectPipingMaterial(
+    {
+      requiredCorrosionAllowanceMm: entry.assessment.metalLoss.totalServiceLifeCorrosionMm.p50,
+      inServiceInspectionPossible,
+    },
+    customMaterials,
+  );
 }
 
 export interface ResultsTableRow {

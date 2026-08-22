@@ -5,11 +5,15 @@
 // tablo (A) ve 8 grafik (B-H) alt çekmecede (bkz. ResultsBottomPanel.tsx).
 
 import { SummaryCards } from "./components/SummaryCards";
+import { ReportButtons } from "../report/ReportButtons";
 
 export function ResultsPanel() {
   return (
     <div className="flex h-full flex-col gap-2 overflow-y-auto bg-white p-3 text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Sonuçlar</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">Sonuçlar</h2>
+        <ReportButtons />
+      </div>
       <SummaryCards />
     </div>
   );

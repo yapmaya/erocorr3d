@@ -28,6 +28,7 @@ const dictionary = {
   navWorkspace: { tr: "Ana Ekran", en: "Workspace" },
   navRegistry: { tr: "Katsayı Kayıt Defteri", en: "Coefficient Registry" },
   navGeometryLab: { tr: "Geometri Laboratuvarı", en: "Geometry Lab" },
+  navProjects: { tr: "Projeler", en: "Projects" },
   geometryLabTitle: { tr: "Geometri Laboratuvarı", en: "Geometry Lab" },
   geometryLabShapeLabel: { tr: "Bileşen Tipi", en: "Component Type" },
   geometryLabLodLabel: { tr: "Detay Seviyesi (LOD)", en: "Level of Detail (LOD)" },
@@ -232,6 +233,28 @@ const dictionary = {
   viewer2dBranchLabel: { tr: "Kullanılan Denklem Dalı", en: "Equation Branch Used" },
   viewer2dDefectLengthLabel: { tr: "Kusur Uzunluğu (L)", en: "Defect Length (L)" },
   viewer2dDefectDepthLabel: { tr: "Kusur Derinliği (d)", en: "Defect Depth (d)" },
+
+  // ── report (rapor üretimi) ─────────────────────────────────────────────
+  reportPdfButton: { tr: "PDF Rapor", en: "PDF Report" },
+  reportExcelButton: { tr: "Excel Rapor", en: "Excel Report" },
+  reportSettingsButton: { tr: "Rapor Ayarları", en: "Report Settings" },
+  reportSettingsTitle: { tr: "Rapor Ayarları", en: "Report Settings" },
+  reportSettingsCompanyName: { tr: "Şirket Adı", en: "Company Name" },
+  reportSettingsLogo: { tr: "Logo", en: "Logo" },
+  reportSettingsLogoUpload: { tr: "Yükle", en: "Upload" },
+  reportSettingsLogoChange: { tr: "Değiştir", en: "Change" },
+  reportSettingsLogoRemove: { tr: "Kaldır", en: "Remove" },
+  reportSettingsProjectName: { tr: "Proje Adı", en: "Project Name" },
+  reportSettingsDocumentNo: { tr: "Doküman No", en: "Document No" },
+  reportSettingsRevision: { tr: "Revizyon", en: "Revision" },
+  reportSettingsLanguage: { tr: "Rapor Dili", en: "Report Language" },
+  reportSettingsPreparedBy: { tr: "Hazırlayan", en: "Prepared by" },
+  reportSettingsCheckedBy: { tr: "Kontrol Eden", en: "Checked by" },
+  reportSettingsApprovedBy: { tr: "Onaylayan", en: "Approved by" },
+  reportSettingsRevisionHistory: { tr: "Revizyon Geçmişi", en: "Revision History" },
+  reportSettingsAddRow: { tr: "+ Satır ekle", en: "+ Add row" },
+  reportSettingsNoRevisionRows: { tr: "Henüz revizyon kaydı yok.", en: "No revision entries yet." },
+  reportTraceabilityTooltip: { tr: "Hesap izlenebilirliğini görüntüle", en: "View calculation traceability" },
 } as const;
 
 export type TranslationKey = keyof typeof dictionary;

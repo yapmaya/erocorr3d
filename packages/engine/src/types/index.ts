@@ -11,3 +11,4 @@ export * from "./mitigation";
 export * from "./operating";
 export * from "./material";
 export * from "./results";
+export * from "./customMaterial";

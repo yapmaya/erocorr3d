@@ -23,6 +23,7 @@ import type {
 } from "../registry/coefficients/materialSelection";
 import type { ConfidenceLevel } from "../registry/types";
 import { ENGINEERING_DISCLAIMER_TR, type ValidityWarning } from "../corrosion/types";
+import { isCustomMaterialApplicable, type CustomMaterial } from "../types/customMaterial";
 
 export type EquipmentType =
   | "PIPING"
@@ -219,7 +220,10 @@ export interface PipingMaterialSelectionInput {
  * Geçerlilik aralığı: yalnızca proses borusu için (basınçlı kap/ekipman
  * için AYRI fonksiyonlar kullanılmalıdır — bkz. aşağıdaki diğer fonksiyonlar).
  */
-export function selectPipingMaterial(input: PipingMaterialSelectionInput): MaterialSelectionResult {
+export function selectPipingMaterial(
+  input: PipingMaterialSelectionInput,
+  customMaterials: CustomMaterial[] = [],
+): MaterialSelectionResult {
   if (input.requiredCorrosionAllowanceMm < 0) {
     throw new Error("Gerekli korozyon payı negatif olamaz.");
   }
@@ -238,6 +242,15 @@ export function selectPipingMaterial(input: PipingMaterialSelectionInput): Mater
     alternativeMaterialsTr.push("Daha yüksek alaşımlı CRA (22Cr/25Cr duplex) — ağır sour/klorür koşullarında 316L yetersizse");
   } else if (ladder.indexOf(step) < ladder.length - 1) {
     alternativeMaterialsTr.push(ladder[ladder.length - 1]!.materialDisplayNameTr + " (daha yüksek maliyetli, uzun vadede daha az bakım)");
+  }
+
+  // Kullanıcı tanımlı malzemeler — YALNIZCA gerekli CA aralığına uyanlar, açıkça
+  // "doğrulanmamış" etiketiyle. §10.3.2 merdiveninin birincil önerisini/confidence'ını
+  // ASLA değiştirmez (bkz. types/customMaterial.ts dosya başı KDP notu).
+  for (const material of customMaterials) {
+    if (isCustomMaterialApplicable(material, input.requiredCorrosionAllowanceMm)) {
+      alternativeMaterialsTr.push(`${material.nameTr} (Kullanıcı Tanımlı — doğrulanmamış: ${material.sourceNoteTr})`);
+    }
   }
 
   const csMaterial = getMaterial("cs-a106-grb");

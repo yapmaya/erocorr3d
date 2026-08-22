@@ -7,7 +7,9 @@
 
 import { MECHANISM_CONFIDENCE_LABELS } from "@erocorr3d/engine";
 import { useAssessmentHistoryStore } from "../../../store/assessmentHistoryStore";
+import { useTraceabilityStore } from "../../../store/traceabilityStore";
 import { UnverifiedBadge } from "../../../components/UnverifiedBadge";
+import { useTranslation } from "../../../i18n/translations";
 import { CONFIDENCE_BADGE_STYLES, CTL_ATL_COLOR_STYLES } from "../chartPalette";
 import { deriveTableRow } from "../resultsDerivation";
 
@@ -15,6 +17,8 @@ export function SummaryCards() {
   const entries = useAssessmentHistoryStore((s) => s.entries);
   const selectedEntryId = useAssessmentHistoryStore((s) => s.selectedEntryId);
   const entry = entries.find((e) => e.id === selectedEntryId);
+  const openTrace = useTraceabilityStore((s) => s.open);
+  const { t } = useTranslation();
 
   if (!entry) {
     return <p className="text-sm text-neutral-400 dark:text-neutral-500">Girdi panelinden bir bileşen tanımlayıp &quot;Hesapla&quot;ya basın.</p>;
@@ -104,7 +108,16 @@ export function SummaryCards() {
                 .map((mechanism) => (
                   <tr key={mechanism.mechanismId} className="border-t border-neutral-100 dark:border-neutral-800">
                     <td className="py-0.5 text-neutral-700 dark:text-neutral-200">{mechanism.nameTr}</td>
-                    <td className="py-0.5 text-right font-mono">{mechanism.rateP50.toFixed(3)}</td>
+                    <td className="py-0.5 text-right">
+                      <button
+                        type="button"
+                        onClick={() => openTrace(mechanism)}
+                        className="font-mono underline decoration-dotted underline-offset-2 hover:text-sky-600 dark:hover:text-sky-400"
+                        title={t("reportTraceabilityTooltip")}
+                      >
+                        {mechanism.rateP50.toFixed(3)}
+                      </button>
+                    </td>
                     <td className="py-0.5 text-right">{MECHANISM_CONFIDENCE_LABELS[mechanism.confidence].tr}</td>
                   </tr>
                 ))}

@@ -43,13 +43,29 @@ describe("computeIronCarbonateSolubility — makullük kontrolü", () => {
   });
 });
 
-describe("computeCarbonicAcidK1 / K2 — ⚠ UNVERIFIED katsayılara dayanır", () => {
-  it("pozitif bir sayısal değer üretir (kaynak doğrulaması başarısız olsa da fonksiyon hesap yapar)", () => {
-    // NOT: Bu testler K1/K2'nin FİZİKSEL OLARAK DOĞRU olduğunu DEĞİL, formülün
-    // standardın basılı haliyle tutarlı şekilde ve hatasız çalıştığını doğrular.
-    // Bkz. registry/coefficients/norsokPh.ts::norsokPh.k1 için ayrıntılı uyuşmazlık notu.
-    expect(computeCarbonicAcidK1(T25C_K, 14.7, 0)).toBeGreaterThan(0);
-    expect(computeCarbonicAcidK2(T25C_K, 14.7, 0)).toBeGreaterThan(0);
+describe("computeCarbonicAcidK1 / K2 — bağımsız fiziksel referans doğrulaması", () => {
+  // 2026-08-22 GÜNCELLEMESİ: K1'in tkInverseSquaredCoeff katsayısındaki ondalık
+  // kayması (1684915 yerine 168491.5) düzeltildi — bkz. registry/coefficients/
+  // norsokPh.ts::norsokPh.k1'in düzeltme notu. Bu testler artık K1/K2'nin
+  // FİZİKSEL OLARAK DOĞRU olduğunu (Plummer & Busenberg 1982'ye çapraz
+  // doğrulanmış, confidence=HIGH) iddia eder — önceki "UNVERIFIED" başlığı
+  // artık geçerli değildir.
+  it("25°C, ~1atm (14.7 PSİ), I=0'da bilinen karbonik asit pK1'ine (~6.35) çok yakın sonuç verir", () => {
+    const k1 = computeCarbonicAcidK1(T25C_K, 14.7, 0);
+    expect(-Math.log10(k1)).toBeGreaterThan(6.2);
+    expect(-Math.log10(k1)).toBeLessThan(6.5);
+  });
+
+  it("25°C, ~1atm (14.7 PSİ), I=0'da bilinen karbonik asit pK2'sine (~10.33) çok yakın sonuç verir", () => {
+    const k2 = computeCarbonicAcidK2(T25C_K, 14.7, 0);
+    expect(-Math.log10(k2)).toBeGreaterThan(10.1);
+    expect(-Math.log10(k2)).toBeLessThan(10.5);
+  });
+
+  it("K1 > K2 (karbonik asidin ilk ayrışması ikinciden her zaman daha kolaydır — yapısal özellik)", () => {
+    const k1 = computeCarbonicAcidK1(T25C_K, 14.7, 0);
+    const k2 = computeCarbonicAcidK2(T25C_K, 14.7, 0);
+    expect(k1).toBeGreaterThan(k2);
   });
 });
 
@@ -89,19 +105,20 @@ describe("computeNorsokInSituPh", () => {
     isWaterFeSaturated: false,
   };
 
-  it("sonlu bir pH üretir (hata fırlatmadan tamamlanır)", () => {
-    // NOT: pH'ın FİZİKSEL OLARAK MAKUL bir aralıkta (ör. 0-14) olması BURADA
-    // İDDİA EDİLMİYOR — K1/K2'nin UNVERIFIED durumu nedeniyle (bkz. yukarıdaki
-    // test ve registry notu) sayısal değer güvenilir değildir; yalnızca
-    // hesabın hatasız tamamlandığı doğrulanıyor.
+  it("fiziksel olarak makul bir aralıkta (0-14) sonlu bir pH üretir", () => {
+    // 2026-08-22 GÜNCELLEMESİ: K1/K2 artık HIGH confidence (bkz. yukarıdaki
+    // K1/K2 describe bloğu) — bu yüzden pH'ın da fiziksel olarak makul bir
+    // aralıkta olması artık İDDİA EDİLEBİLİR, yalnızca "hatasız tamamlanma" değil.
     const result = computeNorsokInSituPh(baseInput);
     expect(Number.isFinite(result.pH)).toBe(true);
+    expect(result.pH).toBeGreaterThan(0);
+    expect(result.pH).toBeLessThan(14);
   });
 
-  it("⚠ K1/K2 UNVERIFIED olduğundan sonuç confidence=UNVERIFIED taşır ve uyarı ekler", () => {
+  it("K0/K1/K2/KH/Kw/Ksp'nin TAMAMI HIGH confidence olduğundan sonuç confidence=HIGH taşır, K1/K2 uyarısı EKLENMEZ", () => {
     const result = computeNorsokInSituPh(baseInput);
-    expect(result.confidence).toBe("UNVERIFIED");
-    expect(result.validityWarnings.some((w) => w.message.includes("K1/K2"))).toBe(true);
+    expect(result.confidence).toBe("HIGH");
+    expect(result.validityWarnings.some((w) => w.message.includes("K1/K2"))).toBe(false);
   });
 
   it("CO2 fugasitesi arttıkça pH azalır (daha asidik — temel karbonik asit kimyası, K1/K2'nin kesin değerinden BAĞIMSIZ bir yapısal özellik)", () => {

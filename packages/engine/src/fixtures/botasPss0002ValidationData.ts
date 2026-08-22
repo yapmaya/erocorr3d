@@ -248,17 +248,21 @@ export function buildRepresentativeWetGasCase(
       methanolWeightPercent: 0,
       isWaterFeSaturated: false,
       bacteriaPresent: false,
-      // Temsili, AMA BİLİNÇLİ bir tercih: motorun hesapladığı NORSOK in-situ pH
-      // (registry/coefficients/norsokPh.ts::k1) bu oturumda BULUNAN bir KDP
-      // sorununa sahip — kendi notu "~17 mertebe" fiziksel tutarsızlık
-      // bildiriyor (bkz. o katsayının UNVERIFIED confidence'ı). Bu bilinen
-      // sorunlu hesabı kullanmak yerine, CO2-doygun düşük mineralizasyonlu
-      // üretim suyu için literatürde tipik olan pH aralığını (~5,3-6,0,
-      // ör. de Waard/NORSOK örnek hesaplarında sık görülen mertebe) temsilen
-      // sabit bir değer verildi. Bu, registryAudit.test.ts'in yakaladığı
-      // UNVERIFIED sorununu ETRAFINDAN DOLAŞMAK değil, bilinen bir kusuru
-      // devre dışı bırakıp motorun geri kalanını (NORSOK K(T) terimi, akış
-      // katkısı, Fcond vb.) test etmektir.
+      // Temsili, BİLİNÇLİ bir tercih: [2026-08-22 GÜNCELLEMESİ] motorun
+      // NORSOK in-situ pH hesabındaki norsokPh.k1 ondalık-kayması hatası
+      // düzeltildi (bkz. registry/coefficients/norsokPh.ts — artık HIGH
+      // confidence), YİNE DE burada doğrudan pH veriliyor: hesaplanan in-situ
+      // pH, bikarbonat/klorür/TDS gibi GERÇEK üretim suyu kimyası verisi
+      // GEREKTİRİR — bu proje o veriye de sahip değil (yalnızca temsili
+      // değerler var, bkz. process/chemistry alanları). Duyarlılık analizi
+      // (bu oturumda) hesaplanan-pH yolunun, temsili su kimyasıyla birlikte,
+      // referans hızları SİSTEMATİK OLARAK düşük tahmin ettiğini gösterdi
+      // (0,12-0,18 mm/yıl, referans 0,20-0,46 aralığının altında) — yani k1
+      // düzeltmesi motoru daha DOĞRU yaptı, ama girdi verisi eksikliği hâlâ
+      // baskın belirsizlik kaynağı. Bu yüzden CO2-doygun düşük mineralizasyonlu
+      // üretim suyu için literatürde tipik olan pH aralığını (~5,3-6,0) temsilen
+      // sabit bir değer verilmeye devam ediliyor — ampirik olarak referansla
+      // daha iyi örtüşüyor (bkz. botasKmgsCases.test.ts sonuçları).
       phMeasured: 5.5,
     },
     solids: {

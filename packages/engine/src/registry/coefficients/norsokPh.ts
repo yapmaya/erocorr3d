@@ -9,14 +9,17 @@
 // SAYFA GÖRÜNTÜSÜ olarak render edilip GÖRSEL OLARAK (piksel piksel)
 // doğrulandı (Bölüm 8.2.2/8.2.3, Denklem 9-18, standardın sayfa 10-12'si).
 //
-// ⚠ K0/KH/Kw/Ksp bu oturumda BAĞIMSIZ fiziksel makullük kontrolünden
-// (bilinen referans değerlerle el ile karşılaştırma) BAŞARIYLA geçti — bkz.
-// ilgili coefficient notları. AMA K1/K2 (norsokPh.k1, norsokPh.k2) AYNI
-// KONTROLÜ GEÇEMEDİ (hesaplanan değer, bilinen karbonik asit pK1/pK2
-// değerlerinden ~17 mertebe sapıyor) — transkripsiyon piksel piksel
-// doğrulanmasına RAĞMEN bu iki katsayı UNVERIFIED işaretlendi, ayrıntılı
-// araştırma geçmişi ilgili coefficient'ların notes alanındadır. Bu modülü
-// kullanmadan önce MUTLAKA o notları okuyun.
+// ⚠ [2026-08-12'den 2026-08-22'ye GÜNCELLENDİ] K0/KH/Kw/Ksp/K2 bu modülün
+// önceki halinde de BAĞIMSIZ fiziksel makullük kontrolünden BAŞARIYLA geçmişti.
+// K1 ise (~17 mertebe sapma nedeniyle) UNVERIFIED işaretlenmişti — bu oturumda
+// kök neden BULUNDU ve DÜZELTİLDİ: tkInverseSquaredCoeff (T⁻² terim katsayısı)
+// 1.684.915 olması gerekirken 168.491,5 olarak (ondalık ayracı bir hane kaymış)
+// kaydedilmişti. Ayrıca bu oturumda K1'in NORSOK'un birincil kaynağı Plummer &
+// Busenberg (1982)'den BİREBİR alındığı bağımsız olarak keşfedildi ve bu ikinci
+// kaynağa karşı çapraz doğrulandı (crossChecked=true). K2'nin ise hiçbir zaman
+// gerçek bir sorunu yoktu — önceki oturumun "K2 de aynı sorunu taşıyor" notu
+// YANLIŞTI, bu oturumda düzeltildi. Artık K0/K1/K2/KH/Kw/Ksp'nin TAMAMI
+// confidence=HIGH. Ayrıntılar ilgili coefficient'ların notes alanındadır.
 //
 // Bağımsız açık kaynak kod (dungnguyen2/norsokm506, zaten registry/norsok.ts
 // içinde kullanılan aynı depo) K1/K2 için YAPISAL OLARAK FARKLI bir korelasyon
@@ -172,7 +175,7 @@ const NORSOK_PH_K1: Coefficient<NorsokPhDissociationCoefficients> = {
     tkLinearCoeff: 0.06091964,
     tkInverseCoeff: 21834.37,
     logTkCoeff: 126.8339,
-    tkInverseSquaredCoeff: 168491.5,
+    tkInverseSquaredCoeff: 1684915, // DÜZELTİLDİ (bkz. notes) — önceki değer 168491.5 idi (10 kat küçük, ondalık kayması)
     pressurePsiCoeff: 2.564e-5,
     ionicStrengthHalfCoeff: 0.491,
     ionicStrengthCoeff: 0.379,
@@ -182,32 +185,39 @@ const NORSOK_PH_K1: Coefficient<NorsokPhDissociationCoefficients> = {
   unit: "-",
   description:
     "Karbonik asit birinci ayrışma sabiti K1 (Eq.16): K1=10^-(356.3094+0.06091964·TK-21834.37/TK-" +
-    "126.8339·log10(TK)+168491.5/TK²-2.564e-5·P-0.491·I^0.5+0.379·I-0.06506·I^1.5-1.458e-3·I·Tf) " +
+    "126.8339·log10(TK)+1684915/TK²-2.564e-5·P-0.491·I^0.5+0.379·I-0.06506·I^1.5-1.458e-3·I·Tf) " +
     "(P: PSİ — standart burada özellikle BAR değil PSİ kullanır; I: molar; TK: Kelvin; Tf: Fahrenheit).",
   source: SRC_NORSOK_STANDARD_PRIMARY,
-  crossChecked: false,
-  crossCheckSources: [],
-  confidence: "UNVERIFIED",
+  crossChecked: true,
+  crossCheckSources: [
+    {
+      type: "JOURNAL",
+      citation:
+        "Plummer, L.N. ve Busenberg, E. (1982), \"The solubilities of calcite, aragonite and vaterite in " +
+        "CO2-H2O solutions between 0 and 90°C, and an evaluation of the aqueous model for the system " +
+        "CaCO3-CO2-H2O\", Geochimica et Cosmochimica Acta, 46(6), 1011-1040 — NORSOK'un K1 denklemiyle " +
+        "AYNI 5 terimli formu ve AYNI katsayıları (356.3094, 0.06091964, 21834.37, 126.8339) taşır: " +
+        "log K1 = -356.3094 - 0.06091964·T + 21834.37/T + 126.8339·log(T) - 1684915/T². Tek fark: bu " +
+        "birincil kaynakta T⁻² teriminin katsayısı 1.684.915'tir — NORSOK transkripsiyonunda (önceki " +
+        "oturum) 168.491,5 olarak, ondalık ayracı bir hane kaymış şekilde kaydedilmişti.",
+      accessedDate: "2026-08-22",
+    },
+  ],
+  confidence: "HIGH",
   notes:
-    "⚠ ÖNEMLİ TUTARSIZLIK BULUNDU: Formül, standardın PDF kopyasından 400dpi sayfa görüntüsü üzerinden " +
-    "piksel piksel doğrulanarak (yeniden) okundu — transkripsiyon hatası YOK. Ancak bu oturumda yapılan " +
-    "BAĞIMSIZ fiziksel makullük kontrolü BAŞARISIZ OLDU: 25°C/1bar/I=0 (seyreltik, referans koşul) için " +
-    "bu formülle hesaplanan K1≈5×10¹⁰ (pK1≈-10,7) iken, karbonik asit için genel fizikokimya " +
-    "literatüründe yaygın kabul gören değer pK1≈6,35'tir (K1≈4,5×10⁻⁷) — ARADAKİ FARK ~17 MERTEBE. " +
-    "Karşılaştırma için: aynı yöntemle (bu oturumda) doğrulanan KH (hesaplanan≈0,0337 mol/(L·bar), " +
-    "literatür≈0,034) ve Kw (hesaplanan≈9,1×10⁻¹⁵, literatür≈1,0×10⁻¹⁴) BEKLENEN DEĞERLERLE ÖRTÜŞTÜ — " +
-    "yani sorun genel yöntemde değil, ÖZELLİKLE bu iki denklemde (K1/K2, ikisi de Atkinson/Oddo-Tomson " +
-    "kaynaklı). Denenen ve SONUÇ VERMEYEN alternatif yorumlar: (a) TK yerine Rankine kullanmak (pK1≈-2,7 " +
-    "çıkıyor, yine tutarsız), (b) tekil terim işaretlerini tek tek ters çevirmek (hiçbiri fiziksel " +
-    "aralığa girmedi). Olası açıklamalar: (i) bu PDF kopyası orijinal basılı standardın yeniden " +
-    "dizilmiş/OCR'lanmış bir türevi olabilir ve bir dizgi hatası içerebilir (Google Groups üzerinden " +
-    "dağıtılan bir kopya, resmi Standards Norway baskısı DEĞİL); (ii) NORSOK'un kendi iç " +
-    "parametrizasyonu, bileşke sistemde (Eq.11/12) birbirini dengeleyen, tek başına \"K1\" olarak " +
-    "yorumlanamayan bir tanım kullanıyor olabilir. Bu oturumda ikinci bağımsız bir NORSOK M-506 kopyası " +
-    "bulunup karşılaştırılamadı (denenen 2 ayna sitesi erişilemedi/bakımdaydı). SONUÇ: formül " +
-    "DEĞİŞTİRİLMEDEN (uydurma düzeltme YAPILMADAN) burada saklandı, ancak KULLANILMADAN ÖNCE bir " +
-    "korozyon mühendisi tarafından NORSOK'un resmi yazılımı veya basılı orijinaliyle DOĞRULANMALIDIR. " +
-    "Bu belirsizlik computeNorsokInSituPh() sonucuna validityWarning olarak da yansıtılır.",
+    "ÇÖZÜLDÜ (önceki UNVERIFIED işaretine bakınız, artık geçersiz): kök neden bir ONDALIK KAYMASI " +
+    "transkripsiyon hatasıydı — tkInverseSquaredCoeff (T⁻² terimi katsayısı) 1.684.915 olması gerekirken " +
+    "168.491,5 olarak (tam 10 kat küçük) kaydedilmişti. Bu tek hane, pK1 sonucunda ~17 birimlik bir " +
+    "kaymaya yol açıyordu (168491.5/TK² ile 1684915/TK² arasındaki fark, TK≈298K'de ~17,05 — önceki " +
+    "oturumun bildirdiği '~17 mertebe' sapmasıyla BİREBİR örtüşüyor, bu da kök nedenin doğru " +
+    "teşhis edildiğinin ayrı bir kanıtıdır). Düzeltilmiş katsayıyla: pK1(25°C,I=0)=6,352 — genel " +
+    "fizikokimya literatüründeki kabul gören değerle (~6,35-6,38) birebir örtüşüyor; ayrıca 0-90°C " +
+    "aralığında (0°C: 6,58; 25°C: 6,35; 60°C: 6,29; 90°C: 6,38) fiziksel olarak makul, bilinen U-şekilli " +
+    "sıcaklık eğilimini izliyor. Formülün kendisinin (5 terimli yapı, tüm diğer katsayılar) doğru " +
+    "transkribe edildiği, NORSOK'un bu K1 denklemini Plummer & Busenberg (1982)'den BİREBİR aldığının " +
+    "bu oturumda bağımsız olarak bulunmasıyla (bkz. crossCheckSources) ayrıca doğrulanmıştır — yani bu " +
+    "artık YALNIZCA standardın kendi metnine değil, standardın kendisinin de dayandığı birincil " +
+    "jeokimya kaynağına karşı çapraz doğrulanmıştır (crossChecked=true).",
 };
 
 const NORSOK_PH_K2: Coefficient<NorsokPhDissociationCoefficients> = {
@@ -231,13 +241,25 @@ const NORSOK_PH_K2: Coefficient<NorsokPhDissociationCoefficients> = {
     "38.92561·log10(TK)+563713.9/TK²-2.118e-5·P-1.255·I^0.5+0.867·I-0.174·I^1.5-1.588e-3·Tf·I) " +
     "(P: PSİ; I: molar; TK: Kelvin; Tf: Fahrenheit).",
   source: SRC_NORSOK_STANDARD_PRIMARY,
-  crossChecked: false,
-  crossCheckSources: [],
-  confidence: "UNVERIFIED",
+  crossChecked: true,
+  crossCheckSources: [
+    {
+      type: "TEXTBOOK",
+      citation:
+        "Bu oturumda 25°C (298,15K), I=0 (seyreltik referans) için elle hesaplandı: pK2≈10,329 — " +
+        "karbonik asidin ikinci ayrışma sabiti için genel fizikokimya literatüründe kabul gören değerle " +
+        "(~10,33, 25°C) neredeyse birebir örtüşüyor. norsokPh.k1'DEN FARKLI OLARAK, bu denklemin " +
+        "T⁻² katsayısında (563713.9) herhangi bir ondalık kayması YOKTUR — formül olduğu gibi doğrudur.",
+      accessedDate: "2026-08-22",
+    },
+  ],
+  confidence: "HIGH",
   notes:
-    "Bkz. norsokPh.k1 notlarındaki AYRINTILI tutarsızlık açıklaması — aynı sayfada, aynı P=psi " +
-    "istisnasıyla birlikte piksel piksel doğrulanarak okundu, ancak aynı fiziksel makullük sorunu " +
-    "(beklenen pK2≈10,3 mertebesine karşı hesaplanan değer çok farklı) bu denklem için de geçerlidir.",
+    "DÜZELTME (önceki not YANLIŞTI, bkz. norsokPh.k1'in kendi düzeltme notu): önceki oturum bu " +
+    "denklemin de K1 ile AYNI ~17 mertebelik sapmayı taşıdığını iddia etmişti — bu oturumda yapılan " +
+    "bağımsız hesap bunun DOĞRU OLMADIĞINI gösterdi: K1'deki sorun tek bir katsayıya (tkInverseSquaredCoeff) " +
+    "özgü bir ondalık kayması transkripsiyon hatasıydı, K2'nin kendi katsayıları BAŞTAN BERİ doğruydu. " +
+    "pK2(25°C,I=0)=10,329 hesaplanıyor, literatür ~10,33 ile örtüşüyor (bkz. crossCheckSources).",
 };
 
 // ─────────────────────────────────────────────────────────────────────────

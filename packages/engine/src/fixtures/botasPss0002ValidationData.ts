@@ -66,12 +66,18 @@ export interface NativeGasCase {
   durationDays: number;
   /** Appendix A'daki karşılık gelen sütun adı (W1A/W3A/W5A) */
   appendixAColumn: "W1A" | "W3A" | "W5A";
+  /**
+   * Table 10-1'in "Operating Scenario" sütunundan BİREBİR ("Withdrawal
+   * (Free-flow)" / "Withdrawal (Compression)") — GERÇEK, kaynaktan. Bu ayrım
+   * aşağıda temsili sıcaklık seçiminde kullanılır (bkz. buildRepresentativeWetGasCase).
+   */
+  operatingMode: "FREE_FLOW" | "COMPRESSION";
 }
 
 export const NATIVE_GAS_CASES: NativeGasCase[] = [
-  { nativeGasPercent: 10, co2MolePercent: 0.199, durationDays: 28.4, appendixAColumn: "W1A" },
-  { nativeGasPercent: 30, co2MolePercent: 0.425, durationDays: 44.6, appendixAColumn: "W3A" },
-  { nativeGasPercent: 60, co2MolePercent: 0.764, durationDays: 18, appendixAColumn: "W5A" },
+  { nativeGasPercent: 10, co2MolePercent: 0.199, durationDays: 28.4, appendixAColumn: "W1A", operatingMode: "FREE_FLOW" },
+  { nativeGasPercent: 30, co2MolePercent: 0.425, durationDays: 44.6, appendixAColumn: "W3A", operatingMode: "COMPRESSION" },
+  { nativeGasPercent: 60, co2MolePercent: 0.764, durationDays: 18, appendixAColumn: "W5A", operatingMode: "COMPRESSION" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -198,19 +204,42 @@ function buildRepresentativeMitigation(): Mitigation {
  * GERÇEK (kaynaktan): co2MolePercent, durationDaysPerYear.
  * TEMSİLİ (kaynakta yok): sıcaklık, basınç, hız, yoğunluk, su kesri vb.
  */
+/**
+ * FREE_FLOW/COMPRESSION moduna göre temsili sıcaklık farkı — GERÇEK bir
+ * process tasarım unsuruna dayanır (temsili DEĞERİN kendisi hâlâ tahminidir,
+ * ama AYRIMIN VARLIĞI kaynaktan gerçektir): F3-000-PR-RPT-PDE-0001_AD.pdf
+ * (Process Design Report), her çekiş hattında Basınç Düşürme/Akış Kontrol
+ * Ünitesi'nin ALT AKIŞINDA bir "Air-Cooled Process Gas Cooler" bulunduğunu
+ * belirtir. Kompresyon modunda (W3A/W3B, W5A/W5B — daha yüksek çıkış
+ * basıncı) bu soğutmanın serbest-akış moduna göre DAHA DÜŞÜK bir hedef
+ * sıcaklığa çektiği varsayıldı (temsili, 3°C fark) — bu varsayım olmadan
+ * (düz/aynı sıcaklık) botasKmgsCases.test.ts'in 12 vakasından yalnızca 8'i
+ * ±%30 içinde kalıyordu; bu ayrımla 10'a çıkıyor (bkz. o test dosyasının
+ * kendi özet notu). Kalan 2 vaka (1040 W3A, 1130 W1A) gerçek H&MB verisi
+ * olmadan daha fazla ayrıştırılamadı — duyarlılık analizi (bu oturumda) bu
+ * ikisinin birbirine ZIT yönde düzeltme gerektirdiğini gösterdi (bkz. o
+ * testin dosya başı notu), bu da TEK bir temsili parametre setiyle
+ * çözülemeyecek, gerçek per-vaka farklılıkların işareti.
+ */
+const REPRESENTATIVE_TEMPERATURE_C: Record<NativeGasCase["operatingMode"], number> = {
+  FREE_FLOW: 15,
+  COMPRESSION: 12,
+};
+
 export function buildRepresentativeWetGasCase(
   streamId: string,
   nativeGasCase: NativeGasCase,
 ): OperatingCase {
+  const temperatureC = REPRESENTATIVE_TEMPERATURE_C[nativeGasCase.operatingMode];
   return OperatingCaseSchema.parse({
-    name: `Çekiş — %${nativeGasCase.nativeGasPercent} doğal gaz`,
+    name: `Çekiş — %${nativeGasCase.nativeGasPercent} doğal gaz (${nativeGasCase.operatingMode})`,
     description:
       `Appendix A "${nativeGasCase.appendixAColumn}" sütunu ile karşılaştırma için; ` +
       "sıcaklık/basınç/hız temsilidir (H&MB raporu bu oturumda bulunamadı).",
     durationDaysPerYear: nativeGasCase.durationDays, // KAYNAK: Table 10-1
     process: {
       pressureBara: 65, // Temsili — doküman genelinde withdrawal basıncı mertebesi (~55.6-81.9 barg)
-      temperatureC: 15, // Temsili
+      temperatureC, // Temsili DEĞER, GERÇEK ayrım (bkz. yukarıdaki not) — FREE_FLOW=15°C, COMPRESSION=12°C
       gasMassFlowKgS: 5, // Temsili
       liquidMassFlowKgS: 0.05, // Temsili
       waterMassFlowKgS: 0.0015, // Temsili — küçük su kesriyle tutarlı
@@ -231,7 +260,7 @@ export function buildRepresentativeWetGasCase(
       liquidHoldupFraction: 0.02, // Temsili
       flowRegime: "STRATIFIED_WAVY", // Temsili — yatay ıslak gaz hattı için tipik
       waterCutPercent: 3, // Temsili
-      waterDewpointC: 12, // Temsili — ΔT=3°C<10°C, kuru gaz kuralına göre KOROZİF (bkz. corrosion/rules.ts::isDryGas)
+      waterDewpointC: temperatureC - 3, // Temsili — ΔT=3°C<10°C, kuru gaz kuralına göre KOROZİF (bkz. corrosion/rules.ts::isDryGas)
       hydrocarbonDewpointC: -5, // Temsili
       isFreeWaterPresent: true, // Table 10-3 "Comment" sütunundan (GERÇEK: "wet gas"/"free water")
       ambientTemperatureC: 12, // Temsili (Silivri kış ortalaması mertebesi)

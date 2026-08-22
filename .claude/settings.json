@@ -20,5 +20,20 @@
       "Bash(git reset --hard*)",
       "Bash(rm -rf*)"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r \".tool_input.file_path // .tool_response.filePath // empty\"); case \"$f\" in *.ts|*.tsx) out=$(cd \"/home/aliattar/Masaüstü/uygulama/erocorr3d\" && npx eslint \"$f\" 2>&1); code=$?; if [ \"$code\" -ne 0 ]; then jq -n --arg r \"$out\" --arg f \"$f\" \"{decision:\\\"block\\\",reason:(\\\"ESLint hatası — \\\" + \\$f + \\\":\\n\\\" + \\$r)}\"; exit 2; fi ;; esac",
+            "asyncRewake": true,
+            "statusMessage": "ESLint kontrol ediliyor..."
+          }
+        ]
+      }
+    ]
   }
 }

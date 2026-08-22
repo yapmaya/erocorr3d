@@ -10,12 +10,14 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "validate": "npm run build && tsx scripts/generateValidationReport.ts"
   },
   "dependencies": {
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "tsx": "^4.19.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
   }

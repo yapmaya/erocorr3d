@@ -11,3 +11,4 @@ export * from "./data";
 export * from "./orchestrate";
 export * from "./mechanicalIntegrity";
 export * from "./fixtures/botas";
+export * from "./fixtures/botasPss0002ValidationData";

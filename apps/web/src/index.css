@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+/* Koyu tema, prefers-color-scheme yerine <html class="dark"> ile kontrol edilir
+   (bkz. src/App.tsx — kullanıcı tercihi zustand store'dan gelir). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}

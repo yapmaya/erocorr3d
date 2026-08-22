@@ -29,7 +29,7 @@ describe("buildReportData", () => {
     expect(data.components[0]!.tableRow.ctlAtl?.ratio).toBe(expectedCtlAtl?.ratio);
   });
 
-  it("allCoefficients registry'nin TAMAMını taşır (Ek B eksiksiz olsun diye)", () => {
+  it("allCoefficients registry'nin TAMAMını taşır (Excel'in Katsayı Defteri sayfası için)", () => {
     const data = buildReportData({
       entries: [entry],
       settings,
@@ -38,6 +38,21 @@ describe("buildReportData", () => {
       chartPngs: {},
     });
     expect(data.allCoefficients.length).toBe(listCoefficients().length);
+  });
+
+  it("usedCoefficients yalnızca GERÇEKTEN calculationTrace'te geçen katsayıları içerir (allCoefficients'in ÖZ ALT KÜMESİ, PDF'in EK B'si için)", () => {
+    const data = buildReportData({
+      entries: [entry],
+      settings,
+      inServiceInspectionPossible: false,
+      heatmapPngDataUrl: null,
+      chartPngs: {},
+    });
+    const referencedIds = new Set(data.rawTraceRows.flatMap((r) => r.coefficientIds.split("; ").filter(Boolean)));
+    expect(data.usedCoefficients.length).toBeGreaterThan(0);
+    expect(data.usedCoefficients.length).toBeLessThan(data.allCoefficients.length);
+    expect(data.usedCoefficients.every((c) => referencedIds.has(c.id))).toBe(true);
+    expect(referencedIds.size).toBe(data.usedCoefficients.length);
   });
 
   it("rawTraceRows, mekanizmaların calculationTrace'ini KAYIPSIZ döker", () => {

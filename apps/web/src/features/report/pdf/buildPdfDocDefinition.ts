@@ -35,6 +35,24 @@ function h2(text: string): Content {
   return { text, style: "h2" };
 }
 
+const COEFFICIENT_VALUE_MAX_CHARS = 200;
+
+/**
+ * Bazı katsayıların `value`si (ör. NORSOK Kt/f(pH) tabloları) çok büyük
+ * nesneler/dizilerdir — PDF'te ham JSON.stringify'ını basmak TEK bir hücreyi
+ * birkaç SAYFAya çıkarabilir (gerçek testte gözlemlendi). Bilgi
+ * KAYBOLMAZ — tam değer HER ZAMAN Excel raporunun "Katsayı Defteri"
+ * sayfasında ve Katsayı Kayıt Defteri sayfasında (CSV dışa aktarım) mevcuttur;
+ * burada yalnızca PDF hücresi için KISALTILMIŞ bir özet üretilir.
+ */
+function formatCoefficientValueForPdf(value: unknown): string {
+  const json = JSON.stringify(value);
+  if (json.length <= COEFFICIENT_VALUE_MAX_CHARS) return json;
+  if (Array.isArray(value)) return `[${value.length} elemanlı tablo — tam değer Excel raporunda/Katsayı Kayıt Defteri'nde]`;
+  if (typeof value === "object" && value !== null) return `{...} karmaşık tablo — tam değer Excel raporunda/Katsayı Kayıt Defteri'nde`;
+  return `${json.slice(0, COEFFICIENT_VALUE_MAX_CHARS)}…`;
+}
+
 function simpleTable(header: string[], rows: (string | number)[][], widths?: (string | number)[]): Content {
   const body: TableCell[][] = [
     header.map((h) => ({ text: h, style: "tableHeader" }) as TableCell),
@@ -295,10 +313,18 @@ function buildAppendices(data: ReportData): Content[] {
   );
 
   blocks.push(h1(pick(SECTION_TITLES.appendixB, lang)));
+  blocks.push({
+    text:
+      lang === "tr"
+        ? `Bu listede yalnızca bu rapordaki bileşenlerin hesabında GERÇEKTEN kullanılan katsayılar yer alır (${data.usedCoefficients.length} / ${data.allCoefficients.length} kayıtlı katsayı). Kayıt defterinin tamamı Excel raporunun "Katsayı Defteri" sayfasındadır.`
+        : `This list contains only the coefficients ACTUALLY used in this report's components (${data.usedCoefficients.length} / ${data.allCoefficients.length} registered coefficients). The full registry is available in the "Katsayı Defteri" sheet of the Excel report.`,
+    style: "small",
+    margin: [0, 0, 0, 4],
+  });
   blocks.push(
     simpleTable(
       lang === "tr" ? ["ID", "Değer", "Birim", "Açıklama", "Kaynak", "Güven"] : ["ID", "Value", "Unit", "Description", "Source", "Confidence"],
-      data.allCoefficients.map((c) => [c.id, JSON.stringify(c.value), c.unit, c.description, c.source.citation, c.confidence]),
+      data.usedCoefficients.map((c) => [c.id, formatCoefficientValueForPdf(c.value), c.unit, c.description, c.source.citation, c.confidence]),
       [90, 40, 30, "*", "*", 45],
     ),
   );

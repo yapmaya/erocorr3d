@@ -49,8 +49,21 @@ export interface ReportData {
   settings: ReportSettings;
   generatedAt: Date;
   components: ReportComponentSection[];
-  /** Tüm bileşenler/mekanizmalar üzerinden tekilleştirilmiş kullanılan katsayı ID'leri (Ek B'nin kapsamı — SADECE fiilen kullanılanlar mı yoksa TÜM defter mi seçimi: burada TÜM defter, denetim amacıyla eksiksiz olsun diye). */
+  /**
+   * Registry'nin TAMAMI (271+ kayıt) — Excel'in "Katsayı Defteri" sayfası
+   * bunu kullanır (sayfa/uzunluk sorunu YOK, tam denetim kaydı olarak
+   * değerlidir).
+   */
   allCoefficients: Coefficient[];
+  /**
+   * YALNIZCA bu rapordaki bileşenlerin GERÇEKTEN kullandığı katsayılar
+   * (calculationTrace'lerden tekilleştirilmiş) — PDF'in EK B'si bunu
+   * kullanır. Gerçek testte (bkz. commit geçmişi): tam registry'yi PDF'e
+   * dökmek TEK bir düz boru için 177 sayfaya çıkıyordu (bazı katsayı
+   * değerleri koca JSON tablolar) — kullanıcı onayıyla PDF bu listeye
+   * daraltıldı, Excel'in tam defteri KORUNDU.
+   */
+  usedCoefficients: Coefficient[];
   rawTraceRows: RawTraceStepRow[];
   spatialGridRows: SpatialGridRow[];
   heatmapPngDataUrl: string | null;
@@ -85,6 +98,21 @@ function buildRawTraceRows(entries: AssessmentHistoryEntry[]): RawTraceStepRow[]
     }
   }
   return rows;
+}
+
+/** `buildRawTraceRows` İLE AYNI iterasyon yapısı — coefficientIds'leri tekilleştirerek toplar (ikinci bir hesap İCAT ETMEZ, aynı calculationTrace verisini okur). */
+function collectUsedCoefficientIds(entries: AssessmentHistoryEntry[]): Set<string> {
+  const ids = new Set<string>();
+  for (const entry of entries) {
+    for (const caseAssessment of entry.assessment.perCase) {
+      for (const mechanism of caseAssessment.mechanismResults) {
+        for (const step of mechanism.calculationTrace) {
+          for (const id of step.coefficientIds) ids.add(id);
+        }
+      }
+    }
+  }
+  return ids;
 }
 
 function buildSpatialGridRows(entries: AssessmentHistoryEntry[]): SpatialGridRow[] {
@@ -129,11 +157,15 @@ export function buildReportData(options: BuildReportDataOptions): ReportData {
     materialDetail: deriveMaterialRecommendation(entry, inServiceInspectionPossible),
   }));
 
+  const allCoefficients = listCoefficients();
+  const usedIds = collectUsedCoefficientIds(entries);
+
   return {
     settings,
     generatedAt: new Date(),
     components,
-    allCoefficients: listCoefficients(),
+    allCoefficients,
+    usedCoefficients: allCoefficients.filter((c) => usedIds.has(c.id)),
     rawTraceRows: buildRawTraceRows(entries),
     spatialGridRows: buildSpatialGridRows(entries),
     heatmapPngDataUrl,

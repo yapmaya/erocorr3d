@@ -44,14 +44,29 @@ describe("buildPdfDocDefinition", () => {
     expect(flattenContent(doc.content as Content[]).length).toBeGreaterThan(10);
   });
 
-  it("EK B satır sayısı allCoefficients ile eşleşir", () => {
+  it("EK B satır sayısı usedCoefficients ile eşleşir (allCoefficients İLE DEĞİL — tam registry PDF'i 177 sayfaya çıkarıyordu, bkz. reportData.ts'in dosya başı notu)", () => {
     const { data, doc } = build("tr");
+    expect(data.usedCoefficients.length).toBeLessThan(data.allCoefficients.length);
     const content = doc.content as Content[];
     const appendixBTable = content.find(
       (c): c is Content & { table: { body: unknown[][] } } =>
-        typeof c === "object" && c !== null && "table" in c && Array.isArray((c as { table?: { body?: unknown[] } }).table?.body) && (c as { table: { body: unknown[] } }).table.body.length === data.allCoefficients.length + 1,
+        typeof c === "object" && c !== null && "table" in c && Array.isArray((c as { table?: { body?: unknown[] } }).table?.body) && (c as { table: { body: unknown[] } }).table.body.length === data.usedCoefficients.length + 1,
     );
     expect(appendixBTable).toBeTruthy();
+  });
+
+  it("EK B'deki büyük tablo-şeklindeki katsayı değerleri KISALTILIR (bilgi kaybı yok — Excel'de tam hali var), küçük değerler AYNEN kalır", () => {
+    const { data, doc } = build("tr");
+    const bigValueCoefficient = data.usedCoefficients.find((c) => JSON.stringify(c.value).length > 200);
+    // Bu fixture'da büyük bir tablo değeri (ör. NORSOK Kt/f(pH) tabloları) bulunmalı — yoksa bu test anlamsızlaşır.
+    expect(bigValueCoefficient).toBeDefined();
+    const docString = JSON.stringify(doc.content);
+    expect(docString).not.toContain(JSON.stringify(bigValueCoefficient!.value));
+    expect(docString).toContain("Katsayı Kayıt Defteri");
+
+    const smallValueCoefficient = data.usedCoefficients.find((c) => JSON.stringify(c.value).length <= 200);
+    expect(smallValueCoefficient).toBeDefined();
+    expect(docString).toContain(JSON.stringify(smallValueCoefficient!.value));
   });
 
   it("EN dilinde üretildiğinde kapak alt başlığı İngilizce olur", () => {

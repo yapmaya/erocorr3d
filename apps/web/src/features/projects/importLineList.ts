@@ -102,7 +102,16 @@ export function buildComponentsFromLineListRows(
     const temperatureC = cellToNumber(getCell("temperatureC"));
     if (temperatureC !== undefined) baseCase.process.temperatureC = temperatureC;
     const waterCutPercent = cellToNumber(getCell("waterCutPercent"));
-    if (waterCutPercent !== undefined) baseCase.process.waterCutPercent = waterCutPercent;
+    if (waterCutPercent !== undefined) {
+      baseCase.process.waterCutPercent = waterCutPercent;
+      // ProcessConditionsSchema'nın kendi kuralı: isFreeWaterPresent=false iken
+      // waterCutPercent>0 OLAMAZ (bkz. types/process.ts superRefine) — bu
+      // eşleşmezse satır motor doğrulamasında sessizce BAŞARISIZ olurdu
+      // (gerçek testte gözlemlendi). Su kesri>0 girildiyse serbest su VAR
+      // kabul edilir — bu yeni bir mühendislik sabiti DEĞİLDİR, yalnızca
+      // şemanın kendi iç tutarlılık kuralının doğal sonucudur.
+      if (waterCutPercent > 0) baseCase.process.isFreeWaterPresent = true;
+    }
     const co2MolePercent = cellToNumber(getCell("co2MolePercent"));
     if (co2MolePercent !== undefined) baseCase.chemistry.co2MolePercent = co2MolePercent;
     const h2sPpmMole = cellToNumber(getCell("h2sPpmMole"));
@@ -110,7 +119,21 @@ export function buildComponentsFromLineListRows(
     const chlorideMgL = cellToNumber(getCell("chlorideMgL"));
     if (chlorideMgL !== undefined) baseCase.chemistry.chlorideMgL = chlorideMgL;
     const sandRateKgDay = cellToNumber(getCell("sandRateKgDay"));
-    if (sandRateKgDay !== undefined) baseCase.solids.sandRateKgDay = sandRateKgDay;
+    if (sandRateKgDay !== undefined) {
+      baseCase.solids.sandRateKgDay = sandRateKgDay;
+      // SolidsDataSchema'nın kendi kuralı: sandRateKgDay>0 iken parçacık
+      // çapı/yoğunluğu/şekil faktörü ZORUNLU (bkz. types/process.ts
+      // superRefine) — hat listesi bu alanları taşımaz, bu yüzden
+      // `templates.ts`'in KENDİ "Kum İçeren Kuyu Başı Hattı" şablonunda
+      // ZATEN kullanılan AYNI temsili kuvars kumu değerleri (150µm,
+      // 2650 kg/m³ — kuvarsın yoğunluğu, 0,7 şekil faktörü) tekrar
+      // kullanılır — yeni bir sabit İCAT EDİLMEZ.
+      if (sandRateKgDay > 0) {
+        baseCase.solids.particleDiameterUm = 150;
+        baseCase.solids.particleDensityKgM3 = 2650;
+        baseCase.solids.particleShapeFactor = 0.7;
+      }
+    }
 
     const operatingProfile = { ...createDefaultOperatingProfile(), cases: [baseCase] };
 

@@ -3,6 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { buildComponentsFromLineListRows, type LineListColumnMapping } from "../../src/features/projects/importLineList";
 import type { ParsedSheet } from "../../src/features/input/importExcel/parseLineList";
+import { WizardDraftSchema } from "../../src/features/input/schema";
 
 const HEADERS = ["Hat Adı", "NPS", "Schedule", "Gün", "Basınç", "Sıcaklık", "CO2%"];
 const MAPPING: LineListColumnMapping = {
@@ -63,5 +64,38 @@ describe("buildComponentsFromLineListRows", () => {
     const sheet = makeSheet([["Hat-Y", 6, "STD", "", "", "", ""]]);
     const { drafts } = buildComponentsFromLineListRows(sheet, { componentLabel: 0, npsInch: 1, schedule: 2 });
     expect(drafts[0]!.operatingProfile.cases[0]!.durationDaysPerYear).toBe(365); // createDefaultOperatingCase varsayılanı
+  });
+
+  it("Su Kesri>0 eşlenirse isFreeWaterPresent OTOMATİK true olur (aksi halde ProcessConditionsSchema BAŞARISIZ olur — gerçek testte gözlemlendi)", () => {
+    const headers = [...HEADERS, "SuKesri"];
+    const sheet: ParsedSheet = { headers, rows: [["Hat-Su", 6, "STD", 365, 50, 40, 0, 15]] };
+    const { drafts, skippedRowsTr } = buildComponentsFromLineListRows(sheet, { ...MAPPING, waterCutPercent: 7 });
+    expect(skippedRowsTr).toEqual([]);
+    expect(drafts).toHaveLength(1);
+    const draft = drafts[0]!;
+    expect(draft.operatingProfile.cases[0]!.process.waterCutPercent).toBe(15);
+    expect(draft.operatingProfile.cases[0]!.process.isFreeWaterPresent).toBe(true);
+    expect(() => WizardDraftSchema.parse(draft)).not.toThrow();
+  });
+
+  it("Kum Debisi>0 eşlenirse parçacık çapı/yoğunluğu/şekil faktörü OTOMATİK doldurulur (aksi halde SolidsDataSchema BAŞARISIZ olur — gerçek testte gözlemlendi)", () => {
+    const headers = [...HEADERS, "Kum"];
+    const sheet: ParsedSheet = { headers, rows: [["Hat-Kum", 6, "STD", 365, 50, 40, 0, 25]] };
+    const { drafts, skippedRowsTr } = buildComponentsFromLineListRows(sheet, { ...MAPPING, sandRateKgDay: 7 });
+    expect(skippedRowsTr).toEqual([]);
+    expect(drafts).toHaveLength(1);
+    const draft = drafts[0]!;
+    expect(draft.operatingProfile.cases[0]!.solids.sandRateKgDay).toBe(25);
+    expect(draft.operatingProfile.cases[0]!.solids.particleDiameterUm).toBeGreaterThan(0);
+    expect(draft.operatingProfile.cases[0]!.solids.particleDensityKgM3).toBeGreaterThan(0);
+    expect(draft.operatingProfile.cases[0]!.solids.particleShapeFactor).toBeGreaterThan(0);
+    expect(() => WizardDraftSchema.parse(draft)).not.toThrow();
+  });
+
+  it("her üretilen taslak WizardDraftSchema'yı GEÇER (tam saha örneği, kum+su birlikte)", () => {
+    const headers = [...HEADERS, "SuKesri", "Kum"];
+    const sheet: ParsedSheet = { headers, rows: [["Hat-Tam", 12, "STD", 300, 80, 55, 5, 20, 50]] };
+    const { drafts } = buildComponentsFromLineListRows(sheet, { ...MAPPING, waterCutPercent: 7, sandRateKgDay: 8 });
+    expect(() => WizardDraftSchema.parse(drafts[0])).not.toThrow();
   });
 });

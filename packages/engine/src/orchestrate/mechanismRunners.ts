@@ -291,7 +291,6 @@ export function runCo2AndTlcMechanisms(
   const temperatureK = process.temperatureC + 273.15;
   const totalPressurePa = process.pressureBara * 1e5;
   const co2PartialPressurePa = (chemistry.co2MolePercent / 100) * totalPressurePa;
-  const h2sPartialPressurePa = (chemistry.h2sPpmMole / 1e6) * totalPressurePa;
   const waterDewPointK = process.waterDewpointC + 273.15;
   const routing = resolvePipeFittingSpatialSignature("BULK_LIQUID_OR_TURBULENT_THINNING", component, spatialCtx);
 

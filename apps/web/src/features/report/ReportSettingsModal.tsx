@@ -35,7 +35,13 @@ export function ReportSettingsModal({ onClose }: ReportSettingsModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+    // z-[16777300]: 3B görüntüleyicinin HUD panelleri (CameraToolbar/MeasurementToolbar/
+    // TimeSliderPanel) drei `<Html fullscreen>` içinde render edilir ve drei'nin VARSAYILAN
+    // zIndexRange'i ([16777271, 0], bkz. node_modules/@react-three/drei/web/Html.js) bu
+    // panellere z-40'ı AŞAN, çok daha yüksek sentetik bir z-index atar — ekran konumu
+    // çakıştığında bu modal z-40 ile o panellerin ALTINDA kalır ve tıklamalar HUD'a
+    // sızar (gerçek testte "Hazırlayan" alanının hiç odaklanamadığı gözlemlendi).
+    <div className="fixed inset-0 z-[16777300] flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
       <div
         className="flex max-h-[85vh] w-full max-w-lg flex-col overflow-y-auto rounded bg-white p-4 text-neutral-900 shadow-xl dark:bg-neutral-900 dark:text-neutral-100"
         onClick={(e) => e.stopPropagation()}

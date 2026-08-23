@@ -72,7 +72,9 @@ export function CalculationTraceDrawer() {
   if (!mechanism) return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex justify-end bg-black/30" onClick={close}>
+    // z-[16777300]: bkz. ReportSettingsModal.tsx'in aynı notu — drei Html'in sentetik
+    // z-index'i (varsayılan max 16777271) 3B görüntüleyici HUD'unu z-40'ın üstünde bırakır.
+    <div className="fixed inset-0 z-[16777300] flex justify-end bg-black/30" onClick={close}>
       <div
         className="flex h-full w-full max-w-md flex-col overflow-y-auto bg-white p-4 text-neutral-900 shadow-xl dark:bg-neutral-900 dark:text-neutral-100"
         onClick={(e) => e.stopPropagation()}

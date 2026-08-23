@@ -12,6 +12,7 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import type { UncertaintyDistribution } from "../schema";
 import type { StepProps } from "./Step1ComponentSelect";
 import type { WizardDraft } from "../schema";
+import { getNestedErrorMessage } from "../components/formHelpers";
 
 const DISTRIBUTION_OPTIONS: { value: UncertaintyDistribution; labelTr: string }[] = [
   { value: "NORMAL", labelTr: "Normal (Gauss)" },
@@ -21,7 +22,7 @@ const DISTRIBUTION_OPTIONS: { value: UncertaintyDistribution; labelTr: string }[
 ];
 
 export function Step8Uncertainty({ onPrev }: StepProps) {
-  const { control, register } = useFormContext<WizardDraft>();
+  const { control, register, formState } = useFormContext<WizardDraft>();
   const { fields, append, remove } = useFieldArray({ control, name: "uncertainNotes" });
 
   return (
@@ -31,14 +32,17 @@ export function Step8Uncertainty({ onPrev }: StepProps) {
         P10/P50/P90 bandı her zaman motorun kendi katsayı belirsizliğinden gelir, bu adımdan ETKİLENMEZ.
       </p>
 
-      {fields.map((field, index) => (
+      {fields.map((field, index) => {
+        const labelErrorMessage = getNestedErrorMessage(formState.errors, `uncertainNotes.${index}.fieldLabelTr`);
+        return (
         <div key={field.id} className="rounded border border-neutral-200 p-2 dark:border-neutral-800">
           <input
             type="text"
             placeholder="Belirsiz girdi adı (ör. CO2 mol yüzdesi)"
             {...register(`uncertainNotes.${index}.fieldLabelTr` as const)}
-            className="mb-1 w-full rounded border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+            className={`mb-1 w-full rounded border bg-white px-2 py-1 text-xs text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100 ${labelErrorMessage ? "border-red-500 dark:border-red-500" : "border-neutral-300 dark:border-neutral-700"}`}
           />
+          {labelErrorMessage && <div className="mb-1 text-[11px] text-red-600 dark:text-red-400">Bu satırı doldurun veya &quot;Kaldır&quot; ile silin — boş bırakılan bir belirsizlik satırı &quot;Hesapla&quot;yı engeller.</div>}
           <select
             {...register(`uncertainNotes.${index}.distribution` as const)}
             className="mb-1 w-full rounded border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
@@ -59,7 +63,8 @@ export function Step8Uncertainty({ onPrev }: StepProps) {
             Kaldır
           </button>
         </div>
-      ))}
+        );
+      })}
 
       <button
         type="button"

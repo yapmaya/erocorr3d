@@ -59,7 +59,9 @@ export function ColumnMappingWizard({ isOpen, onClose, onImport, baseCase }: Col
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    // z-[16777300]: bkz. ReportSettingsModal.tsx'in aynı notu — drei Html'in sentetik
+    // z-index'i (varsayılan max 16777271) 3B görüntüleyici HUD'unu z-50'nin üstünde bırakır.
+    <div className="fixed inset-0 z-[16777300] flex items-center justify-center bg-black/50 p-4">
       <div className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Excel/CSV&apos;den İçe Aktar</h2>

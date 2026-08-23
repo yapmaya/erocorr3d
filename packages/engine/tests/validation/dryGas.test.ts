@@ -57,6 +57,8 @@ describe("Kuru gaz → motor CO2_SWEET hızını 0 üretir (Table 10-3 Not 4 sap
       roughnessMm: 0.045,
       installation: "ABOVE_GROUND",
       isInsulated: false,
+      locationClass: 1,
+      environmentalSensitivity: "MEDIUM",
     });
     const mitigation = MitigationSchema.parse({
       inhibitorUsed: false,

@@ -37,6 +37,7 @@ import { MATERIAL_SELECTION_COEFFICIENTS } from "./materialSelection";
 import { UNCERTAINTY_COEFFICIENTS } from "./uncertainty";
 import { SPATIAL_COEFFICIENTS } from "./spatial";
 import { B31G_COEFFICIENTS } from "./b31g";
+import { INSPECTION_PLAN_COEFFICIENTS } from "./inspectionPlan";
 
 export const ALL_COEFFICIENTS: Coefficient[] = [
   ...NORSOK_COEFFICIENTS,
@@ -71,6 +72,7 @@ export const ALL_COEFFICIENTS: Coefficient[] = [
   ...UNCERTAINTY_COEFFICIENTS,
   ...SPATIAL_COEFFICIENTS,
   ...B31G_COEFFICIENTS,
+  ...INSPECTION_PLAN_COEFFICIENTS,
 ];
 
 export * from "./norsok";
@@ -104,3 +106,4 @@ export * from "./ctlAtl";
 export * from "./materialSelection";
 export * from "./uncertainty";
 export * from "./spatial";
+export * from "./inspectionPlan";

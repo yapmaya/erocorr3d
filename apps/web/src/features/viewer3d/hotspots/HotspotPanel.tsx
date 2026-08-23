@@ -17,9 +17,23 @@ export interface HotspotPanelProps {
   onSetMaxCount: (maxCount: number) => void;
   selectedDetail: DemoHotspotDetail | null;
   onCloseDetail: () => void;
+  /** Gerçek bir ScenarioAssessment mevcutken (Referans Tesis/Özel Veri) true — DEMO modunda CMP kavramı ANLAMSIZ olduğundan aç/kapa kontrolü hiç gösterilmez. */
+  cmpAvailable?: boolean;
+  cmpVisible?: boolean;
+  onToggleCmpVisible?: () => void;
 }
 
-export function HotspotPanel({ visible, onToggleVisible, maxCount, onSetMaxCount, selectedDetail, onCloseDetail }: HotspotPanelProps) {
+export function HotspotPanel({
+  visible,
+  onToggleVisible,
+  maxCount,
+  onSetMaxCount,
+  selectedDetail,
+  onCloseDetail,
+  cmpAvailable = false,
+  cmpVisible = false,
+  onToggleCmpVisible,
+}: HotspotPanelProps) {
   const { t } = useTranslation();
 
   return (
@@ -28,6 +42,13 @@ export function HotspotPanel({ visible, onToggleVisible, maxCount, onSetMaxCount
         <span>{t("viewer3dHotspotsTitle")}</span>
         <input type="checkbox" checked={visible} onChange={onToggleVisible} className="accent-amber-500" />
       </label>
+
+      {cmpAvailable && (
+        <label className="mb-2 flex items-center justify-between text-xs font-semibold">
+          <span>İzleme Noktaları (CMP)</span>
+          <input type="checkbox" checked={cmpVisible} onChange={onToggleCmpVisible} className="accent-teal-400" />
+        </label>
+      )}
 
       {visible && (
         <NumberSlider

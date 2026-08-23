@@ -109,6 +109,43 @@ export const INSTALLATION_LABELS: Record<Installation, LocalizedLabel> = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────
+// LocationClass (ASME B31.8 §840.2 nüfus yoğunluğu sınıfı, 1-4) —
+// mechanicalIntegrity/b31g.ts'in ZATEN kullandığı 1|2|3|4 tipiyle AYNI
+// (bkz. registry/coefficients/b31g.ts::b31g.locationClassDesignFactor'ın
+// kendi TR açıklamaları) — burada Geometry şemasının GERÇEK bir girdi alanı
+// olarak taşınabilmesi için z.union olarak tanımlanır.
+// ─────────────────────────────────────────────────────────────────────────
+
+export const LocationClassEnum = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
+export type LocationClassValue = z.infer<typeof LocationClassEnum>;
+
+export const LOCATION_CLASS_LABELS: Record<LocationClassValue, LocalizedLabel> = {
+  1: { tr: "Sınıf 1 — Kırsal/seyrek yerleşim (offshore dahil)", en: "Class 1 — Rural/sparse (incl. offshore)" },
+  2: { tr: "Sınıf 2 — Şehir çeperi/orta yoğunlukta yerleşim", en: "Class 2 — Suburban/medium density" },
+  3: { tr: "Sınıf 3 — Yoğun yerleşim (banliyö)", en: "Class 3 — Dense settlement" },
+  4: { tr: "Sınıf 4 — Çok katlı bina yoğunluğu (şehir merkezi)", en: "Class 4 — High-rise density (urban core)" },
+};
+
+// ─────────────────────────────────────────────────────────────────────────
+// EnvironmentalSensitivity — RBI-lite "çevresel etki" ekseni ve Muayene
+// Planı için sahanın niteliksel çevresel hassasiyeti. Motor içinde
+// türetilebilecek bir veri YOK (su kaynağına yakınlık, ekolojik hassas alan
+// vb. hiçbir şemada taşınmıyor) — kullanıcının doğrudan işaretlemesi
+// gerekir, bu yüzden kapalı bir liste olarak tanımlanır (KDP'nin "uydurma
+// yok" ilkesiyle tutarlı: sayısal bir eşik İCAT EDİLMİYOR, yalnızca
+// niteliksel bir sınıflandırma sunuluyor).
+// ─────────────────────────────────────────────────────────────────────────
+
+export const EnvironmentalSensitivityEnum = z.enum(["LOW", "MEDIUM", "HIGH"]);
+export type EnvironmentalSensitivity = z.infer<typeof EnvironmentalSensitivityEnum>;
+
+export const ENVIRONMENTAL_SENSITIVITY_LABELS: Record<EnvironmentalSensitivity, LocalizedLabel> = {
+  LOW: { tr: "Düşük (kuru/ıssız saha)", en: "Low (dry/remote site)" },
+  MEDIUM: { tr: "Orta", en: "Medium" },
+  HIGH: { tr: "Yüksek (su kaynağına/yerleşime/ekolojik hassas alana yakın)", en: "High (near water/settlement/sensitive habitat)" },
+};
+
+// ─────────────────────────────────────────────────────────────────────────
 // FlowRegime
 // ─────────────────────────────────────────────────────────────────────────
 

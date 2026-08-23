@@ -19,6 +19,8 @@ import {
   TRIM_TYPE_LABELS,
   FLOW_DIRECTION_LABELS,
   PRESSURE_CLASS_VALUES,
+  LOCATION_CLASS_LABELS,
+  ENVIRONMENTAL_SENSITIVITY_LABELS,
 } from "@erocorr3d/engine";
 import type { WizardDraft } from "../schema";
 import { UnitField } from "../components/UnitField";
@@ -33,6 +35,8 @@ import type { StepProps } from "./Step1ComponentSelect";
 const NPS_OPTIONS = listPipesForSchedule("STD").map((p) => ({ value: p.nps, labelTr: `NPS ${p.npsLabel}"` }));
 const ORIENTATION_OPTIONS = Object.entries(ORIENTATION_LABELS).map(([value, label]) => ({ value, labelTr: label.tr }));
 const INSTALLATION_OPTIONS = Object.entries(INSTALLATION_LABELS).map(([value, label]) => ({ value, labelTr: label.tr }));
+const LOCATION_CLASS_OPTIONS = Object.entries(LOCATION_CLASS_LABELS).map(([value, label]) => ({ value: Number(value), labelTr: label.tr }));
+const ENVIRONMENTAL_SENSITIVITY_OPTIONS = Object.entries(ENVIRONMENTAL_SENSITIVITY_LABELS).map(([value, label]) => ({ value, labelTr: label.tr }));
 const TRIM_TYPE_OPTIONS = Object.entries(TRIM_TYPE_LABELS).map(([value, label]) => ({ value, labelTr: label.tr }));
 const FLOW_DIRECTION_OPTIONS = Object.entries(FLOW_DIRECTION_LABELS).map(([value, label]) => ({ value, labelTr: label.tr }));
 const PRESSURE_CLASS_OPTIONS = PRESSURE_CLASS_VALUES.map((c) => ({ value: c, labelTr: `Class ${c}` }));
@@ -165,6 +169,19 @@ export function Step2Geometry({ onNext, onPrev }: StepProps) {
       <SelectField name="geometry.orientation" labelTr="Yönelim" options={ORIENTATION_OPTIONS} />
       <SelectField name="geometry.installation" labelTr="Tesis Yöntemi" helpKey="geometry.installation" options={INSTALLATION_OPTIONS} />
       <ToggleField name="geometry.isInsulated" labelTr="İzolasyonlu" helpKey="geometry.isInsulated" />
+      <SelectField
+        name="geometry.locationClass"
+        labelTr="Konum Sınıfı (ASME B31.8)"
+        helpKey="geometry.locationClass"
+        valueType="number"
+        options={LOCATION_CLASS_OPTIONS}
+      />
+      <SelectField
+        name="geometry.environmentalSensitivity"
+        labelTr="Çevresel Hassasiyet"
+        helpKey="geometry.environmentalSensitivity"
+        options={ENVIRONMENTAL_SENSITIVITY_OPTIONS}
+      />
       {isInsulated && (
         <label className="mb-3 block text-xs">
           <span className="mb-1 block text-neutral-600 dark:text-neutral-300">İzolasyon Malzemesi Tipi</span>

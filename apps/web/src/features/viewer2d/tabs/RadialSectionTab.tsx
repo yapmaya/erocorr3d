@@ -15,7 +15,7 @@ import { describeClockPositionTr, vToClockPosition, getPipeGrade, computeAsmeB31
 import { NumberSlider } from "../../../components/NumberSlider";
 import { useTranslation } from "../../../i18n/translations";
 import type { Viewer2dDataSource } from "../dataSource";
-import { DEFAULT_LOCATION_CLASS, DEFAULT_PIPE_GRADE_ID } from "../dataSource";
+import { DEFAULT_PIPE_GRADE_ID } from "../dataSource";
 import { exportContainerSvgAsPng } from "../export/exportChartPng";
 import { downloadCsv } from "../export/exportCsv";
 
@@ -73,7 +73,7 @@ export function RadialSectionTab({ dataSource }: { dataSource: Viewer2dDataSourc
     geometry.designPressurePa,
     geometry.odMm / 1000,
     grade.smysPa,
-    DEFAULT_LOCATION_CLASS,
+    geometry.locationClass,
     geometry.temperatureC,
     geometry.corrosionAllowanceMm / 1000,
   );
@@ -168,7 +168,7 @@ export function RadialSectionTab({ dataSource }: { dataSource: Viewer2dDataSourc
           </div>
         </div>
         <div className="text-[10px] text-neutral-500 dark:text-neutral-400">
-          t_min ≈ {tMinMm.toFixed(2)} mm ({grade.designationX}, Class {DEFAULT_LOCATION_CLASS}) · CA = {geometry.corrosionAllowanceMm.toFixed(1)} mm
+          t_min ≈ {tMinMm.toFixed(2)} mm ({grade.designationX}, Class {geometry.locationClass}) · CA = {geometry.corrosionAllowanceMm.toFixed(1)} mm
         </div>
       </div>
     </div>

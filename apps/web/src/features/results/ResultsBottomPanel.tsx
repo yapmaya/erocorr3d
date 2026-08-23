@@ -16,6 +16,7 @@ import { TornadoChart } from "./charts/TornadoChart";
 import { MonteCarloHistogramChart } from "./charts/MonteCarloHistogramChart";
 import { VelocityErosionChart } from "./charts/VelocityErosionChart";
 import { MaterialComparisonMatrix } from "./MaterialComparisonMatrix";
+import { InspectionPlanTab } from "../inspectionPlan/InspectionPlanTab";
 
 type TabId =
   | "TABLE"
@@ -26,7 +27,8 @@ type TabId =
   | "TORNADO"
   | "MONTE_CARLO"
   | "VELOCITY_EROSION"
-  | "MATERIAL_MATRIX";
+  | "MATERIAL_MATRIX"
+  | "INSPECTION_PLAN";
 
 const TAB_IDS: TabId[] = [
   "TABLE",
@@ -38,6 +40,7 @@ const TAB_IDS: TabId[] = [
   "MONTE_CARLO",
   "VELOCITY_EROSION",
   "MATERIAL_MATRIX",
+  "INSPECTION_PLAN",
 ];
 
 const TAB_LABEL_KEYS: Record<TabId, TranslationKey> = {
@@ -50,6 +53,7 @@ const TAB_LABEL_KEYS: Record<TabId, TranslationKey> = {
   MONTE_CARLO: "resultsTabMonteCarlo",
   VELOCITY_EROSION: "resultsTabVelocityErosion",
   MATERIAL_MATRIX: "resultsTabMaterialMatrix",
+  INSPECTION_PLAN: "resultsTabInspectionPlan",
 };
 
 export function ResultsBottomPanel() {
@@ -82,6 +86,7 @@ export function ResultsBottomPanel() {
         {activeTab === "MONTE_CARLO" && <MonteCarloHistogramChart />}
         {activeTab === "VELOCITY_EROSION" && <VelocityErosionChart />}
         {activeTab === "MATERIAL_MATRIX" && <MaterialComparisonMatrix />}
+        {activeTab === "INSPECTION_PLAN" && <InspectionPlanTab />}
       </div>
     </div>
   );

@@ -36,6 +36,8 @@ import { useDemoHotspots } from "./hotspots/useDemoHotspots";
 import { buildDemoHotspotDetail, type DemoHotspotDetail } from "./hotspots/hotspotDetail";
 import { HotspotMarker } from "./hotspots/HotspotMarker";
 import { HotspotPanel } from "./hotspots/HotspotPanel";
+import { useCmpPoints } from "./hotspots/useCmpPoints";
+import { CmpMarker3D } from "./hotspots/CmpMarker3D";
 import { REFERENCE_FACILITY_SCENARIO_TABS, getReferenceFacilityFixture, getReferenceFacilityScenarioAssessment } from "./referenceFacility/referenceFacilityScenarios";
 import { computeReferenceFacilityBreachYears, computeReferenceFacilityHotspotsAtYears, computeReferenceFacilityTimeDependentField } from "./referenceFacility/referenceFacilityFieldSampling";
 import { buildReferenceFacilityHotspotDetail } from "./referenceFacility/referenceFacilityHotspotDetail";
@@ -307,6 +309,16 @@ function SceneRoot({ dataSource }: SceneRootProps) {
       : buildDemoHotspotDetail(selectedHotspot, scenario, DEFAULT_WALL_THICKNESS_MM)
     : null;
 
+  // ── Kritik İzleme Noktaları (CMP) — bkz. useCmpPoints.ts'in dosya başı
+  // notu: GERÇEK bir ScenarioAssessment (Referans Tesis/Özel Veri) mevcutken
+  // dolu, DEMO'da koşulsuz boş. `realCase` (seçili sekme) DEĞİL TÜM
+  // `ScenarioAssessment` kullanılır — CMP bileşenin BÜTÜNÜNÜN belirleyici
+  // senaryosundan türetilir.
+  const realAssessment = isReference ? referenceScenario : isCustomReady ? customAssessment : null;
+  const realGeometryForCmp = isReference ? referenceFixture.geometry : isCustomReady ? customGeometry : null;
+  const cmpPoints = useCmpPoints(realAssessment, realGeometryForCmp ?? null);
+  const [cmpVisible, setCmpVisible] = useState(false);
+
   // ── Ölçüm araçları (Faz 2) ───────────────────────────────────────────
   const measurement = useMeasurementState();
   const probeUV = useMemo(
@@ -455,6 +467,11 @@ function SceneRoot({ dataSource }: SceneRootProps) {
           />
         ))}
 
+      {cmpVisible &&
+        cmpPoints.map((point) => (
+          <CmpMarker3D key={point.rank} point={point} positionM={geometryInfo.uvMap.uvToPoint(point.hotspot.u, point.hotspot.v, "outer")} />
+        ))}
+
       <MeasurementOverlay
         mode={measurement.mode}
         distancePoints={measurement.distancePoints}
@@ -519,6 +536,9 @@ function SceneRoot({ dataSource }: SceneRootProps) {
           onSetMaxCount={setHotspotMaxCount}
           selectedDetail={selectedHotspotDetail}
           onCloseDetail={() => setSelectedHotspotIndex(null)}
+          cmpAvailable={realAssessment !== null}
+          cmpVisible={cmpVisible}
+          onToggleCmpVisible={() => setCmpVisible((v) => !v)}
         />
         <MeasurementToolbar mode={measurement.mode} onSetMode={measurement.setMode} />
         <ExportPanel onExportPng={handleExportPng} onExportGlb={handleExportGlb} onCopyShareLink={handleCopyShareLink} />

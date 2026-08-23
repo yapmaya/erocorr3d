@@ -8,7 +8,7 @@
 //
 // SAF DEĞİL (Dexie yan etkisi) — test edilmez (bkz. db.ts'in AYNI notu).
 
-import { assessComponentScenario, ENGINE_VERSION, GeometrySchema, MitigationSchema, OperatingProfileSchema } from "@erocorr3d/engine";
+import { assessComponentScenario, ENGINE_VERSION, GeometrySchema, MitigationSchema, OperatingProfileSchema, type Geometry } from "@erocorr3d/engine";
 import { VALVE_ASSESSMENT_UNSUPPORTED_MESSAGE_TR } from "../input/computeAssessment";
 import type { WizardDraft } from "../input/schema";
 import { useProjectsStore } from "../../store/projectsStore";
@@ -22,7 +22,18 @@ export async function persistAssessmentRun(projectId: string, componentId: strin
   }
 
   try {
-    const geometry = GeometrySchema.parse(draft.geometry);
+    // ComponentList.tsx'in "Yeniden Hesapla" eylemi ComponentForm'un
+    // backfillDraftDefaults'ından GEÇMEDEN, kayıtlı bileşeni doğrudan Dexie'den
+    // buraya geçirir — eski (bu oturumdan önce kaydedilmiş) bir bileşende
+    // locationClass/environmentalSensitivity EKSİK olabilir (bkz. defaultDraft.ts::
+    // backfillDraftDefaults'ın AYNI gerekçesi). `as Partial<Geometry>`: statik
+    // tip bu alanların HER ZAMAN var olduğunu garanti eder, ama Dexie'den gelen
+    // ÇALIŞMA-ZAMANI veri eski bir şema sürümüyle kaydedilmiş olabilir.
+    const geometry = GeometrySchema.parse({
+      locationClass: 1,
+      environmentalSensitivity: "MEDIUM",
+      ...(draft.geometry as Partial<Geometry>),
+    });
     const mitigation = MitigationSchema.parse(draft.mitigation);
     const operatingProfile = OperatingProfileSchema.parse(draft.operatingProfile);
     const assessment = assessComponentScenario(geometry, mitigation, operatingProfile, {}, draft.componentLabel);

@@ -184,6 +184,7 @@ const dictionary = {
   resultsTabMonteCarlo: { tr: "Monte Carlo", en: "Monte Carlo" },
   resultsTabVelocityErosion: { tr: "Hız-Erozyon Eğrisi", en: "Velocity-Erosion Curve" },
   resultsTabMaterialMatrix: { tr: "Malzeme Matrisi", en: "Material Matrix" },
+  resultsTabInspectionPlan: { tr: "Muayene Planı", en: "Inspection Plan" },
 
   viewer2dRadialTitle: { tr: "Radyal Kesit (Saat Kadranı)", en: "Radial Section (Clock Face)" },
   viewer2dAxialPositionLabel: { tr: "Eksenel Konum", en: "Axial Position" },

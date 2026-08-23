@@ -2,3 +2,8 @@ export * from "./metalLoss";
 export * from "./corrosionAllowance";
 export * from "./ctlAtl";
 export * from "./materialSelection";
+export * from "./criticalMonitoringPoints";
+export * from "./inspectionInterval";
+export * from "./riskMatrix";
+export * from "./mitigationRecommendations";
+export * from "./lifecycleCost";

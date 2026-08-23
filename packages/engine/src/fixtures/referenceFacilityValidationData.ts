@@ -182,6 +182,8 @@ function buildRepresentativeGeometry(streamId: string): Geometry {
     roughnessMm: 0.045, // Tipik ticari çelik boru pürüzlülüğü (temsili)
     installation: spec.installation, // Kaynak dokümanın notlarından çıkarım (buried hatlar CP notuyla anılır)
     isInsulated: false,
+    locationClass: 1, // Temsili — kaynakta belirtilmemiş
+    environmentalSensitivity: "MEDIUM", // Temsili — kaynakta belirtilmemiş
   });
 }
 

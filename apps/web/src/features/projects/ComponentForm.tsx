@@ -12,7 +12,7 @@ import { useState } from "react";
 import { FormProvider, useForm, useFormContext, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { WizardDraftSchema, WIZARD_STEPS, type WizardDraft } from "../input/schema";
-import { createBlankDraft } from "../input/defaultDraft";
+import { backfillDraftDefaults, createBlankDraft } from "../input/defaultDraft";
 import { computeAssessment } from "../input/computeAssessment";
 import { StepperNav } from "../input/components/StepperNav";
 import { ColumnMappingWizard } from "../input/importExcel/ColumnMappingWizard";
@@ -155,7 +155,7 @@ function ComponentFormInner({ projectId, onClose }: { projectId: string; onClose
 }
 
 export function ComponentForm({ projectId, existing, onClose }: ComponentFormProps) {
-  const defaultValues: WizardDraft = existing ?? createBlankDraft();
+  const defaultValues: WizardDraft = existing ? backfillDraftDefaults(existing) : createBlankDraft();
   const form = useForm<WizardDraft>({
     resolver: zodResolver(WizardDraftSchema),
     defaultValues,

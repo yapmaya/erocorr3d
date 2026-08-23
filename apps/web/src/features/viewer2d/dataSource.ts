@@ -56,6 +56,8 @@ export interface Viewer2dGeometryInfo {
   caseNameTr: string;
   /** DEMO modunda gerçek bir hattı TEMSİL ETMEZ — yalnızca gösterim amaçlı temsili değerlerdir. */
   isRepresentative: boolean;
+  /** ASME B31.8 konum sınıfı (1-4) — REFERENCE/CUSTOM'da gerçek Geometry.locationClass, DEMO'da DEFAULT_LOCATION_CLASS. */
+  locationClass: 1 | 2 | 3 | 4;
 }
 
 export interface Viewer2dScenarioTab {
@@ -213,6 +215,7 @@ export function useViewer2dDataSource(): Viewer2dDataSource {
         temperatureC: referenceOperatingCase.process.temperatureC,
         caseNameTr: referenceCase.caseName,
         isRepresentative: false,
+        locationClass: referenceFixture.geometry.locationClass,
       }
     : isCustomReady && customGeometry && customOperatingProfile && customOperatingCase
       ? {
@@ -224,6 +227,7 @@ export function useViewer2dDataSource(): Viewer2dDataSource {
           temperatureC: customOperatingCase.process.temperatureC,
           caseNameTr: customCase?.caseName ?? "",
           isRepresentative: false,
+          locationClass: customGeometry.locationClass,
         }
       : {
           odMm: DEFAULT_OUTER_DIAMETER_MM,
@@ -234,6 +238,7 @@ export function useViewer2dDataSource(): Viewer2dDataSource {
           temperatureC: DEMO_TEMPERATURE_C,
           caseNameTr: demoScenario.labelTr,
           isRepresentative: true,
+          locationClass: DEFAULT_LOCATION_CLASS,
         };
 
   const realCase = isReference ? referenceCase : isCustomReady ? customCase : null;

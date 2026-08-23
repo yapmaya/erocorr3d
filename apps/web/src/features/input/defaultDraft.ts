@@ -26,6 +26,8 @@ export function createDefaultGeometry(): Geometry {
     roughnessMm: 0.045,
     installation: "ABOVE_GROUND",
     isInsulated: false,
+    locationClass: 1,
+    environmentalSensitivity: "MEDIUM",
   };
 }
 
@@ -130,5 +132,32 @@ export function createBlankDraft(): WizardDraft {
     activeCaseIndex: 0,
     uncertainNotes: [],
     updatedAt: Date.now(),
+  };
+}
+
+/**
+ * Dexie'den (IndexedDB) geri yüklenen, ESKİ bir GeometrySchema sürümüyle
+ * kaydedilmiş bir taslakta `locationClass`/`environmentalSensitivity` alanları
+ * EKSİK olabilir (bu iki alan bu oturumda ZORUNLU hale getirildi — bkz.
+ * types/geometry.ts). Bu fonksiyon YALNIZCA eksik alanları güvenli
+ * varsayılanlarla doldurur (zaten VAR olan hiçbir değeri EZMEZ) — otomatik
+ * kaydın "Invalid literal value" ile form doğrulamasını KIRMASINI önler.
+ */
+export function backfillDraftDefaults(draft: WizardDraft): WizardDraft {
+  const geometryDefaults = createDefaultGeometry();
+  return {
+    ...draft,
+    geometry: {
+      ...draft.geometry,
+      locationClass: draft.geometry.locationClass ?? geometryDefaults.locationClass,
+      environmentalSensitivity: draft.geometry.environmentalSensitivity ?? geometryDefaults.environmentalSensitivity,
+    },
+    valveGeometry: draft.valveGeometry
+      ? {
+          ...draft.valveGeometry,
+          locationClass: draft.valveGeometry.locationClass ?? geometryDefaults.locationClass,
+          environmentalSensitivity: draft.valveGeometry.environmentalSensitivity ?? geometryDefaults.environmentalSensitivity,
+        }
+      : draft.valveGeometry,
   };
 }

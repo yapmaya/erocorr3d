@@ -35,6 +35,8 @@ function pipeGeometry(npsIn: number, schedule: string, overrides: Partial<Geomet
     roughnessMm: 0.045,
     installation: "ABOVE_GROUND",
     isInsulated: false,
+    locationClass: 1,
+    environmentalSensitivity: "MEDIUM",
     ...overrides,
   };
 }

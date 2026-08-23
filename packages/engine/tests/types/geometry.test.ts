@@ -15,6 +15,8 @@ const validStraightPipe = {
   roughnessMm: 0.045,
   installation: "BURIED" as const,
   isInsulated: false,
+  locationClass: 1 as const,
+  environmentalSensitivity: "MEDIUM" as const,
 };
 
 describe("GeometrySchema — geçerli girdiler", () => {

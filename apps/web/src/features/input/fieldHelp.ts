@@ -46,6 +46,17 @@ export const FIELD_HELP: Record<string, FieldHelpEntry> = {
     titleTr: "İzolasyon",
     bodyTr: "İzolasyonlu mu — evet ise izolasyon altı korozyonu (CUI) değerlendirmeye dahil edilir.",
   },
+  "geometry.locationClass": {
+    titleTr: "Konum Sınıfı (ASME B31.8)",
+    bodyTr:
+      "Konum sınıfı (ASME B31.8 §840.2 nüfus yoğunluğu sınıfı, 1-4) — Muayene Planı sekmesinde RBI-lite risk matrisinin \"konum\" sonuç eksenini besler. API 570'in kendi (akışkan tehlikesi bazlı) Piping Class'ından FARKLI bir sınıflandırmadır.",
+    typicalRangeTr: "Sınıf 1: kırsal/offshore — Sınıf 4: şehir merkezi/çok katlı bina yoğunluğu.",
+  },
+  "geometry.environmentalSensitivity": {
+    titleTr: "Çevresel Hassasiyet",
+    bodyTr:
+      "Sahanın niteliksel çevresel hassasiyeti (su kaynağına/yerleşime/ekolojik hassas alana yakınlık) — Muayene Planı sekmesinde RBI-lite risk matrisinin \"çevresel etki\" sonuç eksenini besler.",
+  },
   "process.pressureBara": {
     titleTr: "Basınç",
     bodyTr: "Basınç (bara, mutlak).",

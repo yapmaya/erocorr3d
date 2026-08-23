@@ -3,8 +3,10 @@
 import { z } from "zod";
 import {
   ComponentTypeEnum,
+  EnvironmentalSensitivityEnum,
   FlowDirectionEnum,
   InstallationEnum,
+  LocationClassEnum,
   OrientationEnum,
   PressureClassEnum,
   TrimTypeEnum,
@@ -79,6 +81,12 @@ export const GeometrySchema = z
       .min(1)
       .optional()
       .describe("İzolasyon malzemesi tipi — yalnızca isInsulated=true iken"),
+    locationClass: LocationClassEnum.describe(
+      "Konum sınıfı (ASME B31.8 §840.2 nüfus yoğunluğu sınıfı, 1-4) — muayene aralığı tavanı (API 570) ve RBI-lite risk matrisinin 'konum' sonuç ekseni için kullanılır",
+    ),
+    environmentalSensitivity: EnvironmentalSensitivityEnum.describe(
+      "Sahanın niteliksel çevresel hassasiyeti (RBI-lite risk matrisinin 'çevresel etki' sonuç ekseni için)",
+    ),
   })
   .describe("Boru hattı bileşeni geometrisi")
   .superRefine((geometry, ctx) => {

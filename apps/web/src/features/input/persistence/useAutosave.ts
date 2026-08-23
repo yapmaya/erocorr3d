@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import type { WizardDraft } from "../schema";
 import { loadDraft, saveDraft } from "./db";
+import { backfillDraftDefaults } from "../defaultDraft";
 
 const AUTOSAVE_DEBOUNCE_MS = 800;
 
@@ -24,7 +25,7 @@ export function useAutosave(form: UseFormReturn<WizardDraft>): RestoreStatus {
       .then((saved) => {
         if (cancelled) return;
         if (saved) {
-          reset(saved);
+          reset(backfillDraftDefaults(saved));
           setStatus("RESTORED");
         } else {
           setStatus("BLANK");

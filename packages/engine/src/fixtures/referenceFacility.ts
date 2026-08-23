@@ -48,6 +48,8 @@ const referenceLine1Geometry: Geometry = GeometrySchema.parse({
   roughnessMm: 0.045, // Tipik ticari çelik boru pürüzlülüğü (temsili)
   installation: "BURIED", // Kaynak notu: "Gömülü kısımlar CP ve dış kaplamalıdır."
   isInsulated: false,
+  locationClass: 1, // Temsili — kaynakta belirtilmemiş, kırsal/offshore sahası varsayıldı
+  environmentalSensitivity: "MEDIUM", // Temsili — kaynakta belirtilmemiş
 });
 
 const referenceLine1Mitigation: Mitigation = MitigationSchema.parse({
@@ -219,6 +221,8 @@ const referenceLine2Geometry: Geometry = GeometrySchema.parse({
   roughnessMm: 0.045, // Tipik ticari çelik boru pürüzlülüğü (temsili)
   installation: "ABOVE_GROUND",
   isInsulated: false,
+  locationClass: 1, // Temsili — kaynakta belirtilmemiş, tesis içi saha varsayıldı
+  environmentalSensitivity: "MEDIUM", // Temsili — kaynakta belirtilmemiş
 });
 
 const referenceLine2Mitigation: Mitigation = MitigationSchema.parse({

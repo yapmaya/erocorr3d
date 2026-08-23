@@ -8,7 +8,7 @@ import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContai
 import { getPipeGrade, computeAsmeB318DesignWallThickness } from "@erocorr3d/engine";
 import { useTranslation } from "../../../i18n/translations";
 import type { Viewer2dDataSource } from "../dataSource";
-import { DEFAULT_LOCATION_CLASS, DEFAULT_PIPE_GRADE_ID } from "../dataSource";
+import { DEFAULT_PIPE_GRADE_ID } from "../dataSource";
 import { exportContainerSvgAsPng } from "../export/exportChartPng";
 import { downloadCsv } from "../export/exportCsv";
 import { formatMm, formatNumber } from "../chartFormat";
@@ -42,7 +42,7 @@ export function AxialProfileTab({ dataSource }: { dataSource: Viewer2dDataSource
     geometry.designPressurePa,
     geometry.odMm / 1000,
     grade.smysPa,
-    DEFAULT_LOCATION_CLASS,
+    geometry.locationClass,
     geometry.temperatureC,
     geometry.corrosionAllowanceMm / 1000,
   );

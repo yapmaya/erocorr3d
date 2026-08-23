@@ -12,7 +12,7 @@
 // features/projects/db.ts'in AYNI gerekçeli notu); `rankRiskiestComponents`
 // AYRI test edilir.
 
-import { computeCtlAtl, ENGINE_VERSION, GeometrySchema, MitigationSchema, OperatingProfileSchema } from "@erocorr3d/engine";
+import { computeCtlAtl, ENGINE_VERSION, GeometrySchema, MitigationSchema, OperatingProfileSchema, type Geometry } from "@erocorr3d/engine";
 import { createAssessmentWorkerClient } from "../../workers/assessmentWorkerClient";
 import { useProjectsStore } from "../../store/projectsStore";
 import type { AssessmentRunRecord, ProjectComponentRecord } from "./types";
@@ -52,7 +52,20 @@ export async function runBatchAnalysis(
       }
 
       try {
-        const geometry = GeometrySchema.parse(component.geometry);
+        // Eski (bu oturumdan önce kaydedilmiş) bir bileşende locationClass/
+        // environmentalSensitivity EKSİK olabilir (bkz. defaultDraft.ts::
+        // backfillDraftDefaults'ın AYNI gerekçesi — ComponentForm bu yolu
+        // KULLANMAZ, kayıtlı bileşen doğrudan Dexie'den okunur) — spread
+        // sırası (varsayılanlar ÖNCE) yalnızca EKSİK alanları doldurur.
+        // `as Partial<Geometry>`: statik tip bu alanların HER ZAMAN var
+        // olduğunu garanti eder, ama Dexie'den gelen ÇALIŞMA-ZAMANI veri
+        // eski bir şema sürümüyle kaydedilmiş olabilir — bu cast o gerçek
+        // çalışma-zamanı belirsizliğini yansıtır (`any` DEĞİLDİR).
+        const geometry = GeometrySchema.parse({
+          locationClass: 1,
+          environmentalSensitivity: "MEDIUM",
+          ...(component.geometry as Partial<Geometry>),
+        });
         const mitigation = MitigationSchema.parse(component.mitigation);
         const operatingProfile = OperatingProfileSchema.parse(component.operatingProfile);
 

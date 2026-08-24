@@ -7,7 +7,7 @@ haritası olarak gösteren bir mühendislik yazılımı. Tamamen tarayıcıda
 kalır.
 
 - **Kaynak kodu:** [github.com/yapmaya/erocorr3d](https://github.com/yapmaya/erocorr3d) (MIT lisansı)
-- **Canlı uygulama:** yayınlandıktan sonra buraya eklenecek — bkz. [Yayınlama](yayinlama.md)
+- **Canlı uygulama:** https://erocorr3d-web.vercel.app
 
 ## Bu dokümantasyonda ne var?
 

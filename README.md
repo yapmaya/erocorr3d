@@ -11,7 +11,7 @@ internet bağlantısı gerektirmez (harici HDRI görsellerinin ilk yüklemesi ha
 
 **Dokümantasyon:** https://yapmaya.github.io/erocorr3d/ (kullanıcı kılavuzu,
 mühendislik metodolojisi, katsayı kayıt defteri, doğrulama raporu).
-**Canlı demo:** yayınlandıktan sonra buraya eklenecek — bkz. [docs/yayinlama.md](docs/yayinlama.md).
+**Canlı demo:** https://erocorr3d-web.vercel.app
 
 Bu belge, **kod bilmeyen** birinin projeyi kendi bilgisayarında çalıştırabilmesi
 için yazılmıştır. Aşağıdaki komutları terminale **olduğu gibi kopyalayıp

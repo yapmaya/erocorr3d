@@ -1,7 +1,7 @@
 {
   "name": "erocorr3d",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "workspaces": [
     "packages/*",
@@ -13,7 +13,9 @@
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "lint": "eslint .",
-    "validate": "npm run validate --workspace packages/engine"
+    "validate": "npm run validate --workspace packages/engine",
+    "docs:generate": "npm run docs:registry --workspace packages/engine && npm run docs:methodology --workspace packages/engine && npm run validate --workspace packages/engine && cp packages/engine/validation-report/index.html docs/dogrulama-raporu-tam.html",
+    "docs:build": "npm run docs:generate && mkdocs build"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

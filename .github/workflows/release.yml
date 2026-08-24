@@ -1,0 +1,51 @@
+name: Release
+
+# v*.*.* etiketi push edildiğinde: doğrulama paketini yeniden çalıştırır,
+# motorun doğrulama raporunu (packages/engine/scripts/generateValidationReport.ts)
+# üretir ve bir GitHub Release'e ekler — "her sürümde otomatik üretilsin ve
+# yayınlansın" (master görev madde 3/4).
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npm run test
+
+  release:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run validate --workspace packages/engine
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: packages/engine/validation-report/index.html
+          generate_release_notes: true
+          body: |
+            Motor sürümü (ENGINE_VERSION): bkz. `packages/engine/src/version.ts`
+
+            Bu sürümün doğrulama raporu (referans veriyle karşılaştırma,
+            katsayı kayıt defteri özeti) ek dosya olarak iliştirilmiştir
+            ve https://yapmaya.github.io/erocorr3d/dogrulama-raporu.html
+            adresinde de yayındadır.

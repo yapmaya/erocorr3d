@@ -1,0 +1,43 @@
+site_name: EroCorr3D Dokümantasyonu
+site_description: Boru ve vanalarda erozyon/korozyon hasarı hesaplama yazılımı — kullanıcı kılavuzu, mühendislik metodolojisi, doğrulama raporu.
+site_url: https://yapmaya.github.io/erocorr3d/
+repo_url: https://github.com/yapmaya/erocorr3d
+repo_name: yapmaya/erocorr3d
+
+theme:
+  name: material
+  language: tr
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Açık temaya geç
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      toggle:
+        icon: material/weather-night
+        name: Koyu temaya geç
+  features:
+    - navigation.tabs
+    - navigation.top
+    - search.suggest
+    - content.code.copy
+
+nav:
+  - Giriş: index.md
+  - Kullanıcı Kılavuzu: kullanici-kilavuzu.md
+  - Mühendislik Metodolojisi: metodoloji.md
+  - Katsayı Kayıt Defteri: katsayi-kayit-defteri.md
+  - Doğrulama Raporu: dogrulama-raporu.md
+  - Sürümleme: surumleme.md
+  - Yayınlama: yayinlama.md
+  - Sorumluluk Reddi: sorumluluk-reddi.md
+
+markdown_extensions:
+  - tables
+  - admonition
+  - toc:
+      permalink: true

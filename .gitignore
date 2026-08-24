@@ -7,3 +7,11 @@ coverage/
 .env
 .env.local
 validation-report/
+
+# Dokümantasyon sitesi: aşağıdaki 3 dosya packages/engine'in KENDİ kaynak
+# kodundan otomatik üretilir (bkz. npm run docs:generate) — build
+# çıktısıdır, elle düzenlenmez, commit edilmez.
+/docs/katsayi-kayit-defteri.md
+/docs/metodoloji.md
+/docs/dogrulama-raporu-tam.html
+/site/

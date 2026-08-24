@@ -1,9 +1,17 @@
 # EroCorr3D
 
+[![CI](https://github.com/yapmaya/erocorr3d/actions/workflows/ci.yml/badge.svg)](https://github.com/yapmaya/erocorr3d/actions/workflows/ci.yml)
+[![Docs](https://github.com/yapmaya/erocorr3d/actions/workflows/docs.yml/badge.svg)](https://yapmaya.github.io/erocorr3d/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Petrol/gaz tesislerindeki boru ve vanalarda erozyon/korozyon hasarını hesaplayan,
 sonucu hem sayısal (tablo/grafik/rapor) hem de 3 boyutlu ısı haritası olarak
 gösteren bir mühendislik yazılımı. Tamamen tarayıcıda çalışır, sunucu veya
 internet bağlantısı gerektirmez (harici HDRI görsellerinin ilk yüklemesi hariç).
+
+**Dokümantasyon:** https://yapmaya.github.io/erocorr3d/ (kullanıcı kılavuzu,
+mühendislik metodolojisi, katsayı kayıt defteri, doğrulama raporu).
+**Canlı demo:** yayınlandıktan sonra buraya eklenecek — bkz. [docs/yayinlama.md](docs/yayinlama.md).
 
 Bu belge, **kod bilmeyen** birinin projeyi kendi bilgisayarında çalıştırabilmesi
 için yazılmıştır. Aşağıdaki komutları terminale **olduğu gibi kopyalayıp
@@ -24,19 +32,21 @@ kurun.
 
 ## 2) Kurulum (yalnızca ilk seferde)
 
-Terminali açın, bu proje klasörüne gidin ve şu komutu yapıştırın:
+Terminali açın, projeyi indirmek istediğiniz klasöre gidin (örn. Masaüstü)
+ve şu komutları sırayla yapıştırın:
 
 ```
-cd "/home/aliattar/Masaüstü/uygulama/erocorr3d"
+git clone https://github.com/yapmaya/erocorr3d.git
+cd erocorr3d
 npm install
 ```
 
 Bu işlem birkaç dakika sürebilir; internet üzerinden gerekli kütüphaneleri indirir.
+Aşağıdaki tüm komutlar bu `erocorr3d` klasörünün İÇİNDEYKEN çalıştırılmalıdır.
 
 ## 3) Uygulamayı çalıştırma
 
 ```
-cd "/home/aliattar/Masaüstü/uygulama/erocorr3d"
 npm run dev
 ```
 
@@ -63,21 +73,18 @@ Uygulamayı durdurmak için terminalde `Ctrl+C` tuşlarına basın.
 Testlerin geçtiğini doğrulamak için:
 
 ```
-cd "/home/aliattar/Masaüstü/uygulama/erocorr3d"
 npm run test
 ```
 
 Kodun üretim için derlenebildiğini doğrulamak için:
 
 ```
-cd "/home/aliattar/Masaüstü/uygulama/erocorr3d"
 npm run build
 ```
 
 Kod kalitesi kontrolü (lint) için:
 
 ```
-cd "/home/aliattar/Masaüstü/uygulama/erocorr3d"
 npm run lint
 ```
 
@@ -89,14 +96,23 @@ Her üç komut da hatasız tamamlanmalıdır (test/build/lint).
 erocorr3d/
 ├── packages/
 │   └── engine/     # Saf hesap motoru (korozyon/erozyon modelleri) — UI'dan bağımsız
-└── apps/
-    └── web/        # Tarayıcı arayüzü (React + 3B görüntüleyici)
+├── apps/
+│   └── web/        # Tarayıcı arayüzü (React + 3B görüntüleyici)
+├── docs/           # Dokümantasyon sitesi kaynağı (MkDocs — bkz. mkdocs.yml)
+└── .github/
+    └── workflows/  # CI (doğrulama paketi), sürüm ve dokümantasyon yayın işleri
 ```
 
 `packages/engine` içindeki her mühendislik katsayısının kaynağı
 `packages/engine/src/registry/coefficients.ts` dosyasında atıflarıyla
 birlikte kayıtlıdır (Kaynak Doğrulama Protokolü). Doğrulanmamış (UNVERIFIED)
-katsayılar kullanıldığında tarayıcı konsoluna otomatik uyarı yazılır.
+katsayılar kullanıldığında tarayıcı konsoluna otomatik uyarı yazılır. Bu
+kayıt defterinin ve motorun 24 hasar mekanizmasının insan-okunur bir dökümü
+dokümantasyon sitesinde yayındadır.
+
+## Lisans
+
+[MIT](LICENSE) — özgürce kullanabilir, değiştirebilir ve dağıtabilirsiniz.
 
 ## 6) Şu anki durum ve bilinen sınırlamalar
 

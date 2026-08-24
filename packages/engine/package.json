@@ -1,6 +1,6 @@
 {
   "name": "@erocorr3d/engine",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "main": "./src/index.ts",
@@ -11,7 +11,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
-    "validate": "npm run build && tsx scripts/generateValidationReport.ts"
+    "validate": "npm run build && tsx scripts/generateValidationReport.ts",
+    "docs:registry": "tsx scripts/generateRegistryDump.ts",
+    "docs:methodology": "tsx scripts/generateMethodologyDoc.ts"
   },
   "dependencies": {
     "zod": "^3.23.0"

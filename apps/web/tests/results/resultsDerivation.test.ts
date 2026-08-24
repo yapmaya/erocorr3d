@@ -35,11 +35,19 @@ describe("collectCoefficientIdsFromAssessment / deriveUnverifiedCoefficients", (
     expect(ids.length).toBeGreaterThan(0);
   });
 
-  it("Islak Gaz Toplama Hattı şablonu — pH ölçülmemiş, kimyadan hesaplanıyor → NORSOK pH K1/K2 UNVERIFIED yakalanır", () => {
+  // NOT: Bu test bir zamanlar NORSOK pH K1/K2'nin UNVERIFIED yakalandığını
+  // doğruluyordu — o katsayılar (packages/engine/src/registry/coefficients/
+  // norsokPh.ts) o zamandan beri gerçek kaynaklarla doğrulanıp HIGH
+  // confidence'a yükseltildi (bu bir regresyon DEĞİL, bir iyileştirme).
+  // Test, artık doğru olan bu durumu yansıtacak şekilde güncellendi —
+  // deriveUnverifiedCoefficients'in sardığı getUsedUnverified'ın KENDİSİ
+  // hâlâ ayrı bir birim testinde (packages/engine/tests/registry/
+  // store.test.ts) UNVERIFIED bir katsayı gerçekten var olduğunda doğru
+  // yakalandığını doğruluyor.
+  it("Islak Gaz Toplama Hattı şablonu — tüm katsayılar kaynaklı (HIGH/MEDIUM), UNVERIFIED yok", () => {
     const entry = buildEntry("wet-gas-gathering");
     const unverified = deriveUnverifiedCoefficients(entry.assessment);
-    expect(unverified.length).toBeGreaterThan(0);
-    expect(unverified.every((c) => c.confidence === "UNVERIFIED")).toBe(true);
+    expect(unverified).toEqual([]);
   });
 
   it("Kuru Satış Gazı şablonu (kuru gaz, korozyon hızı 0) — hiç katsayı toplanmaz (uygulanmayan mekanizma sahte iz taşımaz)", () => {

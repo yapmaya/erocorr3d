@@ -61,7 +61,7 @@ export function TimeSliderPanel({
   const breached = elapsedYears >= breachYears;
 
   return (
-    <div className="pointer-events-auto absolute bottom-0 left-0 right-0 z-10 rounded-t-md bg-neutral-900/85 p-2 backdrop-blur-sm">
+    <div className="no-print pointer-events-auto absolute bottom-0 left-0 right-0 z-10 rounded-t-md bg-neutral-900/85 p-2 backdrop-blur-sm">
       <div className="mb-1.5 flex flex-wrap items-center gap-1">
         <span className="mr-1 text-[10px] uppercase tracking-wide text-neutral-500">{t("viewer3dScenario")}</span>
         {scenarios.map((scenario) => (

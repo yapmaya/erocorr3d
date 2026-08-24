@@ -33,6 +33,7 @@ export interface CriticalMonitoringPoint {
 export interface CriticalMonitoringPointsResult {
   governingCaseName: string;
   dominantMechanismNameTr: string | null;
+  dominantMechanismNameEn: string | null;
   points: CriticalMonitoringPoint[];
   assumptionsTr: string[];
   disclaimer: string;
@@ -139,6 +140,7 @@ export function selectCriticalMonitoringPoints(
   return {
     governingCaseName: assessment.governingCaseName,
     dominantMechanismNameTr: dominantMechanism?.nameTr ?? null,
+    dominantMechanismNameEn: dominantMechanism?.nameEn ?? null,
     points,
     assumptionsTr,
     disclaimer: ENGINEERING_DISCLAIMER_TR,

@@ -15,6 +15,7 @@ import { computeAssessment } from "./computeAssessment";
 import { useAssessmentStore } from "../../store/assessmentStore";
 import { useUiStore } from "../../store/uiStore";
 import { useAutosave } from "./persistence/useAutosave";
+import { isEditableTarget, matchShortcut } from "../shortcuts/matchShortcut";
 import { StepperNav } from "./components/StepperNav";
 import { ColumnMappingWizard } from "./importExcel/ColumnMappingWizard";
 import { Step1ComponentSelect } from "./steps/Step1ComponentSelect";
@@ -84,6 +85,20 @@ function InputWizardInner() {
         : result.messageTr,
     );
   };
+
+  // Ctrl/Cmd+Enter — bkz. features/shortcuts/matchShortcut.ts. Odak bir
+  // metin girdisinde OLSA BİLE tetiklenir (modifiye tuşu formu bozmaz).
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (matchShortcut(e, isEditableTarget(e.target)) === "CALCULATE") {
+        e.preventDefault();
+        void handleCompute();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const currentTitle = WIZARD_STEPS.find((s) => s.step === activeStep)?.titleTr ?? "";
   const activeCaseIndex = getValues("activeCaseIndex");

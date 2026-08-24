@@ -5,17 +5,21 @@
 // aggregate/criticalMonitoringPoints.ts).
 
 import type { CriticalMonitoringPointsResult } from "@erocorr3d/engine";
+import { useTranslation } from "../../i18n/translations";
 
 export function CriticalMonitoringPointsList({ result }: { result: CriticalMonitoringPointsResult }) {
+  const { locale } = useTranslation();
   if (result.points.length === 0) {
     return <p className="text-xs text-neutral-500 dark:text-neutral-400">Belirgin bir hasar hotspot'u bulunamadı.</p>;
   }
 
+  const dominantMechanismName = locale === "en" ? result.dominantMechanismNameEn : result.dominantMechanismNameTr;
+
   return (
     <div className="flex flex-col gap-2">
-      {result.dominantMechanismNameTr && (
+      {dominantMechanismName && (
         <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-          Baskın mekanizma: <span className="font-medium text-neutral-700 dark:text-neutral-200">{result.dominantMechanismNameTr}</span>
+          Baskın mekanizma: <span className="font-medium text-neutral-700 dark:text-neutral-200">{dominantMechanismName}</span>
         </p>
       )}
       <div className="overflow-x-auto">

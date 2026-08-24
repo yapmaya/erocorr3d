@@ -55,7 +55,7 @@ export function SectionPlaneControls({
   const [minOffsetM, maxOffsetM] = offsetRangeM;
 
   return (
-    <div className="pointer-events-auto absolute left-2 top-10 z-10 w-56 rounded-md bg-neutral-900/80 p-2.5 text-neutral-200 backdrop-blur-sm">
+    <div className="no-print pointer-events-auto absolute left-2 top-10 z-10 w-56 rounded-md bg-neutral-900/80 p-2.5 text-neutral-200 backdrop-blur-sm">
       <label className="mb-2 flex items-center justify-between text-xs font-semibold">
         <span>{t("viewer3dSectionTitle")}</span>
         <input type="checkbox" checked={enabled} onChange={onToggleEnabled} className="accent-emerald-600" />

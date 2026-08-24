@@ -19,11 +19,11 @@ export function BottomDrawer() {
   const [mode, setMode] = useState<DrawerMode>("VIEWER2D");
 
   return (
-    <div className="flex h-full flex-col bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
+    <div data-tour="bottom-drawer" className="flex h-full flex-col bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
       <button
         type="button"
         onClick={toggle}
-        className="flex h-6 shrink-0 items-center justify-between border-t border-neutral-200 px-3 text-[11px] font-semibold uppercase tracking-wide text-neutral-500 hover:text-neutral-900 dark:border-neutral-800 dark:text-neutral-400 dark:hover:text-white"
+        className="no-print flex h-6 shrink-0 items-center justify-between border-t border-neutral-200 px-3 text-[11px] font-semibold uppercase tracking-wide text-neutral-500 hover:text-neutral-900 dark:border-neutral-800 dark:text-neutral-400 dark:hover:text-white"
         aria-label={isOpen ? t("bottomDrawerToggleClose") : t("bottomDrawerToggleOpen")}
       >
         <span>{t("bottomDrawerTitle")}</span>

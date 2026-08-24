@@ -41,11 +41,15 @@ export function WorkspaceLayout() {
       <Panel defaultSize="96%" minSize="40%">
         <Group orientation="horizontal">
           <Panel defaultSize="25%" minSize="15%" className="min-w-0">
-            <InputWizard />
+            <div data-tour="input-wizard" className="h-full">
+              <InputWizard />
+            </div>
           </Panel>
           <Separator className={HORIZONTAL_SEPARATOR_CLASS} />
           <Panel defaultSize="50%" minSize="20%" className="min-w-0">
-            <PipeViewer />
+            <div data-tour="pipe-viewer" className="h-full">
+              <PipeViewer />
+            </div>
           </Panel>
           <Separator className={HORIZONTAL_SEPARATOR_CLASS} />
           <Panel defaultSize="25%" minSize="15%" className="min-w-0">

@@ -33,11 +33,12 @@ export function CameraToolbar({ currentView, orthographic, onGoToView, onFit, on
   const { t } = useTranslation();
 
   return (
-    <div className="pointer-events-auto absolute right-2 top-2 z-10 flex flex-wrap items-center gap-1 rounded-md bg-neutral-900/80 p-1.5 backdrop-blur-sm">
+    <div className="no-print pointer-events-auto absolute right-2 top-2 z-10 flex flex-wrap items-center gap-1 rounded-md bg-neutral-900/80 p-1.5 backdrop-blur-sm">
       {QUICK_VIEW_PRESETS.map((preset) => (
         <button
           key={preset}
           type="button"
+          aria-pressed={preset === currentView}
           className={preset === currentView ? BUTTON_CLASS_ACTIVE : BUTTON_CLASS}
           onClick={() => onGoToView(preset)}
         >
@@ -52,7 +53,7 @@ export function CameraToolbar({ currentView, orthographic, onGoToView, onFit, on
         {t("viewer3dResetView")}
       </button>
       <span className="mx-0.5 h-4 w-px bg-neutral-700" aria-hidden />
-      <button type="button" className={orthographic ? BUTTON_CLASS_ACTIVE : BUTTON_CLASS} onClick={onTogglePerspective}>
+      <button type="button" aria-pressed={orthographic} className={orthographic ? BUTTON_CLASS_ACTIVE : BUTTON_CLASS} onClick={onTogglePerspective}>
         {orthographic ? t("viewer3dOrthographic") : t("viewer3dPerspective")}
       </button>
     </div>

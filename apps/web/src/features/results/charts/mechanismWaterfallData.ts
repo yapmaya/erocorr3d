@@ -32,6 +32,7 @@ export interface WaterfallStep {
 
 export interface MechanismWaterfallData {
   mechanismNameTr: string;
+  mechanismNameEn: string;
   steps: WaterfallStep[];
   traceRows: TraceStep[];
   hasTrace: boolean;
@@ -61,6 +62,7 @@ export function buildMechanismWaterfallData(caseAssessment: CaseAssessment, annu
 
   return {
     mechanismNameTr: dominant.nameTr,
+    mechanismNameEn: dominant.nameEn,
     steps,
     traceRows: dominant.calculationTrace,
     hasTrace: dominant.calculationTrace.length > 0,

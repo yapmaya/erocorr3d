@@ -31,7 +31,7 @@ export function ExportPanel({ onExportPng, onExportGlb, onCopyShareLink }: Expor
   };
 
   return (
-    <div className="pointer-events-auto absolute bottom-24 right-2 z-10 flex flex-col gap-1.5 rounded-md bg-neutral-900/80 p-2 text-neutral-200 backdrop-blur-sm">
+    <div className="no-print pointer-events-auto absolute bottom-24 right-2 z-10 flex flex-col gap-1.5 rounded-md bg-neutral-900/80 p-2 text-neutral-200 backdrop-blur-sm">
       <span className="text-[10px] uppercase tracking-wide text-neutral-500">{t("viewer3dExportTitle")}</span>
       <div className="flex items-center gap-1.5">
         <button type="button" className={BUTTON_CLASS} onClick={() => onExportPng(transparentBackground)}>
@@ -50,7 +50,7 @@ export function ExportPanel({ onExportPng, onExportGlb, onCopyShareLink }: Expor
         />
         <span>{t("viewer3dExportTransparent")}</span>
       </label>
-      <button type="button" className={BUTTON_CLASS} onClick={handleCopy}>
+      <button type="button" className={BUTTON_CLASS} onClick={handleCopy} aria-live="polite">
         {copied ? t("viewer3dExportLinkCopied") : t("viewer3dExportCopyLink")}
       </button>
     </div>

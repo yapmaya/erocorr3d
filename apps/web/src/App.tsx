@@ -2,7 +2,10 @@
 
 import { useEffect } from "react";
 import { AppShell } from "./components/layout/AppShell";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useUiStore } from "./store/uiStore";
+import { usePerfStore } from "./store/perfStore";
+import { installDiagnosticsCapture } from "./lib/diagnostics";
 
 export function App() {
   const theme = useUiStore((state) => state.theme);
@@ -18,9 +21,17 @@ export function App() {
     document.documentElement.lang = locale;
   }, [locale]);
 
+  useEffect(() => {
+    installDiagnosticsCapture();
+    const [navEntry] = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
+    if (navEntry) usePerfStore.getState().setLoadMs(navEntry.loadEventEnd - navEntry.startTime);
+  }, []);
+
   return (
     <div className="h-full">
-      <AppShell />
+      <ErrorBoundary>
+        <AppShell />
+      </ErrorBoundary>
     </div>
   );
 }

@@ -301,7 +301,7 @@ function buildAppendices(data: ReportData): Content[] {
       data.rawTraceRows.map((r) => [
         r.componentLabel,
         r.caseName,
-        r.mechanismNameTr,
+        lang === "tr" ? r.mechanismNameTr : r.mechanismNameEn,
         r.stepIndex,
         r.stepName,
         r.formula,

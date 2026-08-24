@@ -256,6 +256,95 @@ const dictionary = {
   reportSettingsAddRow: { tr: "+ Satır ekle", en: "+ Add row" },
   reportSettingsNoRevisionRows: { tr: "Henüz revizyon kaydı yok.", en: "No revision entries yet." },
   reportTraceabilityTooltip: { tr: "Hesap izlenebilirliğini görüntüle", en: "View calculation traceability" },
+
+  // ── onboarding (tanıtım turu) ──────────────────────────────────────────
+  onboardingWelcomeTitle: { tr: "EroCorr3D'ye Hoş Geldiniz", en: "Welcome to EroCorr3D" },
+  onboardingWelcomeBody: {
+    tr: "Boru ve vanalarda erozyon/korozyon hasarını hesaplayan ve 3B ısı haritası olarak gösteren bir mühendislik aracı. Kısa bir tur ile arayüzü tanıyalım.",
+    en: "An engineering tool that calculates erosion/corrosion damage on pipes and valves and shows it as a 3D heatmap. Let's take a short tour of the interface.",
+  },
+  onboardingNavTitle: { tr: "Gezinme Menüsü", en: "Navigation Menu" },
+  onboardingNavBody: {
+    tr: "Buradan Ana Ekran, Katsayı Kayıt Defteri, Geometri Laboratuvarı ve Projeler sayfaları arasında geçiş yaparsınız.",
+    en: "Switch between Workspace, Coefficient Registry, Geometry Lab and Projects pages from here.",
+  },
+  onboardingInputTitle: { tr: "Girdi Sihirbazı", en: "Input Wizard" },
+  onboardingInputBody: {
+    tr: "Bileşen geometrisi, proses koşulları, akışkan kimyası ve işletme senaryolarını adım adım buradan girersiniz.",
+    en: "Enter component geometry, process conditions, fluid chemistry and operating scenarios step by step here.",
+  },
+  onboardingViewerTitle: { tr: "3B Görüntüleyici", en: "3D Viewer" },
+  onboardingViewerBody: {
+    tr: "Hesaplanan hasar dağılımını borunun/vananın üzerinde 3 boyutlu ısı haritası olarak inceleyebilirsiniz.",
+    en: "Inspect the calculated damage distribution on the pipe/valve as a 3D heatmap.",
+  },
+  onboardingResultsTitle: { tr: "Sonuçlar / Tablo / Grafik", en: "Results / Table / Chart" },
+  onboardingResultsBody: {
+    tr: "Alt çekmecede sayısal sonuç tabloları, grafikler ve 2B tamamlayıcı görünümler yer alır.",
+    en: "The bottom drawer holds numerical result tables, charts and complementary 2D views.",
+  },
+  onboardingHeaderTitle: { tr: "Dil, Tema ve Yardım", en: "Language, Theme and Help" },
+  onboardingHeaderBody: {
+    tr: "Dili ve temayı buradan değiştirebilir, klavye kısayollarını görebilir ve bu turu istediğiniz zaman yeniden başlatabilirsiniz.",
+    en: "Change language and theme here, view keyboard shortcuts, and restart this tour any time.",
+  },
+  onboardingNext: { tr: "İleri", en: "Next" },
+  onboardingBack: { tr: "Geri", en: "Back" },
+  onboardingSkip: { tr: "Atla", en: "Skip" },
+  onboardingFinish: { tr: "Bitir", en: "Finish" },
+  onboardingRestartButton: { tr: "Tanıtım Turu", en: "Product Tour" },
+
+  // ── klavye kısayolları ─────────────────────────────────────────────────
+  shortcutsHelpTitle: { tr: "Klavye Kısayolları", en: "Keyboard Shortcuts" },
+  shortcutsCalculate: { tr: "Hesapla", en: "Calculate" },
+  shortcutsSection: { tr: "Kesit düzlemini aç/kapat", en: "Toggle section plane" },
+  shortcutsPlayPause: { tr: "Zaman oynatmayı başlat/duraklat", en: "Play/pause time playback" },
+  shortcutsScreenshot: { tr: "Ekran görüntüsü al (PNG)", en: "Take screenshot (PNG)" },
+  shortcutsHelp: { tr: "Bu yardımı aç/kapat", en: "Toggle this help" },
+  shortcutsHelpButtonLabel: { tr: "Klavye Kısayolları", en: "Keyboard Shortcuts" },
+  shortcutsCloseButton: { tr: "Kapat", en: "Close" },
+
+  // ── hata yönetimi ──────────────────────────────────────────────────────
+  errorBoundaryTitle: { tr: "Beklenmeyen bir hata oluştu", en: "An unexpected error occurred" },
+  errorBoundaryBody: {
+    tr: "Uygulama beklenmeyen bir durumla karşılaştı. Verileriniz kaybolmamış olabilir — sayfayı yenilemeyi deneyin.",
+    en: "The application encountered an unexpected condition. Your data may not be lost — try reloading the page.",
+  },
+  errorBoundaryDetailsToggle: { tr: "Teknik detaylar", en: "Technical details" },
+  errorBoundaryReportButton: { tr: "Hata Bildir", en: "Report Bug" },
+  errorBoundaryReloadButton: { tr: "Sayfayı Yenile", en: "Reload Page" },
+  errorBoundaryReportedHint: {
+    tr: "Bir tanı (diagnostic) dosyası indirildi — destek talebinize ekleyebilirsiniz.",
+    en: "A diagnostic file was downloaded — you can attach it to your support request.",
+  },
+
+  // ── örnek/demo projeler ────────────────────────────────────────────────
+  demoProjectsSectionTitle: { tr: "Örnek Projeler", en: "Example Projects" },
+  demoProjectsLoadButton: { tr: "Yükle", en: "Load" },
+  demoProjectWetGasName: { tr: "Islak Gaz Toplama Hattı", en: "Wet Gas Gathering Line" },
+  demoProjectWetGasDesc: {
+    tr: "Serbest su, CO2 ve iz H2S içeren tipik bir gömülü toplama hattı — tatlı (CO2) korozyonu birincil mekanizma.",
+    en: "A typical buried gathering line with free water, CO2 and trace H2S — sweet (CO2) corrosion is the primary mechanism.",
+  },
+  demoProjectSandyWellheadName: { tr: "Kum İçeren Kuyu Başı Hattı", en: "Sandy Wellhead Line" },
+  demoProjectSandyWellheadDesc: {
+    tr: "Kuyu başından gelen kumlu, yüksek hızlı çok-fazlı akış — erozyon ve erozyon-korozyon sinerjisi birincil risktir.",
+    en: "Sandy, high-velocity multiphase flow from a wellhead — erosion and erosion-corrosion synergy are the primary risks.",
+  },
+  demoProjectSeawaterName: { tr: "Deniz Suyu Hattı", en: "Seawater Line" },
+  demoProjectSeawaterDesc: {
+    tr: "Tek fazlı (sıvı) havalandırılmış deniz suyu hattı — yüksek klorür ve çözünmüş oksijen, katodik koruma + dış kaplama tipiktir.",
+    en: "A single-phase (liquid) aerated seawater line — high chloride and dissolved oxygen; cathodic protection + external coating are typical.",
+  },
+
+  // ── erişilebilirlik ────────────────────────────────────────────────────
+  a11yColorblindToggle: { tr: "Renk Körlüğü Modu", en: "Colorblind Mode" },
+
+  // ── performans paneli (yalnızca geliştirici modu) ──────────────────────
+  perfOverlayTitle: { tr: "Performans (Dev)", en: "Performance (Dev)" },
+  perfLoadLabel: { tr: "Yük Süresi", en: "Load Time" },
+  perfCalcLabel: { tr: "Hesap Süresi", en: "Calc Time" },
+  perfFpsLabel: { tr: "FPS", en: "FPS" },
 } as const;
 
 export type TranslationKey = keyof typeof dictionary;

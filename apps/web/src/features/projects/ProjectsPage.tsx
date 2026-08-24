@@ -15,6 +15,8 @@ import { LineListImportWizard } from "./LineListImportWizard";
 import { buildEc3dFile, downloadEc3dFile } from "./exportProject";
 import { importProjectFromFile } from "./importProject";
 import { projectsDb } from "./db";
+import { DEMO_PROJECT_DEFS, buildDemoComponentDraft, type DemoProjectDef } from "./demoProjects";
+import { useTranslation } from "../../i18n/translations";
 
 type ProjectTab = "components" | "batch" | "compare" | "materials" | "templates";
 
@@ -53,12 +55,40 @@ function NewProjectForm({ onCreated }: { onCreated: (id: string) => void }) {
   );
 }
 
+function DemoProjectsSection({ onLoad }: { onLoad: (def: DemoProjectDef) => void }) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col gap-1 rounded border border-neutral-200 p-2 dark:border-neutral-800">
+      <h3 className="text-[10px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+        {t("demoProjectsSectionTitle")}
+      </h3>
+      {DEMO_PROJECT_DEFS.map((def) => (
+        <div key={def.templateId} className="flex items-center justify-between gap-1.5">
+          <span className="truncate text-[11px] text-neutral-700 dark:text-neutral-200" title={t(def.descKey)}>
+            {t(def.nameKey)}
+          </span>
+          <button
+            type="button"
+            onClick={() => onLoad(def)}
+            className="shrink-0 rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300"
+          >
+            {t("demoProjectsLoadButton")}
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ProjectsPage() {
   const projects = useProjectsStore((s) => s.projects);
   const selectedProjectId = useProjectsStore((s) => s.selectedProjectId);
   const loadProjects = useProjectsStore((s) => s.loadProjects);
   const selectProject = useProjectsStore((s) => s.selectProject);
   const deleteProject = useProjectsStore((s) => s.deleteProject);
+  const createProject = useProjectsStore((s) => s.createProject);
+  const addComponent = useProjectsStore((s) => s.addComponent);
+  const { t } = useTranslation();
   const [tab, setTab] = useState<ProjectTab>("components");
   const [isLineListOpen, setLineListOpen] = useState(false);
   const [importMessage, setImportMessage] = useState<string | null>(null);
@@ -69,6 +99,12 @@ export function ProjectsPage() {
   }, [loadProjects]);
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId) ?? null;
+
+  const handleLoadDemoProject = async (def: DemoProjectDef) => {
+    const id = await createProject({ name: t(def.nameKey), client: "Demo", facility: "—", createdBy: "EroCorr3D Demo", revision: "0" });
+    await addComponent(buildDemoComponentDraft(def.templateId, id));
+    await selectProject(id);
+  };
 
   const handleExport = async () => {
     if (!selectedProject) return;
@@ -116,6 +152,8 @@ export function ProjectsPage() {
           />
         </div>
         {importMessage && <p className="text-[10px] text-neutral-500 dark:text-neutral-400">{importMessage}</p>}
+
+        <DemoProjectsSection onLoad={(def) => void handleLoadDemoProject(def)} />
 
         <NewProjectForm onCreated={(id) => void selectProject(id)} />
 

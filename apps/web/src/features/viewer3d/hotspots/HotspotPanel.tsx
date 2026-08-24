@@ -9,12 +9,18 @@
 import { NumberSlider } from "../../../components/NumberSlider";
 import { useTranslation } from "../../../i18n/translations";
 import type { DemoHotspotDetail } from "./hotspotDetail";
+import type { Hotspot } from "@erocorr3d/engine";
 
 export interface HotspotPanelProps {
   visible: boolean;
   onToggleVisible: () => void;
   maxCount: number;
   onSetMaxCount: (maxCount: number) => void;
+  /** 3B görünümdeki hotspot işaretçilerinin METİN ALTERNATİFİ — fareyle
+   * canvas'a hiç dokunmadan, klavye/ekran okuyucuyla gezilip seçilebilir. */
+  hotspots: Hotspot[];
+  selectedIndex: number | null;
+  onSelectHotspot: (index: number) => void;
   selectedDetail: DemoHotspotDetail | null;
   onCloseDetail: () => void;
   /** Gerçek bir ScenarioAssessment mevcutken (Referans Tesis/Özel Veri) true — DEMO modunda CMP kavramı ANLAMSIZ olduğundan aç/kapa kontrolü hiç gösterilmez. */
@@ -28,6 +34,9 @@ export function HotspotPanel({
   onToggleVisible,
   maxCount,
   onSetMaxCount,
+  hotspots,
+  selectedIndex,
+  onSelectHotspot,
   selectedDetail,
   onCloseDetail,
   cmpAvailable = false,
@@ -37,11 +46,33 @@ export function HotspotPanel({
   const { t } = useTranslation();
 
   return (
-    <div className="pointer-events-auto absolute right-2 top-12 z-10 w-64 rounded-md bg-neutral-900/80 p-2.5 text-neutral-200 backdrop-blur-sm">
+    <div className="no-print pointer-events-auto absolute right-2 top-12 z-10 w-64 rounded-md bg-neutral-900/80 p-2.5 text-neutral-200 backdrop-blur-sm">
       <label className="mb-2 flex items-center justify-between text-xs font-semibold">
         <span>{t("viewer3dHotspotsTitle")}</span>
         <input type="checkbox" checked={visible} onChange={onToggleVisible} className="accent-amber-500" />
       </label>
+
+      {visible && hotspots.length > 0 && (
+        <ul aria-label={t("viewer3dHotspotsTitle")} className="mb-2 max-h-28 overflow-y-auto rounded border border-neutral-700 text-[11px]">
+          {hotspots.map((hotspot, index) => (
+            <li key={index}>
+              <button
+                type="button"
+                aria-current={selectedIndex === index}
+                onClick={() => onSelectHotspot(index)}
+                className={`flex w-full items-center justify-between gap-2 px-1.5 py-1 text-left ${
+                  selectedIndex === index ? "bg-amber-600/30 text-amber-200" : "hover:bg-neutral-800"
+                }`}
+              >
+                <span className="truncate">
+                  #{index + 1} {hotspot.descriptionTr}
+                </span>
+                <span className="shrink-0 font-mono text-neutral-400">{hotspot.valueMm.toFixed(2)} mm</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {cmpAvailable && (
         <label className="mb-2 flex items-center justify-between text-xs font-semibold">

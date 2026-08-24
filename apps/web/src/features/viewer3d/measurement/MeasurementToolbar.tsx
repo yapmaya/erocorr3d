@@ -28,10 +28,10 @@ export function MeasurementToolbar({ mode, onSetMode }: MeasurementToolbarProps)
   const { t } = useTranslation();
 
   return (
-    <div className="pointer-events-auto absolute bottom-24 left-2 z-10 flex items-center gap-1 rounded-md bg-neutral-900/80 p-1.5 backdrop-blur-sm">
+    <div className="no-print pointer-events-auto absolute bottom-24 left-2 z-10 flex items-center gap-1 rounded-md bg-neutral-900/80 p-1.5 backdrop-blur-sm">
       <span className="mr-1 text-[10px] uppercase tracking-wide text-neutral-500">{t("viewer3dMeasureTitle")}</span>
       {MEASUREMENT_MODES.map((m) => (
-        <button key={m} type="button" className={m === mode ? BUTTON_CLASS_ACTIVE : BUTTON_CLASS} onClick={() => onSetMode(m)}>
+        <button key={m} type="button" aria-pressed={m === mode} className={m === mode ? BUTTON_CLASS_ACTIVE : BUTTON_CLASS} onClick={() => onSetMode(m)}>
           {t(MODE_LABEL_KEYS[m])}
         </button>
       ))}

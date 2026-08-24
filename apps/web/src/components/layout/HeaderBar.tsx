@@ -32,6 +32,25 @@ function MenuIcon() {
   );
 }
 
+function HelpIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
+      <circle cx="12" cy="12" r="9" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.5 9a2.5 2.5 0 0 1 4.9.8c0 1.7-2.4 1.9-2.4 3.4" />
+      <path strokeLinecap="round" d="M12 17h.01" />
+    </svg>
+  );
+}
+
+function EyeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-5 w-5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
 function NavMenu() {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -47,6 +66,7 @@ function NavMenu() {
 
   return (
     <div
+      data-tour="nav-menu"
       className="relative"
       onBlur={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget)) {
@@ -88,22 +108,49 @@ function NavMenu() {
   );
 }
 
-export function HeaderBar() {
+export interface HeaderBarProps {
+  onHelpClick: () => void;
+}
+
+export function HeaderBar({ onHelpClick }: HeaderBarProps) {
   const { t, locale } = useTranslation();
   const theme = useUiStore((state) => state.theme);
   const toggleTheme = useUiStore((state) => state.toggleTheme);
   const setLocale = useUiStore((state) => state.setLocale);
+  const colorblindMode = useUiStore((state) => state.colorblindMode);
+  const toggleColorblindMode = useUiStore((state) => state.toggleColorblindMode);
 
   const otherLocale: Locale = locale === "tr" ? "en" : "tr";
 
   return (
-    <header className="flex h-12 shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-3 text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100">
+    <header className="no-print flex h-12 shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-3 text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100">
       <div className="flex items-center gap-3">
         <NavMenu />
         <span className="text-sm font-semibold tracking-wide">{t("appTitle")}</span>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div data-tour="header-controls" className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={toggleColorblindMode}
+          aria-pressed={colorblindMode}
+          className={`rounded p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
+            colorblindMode ? "text-sky-600 dark:text-sky-400" : "text-neutral-500 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white"
+          }`}
+          aria-label={t("a11yColorblindToggle")}
+          title={t("a11yColorblindToggle")}
+        >
+          <EyeIcon />
+        </button>
+        <button
+          type="button"
+          onClick={onHelpClick}
+          className="rounded p-1.5 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white"
+          aria-label={t("shortcutsHelpButtonLabel")}
+          title={t("shortcutsHelpButtonLabel")}
+        >
+          <HelpIcon />
+        </button>
         <button
           type="button"
           onClick={() => setLocale(otherLocale)}

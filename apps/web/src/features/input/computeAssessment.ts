@@ -9,6 +9,7 @@
 import { assessComponentScenario, GeometrySchema, MitigationSchema, OperatingProfileSchema } from "@erocorr3d/engine";
 import { useAssessmentStore } from "../../store/assessmentStore";
 import { useAssessmentHistoryStore } from "../../store/assessmentHistoryStore";
+import { usePerfStore } from "../../store/perfStore";
 import type { WizardDraft } from "./schema";
 
 export const VALVE_ASSESSMENT_UNSUPPORTED_MESSAGE_TR =
@@ -23,6 +24,13 @@ export type ComputeAssessmentResult = { ok: true } | { ok: false; messageTr: str
  * `getReferenceFacilityScenarioAssessment`'ı) Web Worker'a gerek yoktur.
  */
 export function computeAssessment(draft: WizardDraft): ComputeAssessmentResult {
+  const startedAtMs = performance.now();
+  const result = runComputeAssessment(draft);
+  usePerfStore.getState().setLastCalcMs(performance.now() - startedAtMs);
+  return result;
+}
+
+function runComputeAssessment(draft: WizardDraft): ComputeAssessmentResult {
   const store = useAssessmentStore.getState();
 
   if (draft.componentCategory === "VALVE") {

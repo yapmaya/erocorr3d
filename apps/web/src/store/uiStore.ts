@@ -14,12 +14,16 @@ interface UiState {
   isBottomDrawerOpen: boolean;
   activePage: Page;
   unitSystem: UnitSystemPreference;
+  hasSeenOnboarding: boolean;
+  colorblindMode: boolean;
   toggleTheme: () => void;
   setLocale: (locale: Locale) => void;
   toggleBottomDrawer: () => void;
   setBottomDrawerOpen: (open: boolean) => void;
   setActivePage: (page: Page) => void;
   setUnitSystem: (unitSystem: UnitSystemPreference) => void;
+  setHasSeenOnboarding: (seen: boolean) => void;
+  toggleColorblindMode: () => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -30,6 +34,8 @@ export const useUiStore = create<UiState>()(
       isBottomDrawerOpen: false,
       activePage: "workspace",
       unitSystem: "SI",
+      hasSeenOnboarding: false,
+      colorblindMode: false,
       toggleTheme: () =>
         set((state) => ({ theme: state.theme === "dark" ? "light" : "dark" })),
       setLocale: (locale) => set({ locale }),
@@ -38,6 +44,8 @@ export const useUiStore = create<UiState>()(
       setBottomDrawerOpen: (open) => set({ isBottomDrawerOpen: open }),
       setActivePage: (page) => set({ activePage: page }),
       setUnitSystem: (unitSystem) => set({ unitSystem }),
+      setHasSeenOnboarding: (seen) => set({ hasSeenOnboarding: seen }),
+      toggleColorblindMode: () => set((state) => ({ colorblindMode: !state.colorblindMode })),
     }),
     { name: "erocorr3d-ui-preferences" },
   ),

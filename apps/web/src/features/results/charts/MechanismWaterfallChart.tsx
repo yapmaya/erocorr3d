@@ -14,6 +14,7 @@
 import { useMemo, useRef, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useAssessmentHistoryStore } from "../../../store/assessmentHistoryStore";
+import { useTranslation } from "../../../i18n/translations";
 import { CHART_HEX, RECHARTS_AXIS_PROPS, RECHARTS_GRID_PROPS, RECHARTS_TOOLTIP_STYLE } from "../chartPalette";
 import { buildMechanismWaterfallData } from "./mechanismWaterfallData";
 import { ChartExportBar } from "../components/ChartExportBar";
@@ -26,6 +27,7 @@ interface WaterfallRow {
 }
 
 export function MechanismWaterfallChart() {
+  const { locale } = useTranslation();
   const selectedEntryId = useAssessmentHistoryStore((s) => s.selectedEntryId);
   const entries = useAssessmentHistoryStore((s) => s.entries);
   const entry = entries.find((e) => e.id === selectedEntryId);
@@ -40,6 +42,8 @@ export function MechanismWaterfallChart() {
     const annualLossP50 = entry.assessment.metalLoss.scenarioAnnualLosses[activeCaseIndex]?.annualLossMmPerYear.p50 ?? 0;
     return buildMechanismWaterfallData(caseAssessment, annualLossP50);
   }, [entry, activeCaseIndex]);
+
+  const dominantMechanismName = waterfall ? (locale === "en" ? waterfall.mechanismNameEn : waterfall.mechanismNameTr) : "";
 
   const rows: WaterfallRow[] = useMemo(() => {
     if (!waterfall) return [];
@@ -104,7 +108,7 @@ export function MechanismWaterfallChart() {
             {waterfall.hasTrace ? (
               <>
                 <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                  {waterfall.mechanismNameTr} — Hesaplama İzi (kaynak atıflarıyla, birimler farklı olabilir — toplamsal DEĞİLDİR)
+                  {dominantMechanismName} — Hesaplama İzi (kaynak atıflarıyla, birimler farklı olabilir — toplamsal DEĞİLDİR)
                 </div>
                 <table className="w-full text-[11px]">
                   <thead>
@@ -131,7 +135,7 @@ export function MechanismWaterfallChart() {
               </>
             ) : (
               <div className="text-[11px] text-neutral-400 dark:text-neutral-500">
-                {waterfall.mechanismNameTr} için adım adım hesaplama izi mevcut değil.
+                {dominantMechanismName} için adım adım hesaplama izi mevcut değil.
               </div>
             )}
           </div>

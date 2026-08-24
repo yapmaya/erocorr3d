@@ -27,6 +27,7 @@ export interface RawTraceStepRow {
   componentLabel: string;
   caseName: string;
   mechanismNameTr: string;
+  mechanismNameEn: string;
   stepIndex: number;
   stepName: string;
   formula: string;
@@ -83,6 +84,7 @@ function buildRawTraceRows(entries: AssessmentHistoryEntry[]): RawTraceStepRow[]
             componentLabel: entry.componentLabel,
             caseName: caseAssessment.caseName,
             mechanismNameTr: mechanism.nameTr,
+            mechanismNameEn: mechanism.nameEn,
             stepIndex: index + 1,
             stepName: step.stepName,
             formula: step.formula,

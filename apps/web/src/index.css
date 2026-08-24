@@ -13,3 +13,14 @@ body,
 body {
   margin: 0;
 }
+
+/* Yazdırma (Ctrl+P) — yalnızca gezinme/araç çubuğu gibi etkileşimli
+   öğeleri gizleyen HAFİF bir ek (bkz. master görev madde 8). Asıl
+   "gerçek" yazdırılabilir çıktı zaten var olan PDF Rapor özelliğidir
+   (features/report) — burada 3B görüntüleyici/panel düzeni YENİDEN
+   TASARLANMAZ, yalnızca kağıtta anlamsız kalan kontroller kaldırılır. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

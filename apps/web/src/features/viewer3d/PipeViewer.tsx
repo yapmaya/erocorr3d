@@ -46,6 +46,7 @@ import { computeWallProbeResult } from "./measurement/measurementMath";
 import { MeasurementToolbar } from "./measurement/MeasurementToolbar";
 import { MeasurementOverlay } from "./measurement/MeasurementOverlay";
 import { FpsCounter } from "./performance/FpsCounter";
+import { FpsProbe } from "./performance/FpsProbe";
 import { ExportPanel } from "./export/ExportPanel";
 import { capturePngDataUrl, downloadDataUrl } from "./export/exportPng";
 import { downloadGlb, exportPipeAsGlb } from "./export/exportGltf";
@@ -55,6 +56,7 @@ import { useTranslation } from "../../i18n/translations";
 import { useUiStore } from "../../store/uiStore";
 import { useAssessmentStore } from "../../store/assessmentStore";
 import { useViewer3dCaptureStore } from "../../store/viewer3dCaptureStore";
+import { isEditableTarget, matchShortcut } from "../shortcuts/matchShortcut";
 
 const DEFAULT_HOTSPOT_COUNT = 5;
 
@@ -163,6 +165,7 @@ function SceneRoot({ dataSource }: SceneRootProps) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   const threeCamera = useThree((s) => s.camera);
+  const colorblindMode = useUiStore((s) => s.colorblindMode);
 
   const [scenarioId, setScenarioId] = useState(DEMO_SCENARIOS[0].id);
   const scenario = DEMO_SCENARIOS.find((s) => s.id === scenarioId) ?? DEMO_SCENARIOS[0];
@@ -264,7 +267,7 @@ function SceneRoot({ dataSource }: SceneRootProps) {
   const heatmapProps: PipeHeatmapProps | null = heatmapEnabled
     ? {
         values: heatmapValues,
-        colormap: HEATMAP_COLORMAP,
+        colormap: colorblindMode ? "colorblindSafe" : HEATMAP_COLORMAP,
         minValue: 0,
         maxValue: heatmapMaxValue,
         opacity: 1,
@@ -348,6 +351,28 @@ function SceneRoot({ dataSource }: SceneRootProps) {
     const dataUrl = capturePngDataUrl({ gl, scene, camera: threeCamera, transparentBackground });
     downloadDataUrl(dataUrl, "erocorr3d-boru.png");
   };
+
+  // ── Klavye kısayolları: C (kesit), Space (oynat/duraklat), S (ekran
+  // görüntüsü) — bkz. features/shortcuts/matchShortcut.ts. "?" (yardım)
+  // AppShell'de global olarak dinlenir; Ctrl/Cmd+Enter (hesapla) InputWizard'da.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const action = matchShortcut(e, isEditableTarget(e.target));
+      if (action === "SECTION") {
+        e.preventDefault();
+        sectionPlane.setEnabled((v) => !v);
+      } else if (action === "PLAY_PAUSE") {
+        e.preventDefault();
+        timePlayback.togglePlaying();
+      } else if (action === "SCREENSHOT") {
+        e.preventDefault();
+        handleExportPng(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sectionPlane.setEnabled, timePlayback.togglePlaying, gl, scene, threeCamera]);
 
   // Rapor üretimi (features/report/) Canvas ağacı DIŞINDA çalıştığı için
   // "o anki görünümü PNG olarak ver" ihtiyacını bir closure üzerinden
@@ -483,6 +508,8 @@ function SceneRoot({ dataSource }: SceneRootProps) {
 
       <SceneHelpers lengthM={lengthM} />
 
+      <FpsProbe />
+
       <TimePlaybackDriver playing={timePlayback.playing} speed={timePlayback.speed} onAdvance={timePlayback.advanceYears} />
 
       {/* `position={targetM}`: `Html fullscreen`in kendi -width/2/-height/2
@@ -534,6 +561,9 @@ function SceneRoot({ dataSource }: SceneRootProps) {
           onToggleVisible={() => setHotspotsVisible((v) => !v)}
           maxCount={hotspotMaxCount}
           onSetMaxCount={setHotspotMaxCount}
+          hotspots={hotspots}
+          selectedIndex={selectedHotspotIndex}
+          onSelectHotspot={setSelectedHotspotIndex}
           selectedDetail={selectedHotspotDetail}
           onCloseDetail={() => setSelectedHotspotIndex(null)}
           cmpAvailable={realAssessment !== null}

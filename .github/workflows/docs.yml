@@ -8,8 +8,14 @@ name: Docs
 on:
   push:
     branches: [main]
-    tags:
-      - "v*.*.*"
+  # NOT: v*.*.* etiketleri KASITLI OLARAK burada YOK — bir etiket her zaman
+  # main'de ZATEN push edilmiş bir commit'i işaret eder (bkz. docs/
+  # surumleme.md'deki sürüm çıkarma adımları), dokümantasyon o push'ta
+  # ZATEN yeniden üretilmiş olur. Ayrıca GitHub'ın otomatik oluşturduğu
+  # "github-pages" ortamı varsayılan olarak yalnızca dallardan (branch)
+  # dağıtıma izin verir — bir etiketten deploy denemek "environment
+  # protection rules" tarafından reddedilir (bu oturumda gerçek bir
+  # çalıştırmada gözlemlendi).
 
 permissions:
   contents: read

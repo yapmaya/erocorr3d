@@ -39,5 +39,6 @@ nav:
 markdown_extensions:
   - tables
   - admonition
+  - attr_list
   - toc:
       permalink: true

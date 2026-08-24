@@ -12,6 +12,6 @@ docs.yml` / `release.yml`) OTOMATİK olarak yeniden üretilir — elle
 düzenlenmez, aşağıdaki gömülü içerik her zaman en güncel motor koduna
 aittir.
 
-[Raporu tam sayfa aç](../dogrulama-raporu-tam.html){ target=_blank }
+[Raporu tam sayfa aç](dogrulama-raporu-tam.html){ target=_blank }
 
-<iframe src="../dogrulama-raporu-tam.html" style="width:100%; height:1400px; border:1px solid var(--md-default-fg-color--lightest);"></iframe>
+<iframe src="dogrulama-raporu-tam.html" style="width:100%; height:1400px; border:1px solid var(--md-default-fg-color--lightest);"></iframe>

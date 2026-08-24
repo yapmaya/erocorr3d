@@ -1,3 +1,12 @@
+# use_directory_urls: false -> her sayfa "isim.html" olarak üretilir (bkz.
+# dogrulama-raporu.md'nin dosya başı notu: bu, statik dogrulama-raporu-tam.html
+# dosyasına DÜZ bir göreli bağlantı vermeyi mümkün kılar — "pretty URL"
+# (varsayılan, "isim/index.html") kullanılsaydı sayfa bir alt klasöre
+# taşınır, "../" olmadan bağlantı KIRILIR ama mkdocs'un KENDİ strict-mode
+# doğrulayıcısı "../" İLE de yanlış pozitif üretir (kaynak-göreli mi
+# render-göreli mi belirsizliği) — bu ayar iki bakış açısını hizalar.
+use_directory_urls: false
+
 site_name: EroCorr3D Dokümantasyonu
 site_description: Boru ve vanalarda erozyon/korozyon hasarı hesaplama yazılımı — kullanıcı kılavuzu, mühendislik metodolojisi, doğrulama raporu.
 site_url: https://yapmaya.github.io/erocorr3d/

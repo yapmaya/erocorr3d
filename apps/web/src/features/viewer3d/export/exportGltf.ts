@@ -16,6 +16,7 @@ import { BufferGeometry, Float32BufferAttribute, Mesh, MeshStandardMaterial } fr
 import { GLTFExporter } from "three-stdlib";
 import { bakeVertexColors } from "./vertexColorBaking";
 import type { ColormapName } from "../../../shaders/colormaps";
+import { downloadBlob } from "../../../lib/downloadBlob";
 
 export interface ExportGlbParams {
   geometry: BufferGeometry;
@@ -63,10 +64,5 @@ export async function exportPipeAsGlb({
 
 export function downloadGlb(buffer: ArrayBuffer, filename = "erocorr3d-boru.glb"): void {
   const blob = new Blob([buffer], { type: "model/gltf-binary" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  anchor.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, filename);
 }

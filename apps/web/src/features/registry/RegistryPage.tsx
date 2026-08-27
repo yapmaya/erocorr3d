@@ -9,6 +9,7 @@ import {
   type ConfidenceLevel,
 } from "@erocorr3d/engine";
 import { useTranslation } from "../../i18n/translations";
+import { downloadBlob } from "../../lib/downloadBlob";
 
 const CONFIDENCE_LEVELS: ConfidenceLevel[] = ["HIGH", "MEDIUM", "LOW", "UNVERIFIED"];
 
@@ -43,14 +44,7 @@ function formatValue(value: unknown): string {
 
 function downloadTextFile(filename: string, content: string, mimeType: string): void {
   const blob = new Blob([content], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  document.body.appendChild(anchor);
-  anchor.click();
-  document.body.removeChild(anchor);
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, filename);
 }
 
 function StatCard({ label, value, className }: { label: string; value: number; className?: string }) {

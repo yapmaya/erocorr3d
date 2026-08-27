@@ -6,16 +6,13 @@
 // exportCsv.ts::downloadCsv` ile AYNI, DOM'a bağımlı (SAF DEĞİL, test
 // edilmez — bkz. o dosyaların aynı gerekçesi).
 
+import { downloadBlob } from "../../../lib/downloadBlob";
+
 export function exportSvgElementAsSvgFile(svgElement: SVGSVGElement, filename: string): void {
   const serializer = new XMLSerializer();
   const svgString = serializer.serializeToString(svgElement);
   const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  anchor.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, filename);
 }
 
 /** Verilen kapsayıcı elemanın İÇİNDEKİ ilk <svg>'yi bulup .svg dosyası olarak indirir — Recharts'ın kök `div` sarmalayıcısıyla kullanmak için. */

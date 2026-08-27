@@ -6,6 +6,8 @@
 // `ErrorBoundary`'nin "Hata Bildir" indirmesi tüketir — başka hiçbir
 // yerde okunmaz, sunucuya GÖNDERİLMEZ (backend yok).
 
+import { downloadBlob } from "./downloadBlob";
+
 export interface DiagnosticLogEntry {
   level: "error" | "warn" | "window-error" | "unhandled-rejection";
   message: string;
@@ -91,12 +93,5 @@ export function buildDiagnosticBundle(input: {
 
 export function downloadDiagnosticBundle(bundle: DiagnosticBundle): void {
   const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `erocorr3d-tani-${bundle.timestamp.replace(/[:.]/g, "-")}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, `erocorr3d-tani-${bundle.timestamp.replace(/[:.]/g, "-")}.json`);
 }

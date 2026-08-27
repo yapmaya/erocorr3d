@@ -11,8 +11,30 @@
 
 import type { AssessmentRunRecord, ProjectComponentRecord, ProjectRecord } from "./types";
 import { ec3dJsonReplacer } from "./ec3dSerialization";
+import { downloadBlob } from "../../lib/downloadBlob";
 
 export const EC3D_FORMAT_VERSION = 1;
+
+const MAX_SAFE_FILENAME_LENGTH = 200;
+// eslint-disable-next-line no-control-regex
+const CONTROL_CHARS_OR_NULL = /[\x00-\x1f\x7f]/g;
+const PATH_SEPARATORS_AND_WINDOWS_FORBIDDEN = /[/\\:*?"<>|]/g;
+
+/**
+ * Kullanıcının girdiği proje adını dosya adı olarak güvenli hale getirir:
+ * kontrol karakterlerini/null byte'ı atar, yol ayırıcılarını ve Windows'ta
+ * yasak karakterleri tire ile değiştirir, uzunluğu sınırlar. Sonuç boş
+ * kalırsa (örn. yalnızca boşluktan oluşan bir ad) varsayılana düşer.
+ */
+export function toSafeFileName(rawName: string): string {
+  const sanitized = rawName
+    .replace(CONTROL_CHARS_OR_NULL, "")
+    .replace(PATH_SEPARATORS_AND_WINDOWS_FORBIDDEN, "-")
+    .trim()
+    .slice(0, MAX_SAFE_FILENAME_LENGTH)
+    .trim();
+  return sanitized || "erocorr3d-proje";
+}
 
 export interface Ec3dFile {
   formatVersion: number;
@@ -29,10 +51,5 @@ export function buildEc3dFile(project: ProjectRecord, components: ProjectCompone
 export function downloadEc3dFile(file: Ec3dFile): void {
   const json = JSON.stringify(file, ec3dJsonReplacer, 2);
   const blob = new Blob([json], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = `${file.project.name || "erocorr3d-proje"}.ec3d`;
-  anchor.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, `${toSafeFileName(file.project.name)}.ec3d`);
 }

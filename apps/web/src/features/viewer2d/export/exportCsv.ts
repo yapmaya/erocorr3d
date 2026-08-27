@@ -3,6 +3,8 @@
 // Grafik verisini CSV olarak dışa aktarır — features/registry/RegistryPage.tsx'in
 // downloadTextFile deseniyle AYNI.
 
+import { downloadBlob } from "../../../lib/downloadBlob";
+
 /**
  * Excel/LibreOffice, bir CSV hücresi `=`, `+`, `-`, `@`, TAB veya CR ile
  * başlıyorsa onu FORMÜL olarak yorumlar (CSV enjeksiyonu / DDE). Senaryo adı,
@@ -34,10 +36,5 @@ export function csvEscapeCell(value: string | number): string {
 export function downloadCsv(filename: string, rows: (string | number)[][]): void {
   const content = rows.map((row) => row.map(csvEscapeCell).join(",")).join("\n");
   const blob = new Blob([content], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  anchor.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, filename);
 }

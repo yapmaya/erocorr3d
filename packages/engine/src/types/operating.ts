@@ -43,6 +43,25 @@ export const OperatingProfileSchema = z
         message: `Senaryoların toplam süresi (${totalDays} gün) 365 günü geçemez.`,
       });
     }
+
+    // `viewer2d/dataSource.ts` gibi tüketiciler senaryoyu AD üzerinden
+    // (caseName) eşleştirir — iki senaryo aynı ada sahipse kullanıcı
+    // ikincisini seçse bile her zaman birincisinin sonuçları HİÇBİR UYARI
+    // OLMADAN gösterilir. Bu yüzden ad benzersizliği burada, tek kaynak
+    // şemada zorunlu kılınır.
+    const seenNames = new Map<string, number>();
+    profile.cases.forEach((c, index) => {
+      const firstIndex = seenNames.get(c.name);
+      if (firstIndex !== undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["cases", index, "name"],
+          message: `Senaryo adı "${c.name}" birden fazla kez kullanılmış (satır ${firstIndex + 1} ve ${index + 1}) — senaryo adları benzersiz olmalıdır.`,
+        });
+      } else {
+        seenNames.set(c.name, index);
+      }
+    });
   });
 
 export type OperatingProfile = z.infer<typeof OperatingProfileSchema>;

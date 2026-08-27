@@ -37,16 +37,25 @@ const LenientMechanismResultSchema = z.object({
   mechanismId: z.string().min(1),
   nameTr: z.string().min(1),
   nameEn: z.string().min(1),
-  rateMmPerYear: z.number(),
-  rateP10: z.number(),
-  rateP50: z.number(),
-  rateP90: z.number(),
+  // `finiteOrNan`: motor, mekanizma UYGULANMADIĞINDA (isApplicable=false) hız
+  // alanlarını da NaN ile işaretleyebilir — `calculationTrace` ile AYNI
+  // gerekçe (bkz. dosya başı notu).
+  rateMmPerYear: finiteOrNan,
+  rateP10: finiteOrNan,
+  rateP50: finiteOrNan,
+  rateP90: finiteOrNan,
   isApplicable: z.boolean(),
   confidence: z.enum(["HIGH", "MEDIUM", "LOW"]),
   modelUsed: z.string().min(1),
   sourceRefs: z.array(z.string()),
   validityWarnings: z.array(z.string()),
-  governingParameters: z.record(z.string(), z.number()),
+  // `finiteOrNan` (KRİTİK): CO2 mekanizması erken sonlandığında (co2MolePercent
+  // = 0 veya waterCutPercent = 0 — İKİSİ DE tamamen olağan mühendislik
+  // durumları) motor `governingParameters.phUsed` alanına NaN yazar (bkz.
+  // corrosion/norsokM506.ts::zeroResult, "pH kullanılmadı" işareti). Katı
+  // `z.number()` bunu REDDEDİYORDU ve kullanıcının KENDİ dışa aktardığı
+  // proje dosyası geri okunamıyordu (sessiz veri kaybı).
+  governingParameters: z.record(z.string(), finiteOrNan),
   spatialSignatureId: z.string().min(1),
   calculationTrace: z.array(TraceStepSchema),
 });

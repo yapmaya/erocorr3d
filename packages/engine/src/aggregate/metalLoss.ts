@@ -20,6 +20,7 @@ import type { ConfidenceLevel } from "../registry/types";
 import { worstConfidence } from "../registry";
 import { getCoefficient } from "../registry";
 import type { UncertaintyBand } from "../uncertainty/percentiles";
+import { assertFinite } from "../guards/numericGuards";
 
 export interface MetalLossScenario {
   scenarioNameTr: string;
@@ -98,10 +99,12 @@ export function computeTotalMetalLoss(scenarios: MetalLossScenario[], designLife
   if (scenarios.length === 0) {
     throw new Error("En az bir senaryo sağlanmalıdır.");
   }
+  assertFinite(designLifeYears, "Tasarım ömrü");
   if (designLifeYears <= 0) {
     throw new Error("Tasarım ömrü pozitif olmalıdır.");
   }
   for (const scenario of scenarios) {
+    assertFinite(scenario.operatingDaysPerYear, `"${scenario.scenarioNameTr}" senaryosu için işletme günü`);
     if (scenario.operatingDaysPerYear < 0 || scenario.operatingDaysPerYear > 365) {
       throw new Error(`"${scenario.scenarioNameTr}" senaryosu için işletme günü 0-365 aralığında olmalıdır.`);
     }

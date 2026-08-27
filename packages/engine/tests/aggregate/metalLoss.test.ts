@@ -88,6 +88,19 @@ describe("computeTotalMetalLoss — PSS-0002 örnek doğrulama (91 gün/yıl, 30
     ).toThrowError();
   });
 
+  it("P12 — NaN/Infinity tasarım ömrü, çıplak '<=0' karşılaştırmasından SESSİZCE geçmez, açık hata fırlatır", () => {
+    const scenarios = [{ scenarioNameTr: "A", operatingDaysPerYear: 91, rateMmPerYear: { p10: 0.1, p50: 0.1, p90: 0.1 } }];
+    expect(() => computeTotalMetalLoss(scenarios, Number.NaN)).toThrowError(/sonlu/);
+    expect(() => computeTotalMetalLoss(scenarios, Number.POSITIVE_INFINITY)).toThrowError(/sonlu/);
+  });
+
+  it("P12 — NaN/Infinity işletme günü de aynı şekilde açık hatayla reddedilir", () => {
+    const nanScenario = [{ scenarioNameTr: "A", operatingDaysPerYear: Number.NaN, rateMmPerYear: { p10: 0.1, p50: 0.1, p90: 0.1 } }];
+    const infScenario = [{ scenarioNameTr: "A", operatingDaysPerYear: Number.POSITIVE_INFINITY, rateMmPerYear: { p10: 0.1, p50: 0.1, p90: 0.1 } }];
+    expect(() => computeTotalMetalLoss(nanScenario, 30)).toThrowError(/sonlu/);
+    expect(() => computeTotalMetalLoss(infScenario, 30)).toThrowError(/sonlu/);
+  });
+
   it("her sonuç mühendislik uyarısını döndürür", () => {
     const result = computeTotalMetalLoss(
       [{ scenarioNameTr: "A", operatingDaysPerYear: 91, rateMmPerYear: { p10: 0.1, p50: 0.1, p90: 0.1 } }],

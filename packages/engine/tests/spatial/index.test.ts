@@ -105,6 +105,12 @@ describe("computeDamageField — boru/fitting yönlendirme", () => {
     expect(() => computeDamageField(geometry, [baseResult()], -1)).toThrowError();
   });
 
+  it("P12 — NaN/Infinity elapsedYears, çıplak '<0' karşılaştırmasından SESSİZCE geçmez, açık hata fırlatır", () => {
+    const geometry = baseGeometry();
+    expect(() => computeDamageField(geometry, [baseResult()], Number.NaN)).toThrowError(/sonlu/);
+    expect(() => computeDamageField(geometry, [baseResult()], Number.POSITIVE_INFINITY)).toThrowError(/sonlu/);
+  });
+
   it("CYLINDRICAL_UV parametrizasyonunu kullanır (boru/fitting için)", () => {
     const geometry = baseGeometry();
     const field = computeDamageField(geometry, [baseResult()], 5);

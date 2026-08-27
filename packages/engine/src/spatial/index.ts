@@ -44,6 +44,7 @@ import {
   type PipeFittingSignatureId,
 } from "./pipeFittings";
 import { computeValveDamageField } from "./valves";
+import { assertFinite } from "../guards/numericGuards";
 
 export * from "./fields";
 export * from "./pipeFittings";
@@ -179,6 +180,7 @@ export function computeDamageField(
   elapsedYears: number,
   resolution: DamageFieldResolution = DEFAULT_RESOLUTION,
 ): SpatialDamageField {
+  assertFinite(elapsedYears, "elapsedYears");
   if (elapsedYears < 0) {
     throw new Error("elapsedYears negatif olamaz.");
   }

@@ -104,7 +104,7 @@ erocorr3d/
 ```
 
 `packages/engine` içindeki her mühendislik katsayısının kaynağı
-`packages/engine/src/registry/coefficients.ts` dosyasında atıflarıyla
+`packages/engine/src/registry/coefficients/` klasöründeki dosyalarda atıflarıyla
 birlikte kayıtlıdır (Kaynak Doğrulama Protokolü). Doğrulanmamış (UNVERIFIED)
 katsayılar kullanıldığında tarayıcı konsoluna otomatik uyarı yazılır. Bu
 kayıt defterinin ve motorun 24 hasar mekanizmasının insan-okunur bir dökümü
@@ -116,11 +116,14 @@ dokümantasyon sitesinde yayındadır.
 
 ## 6) Şu anki durum ve bilinen sınırlamalar
 
-- 3B boru şu an sabit, örnek (yer tutucu) ölçülerle gösteriliyor; girdi paneli
-  henüz gerçek boru hattı verisini işlemiyor (sıradaki aşama).
-- Sonuç paneli ve alt tablo/grafik alanı henüz boş yer tutuculardır.
-- Ölçek çubuğu, kameraya göre otomatik güncellenmez; sahnedeki 1 metrelik
-  sabit bir referans çizgisidir.
-- 3B görüntüleyici, açık/koyu tema seçiminden bağımsız olarak her zaman koyu
-  arka planla gösterilir (metalik malzemenin okunabilirliği için — CAD
-  araçlarındaki yaygın kabul).
+- Vana (valve) kategorisindeki bileşenler için hesap motoru henüz sayısal bir
+  korozyon/erozyon sonucu üretmiyor. Vana geometrisini girip 3B önizleyebilir
+  ve kaydedebilirsiniz, ama "Hesapla" bu kategori için bir uyarı gösterir —
+  motor şu an yalnızca boru/fitting bileşenlerini değerlendiriyor.
+- Ölçek çubuğu, kameraya göre otomatik büyüyüp küçülen dinamik bir HUD
+  DEĞİLDİR; sahnedeki gerçek dünya birimini göstermek için sabit uzunlukta
+  (1 metre) bir referans çizgisidir.
+- Ana 3B görüntüleyici (boru/fitting bileşenleri ve karşılaştırma görünümü)
+  açık/koyu tema seçimine göre arka planını, ızgarasını ve gölgelerini
+  uyarlar. Vana sekmesindeki 3B önizleme ise henüz tema seçimine
+  bağlanmadığından her zaman koyu arka planla gösterilir.

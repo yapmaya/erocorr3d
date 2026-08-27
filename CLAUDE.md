@@ -23,8 +23,8 @@ Bir değişiklik sonrası bu üçünün (test/build/lint) temiz geçmesi bekleni
 
 ## Kaynak Doğrulama Protokolü (kritik, ihlal etme)
 
-`packages/engine/src/registry/coefficients.ts` içindeki her mühendislik katsayısı
-kaynağıyla (standart/makale atfı) birlikte kayıtlıdır. Yeni bir katsayı eklerken
+`packages/engine/src/registry/coefficients/` klasöründeki dosyalarda her mühendislik
+katsayısı kaynağıyla (standart/makale atfı) birlikte kayıtlıdır. Yeni bir katsayı eklerken
 veya değiştirirken **atıf olmadan ekleme** — doğrulanmamış (UNVERIFIED) katsayılar
 kullanıldığında tarayıcı konsoluna otomatik uyarı yazılır ve bu bilinçli bir
 tasarım kararıdır, susturma. Bu, gerçek petrol/gaz tesislerinde kullanılabilecek
@@ -59,10 +59,16 @@ asla "VERIFIED" gibi işaretleme.
 
 ## Bilinen durum (README'den, değişebilir)
 
-- 3B boru şu an yer tutucu ölçülerle gösteriliyor, girdi paneli henüz gerçek
-  boru hattı verisini işlemiyor.
-- Sonuç paneli ve alt tablo/grafik alanı henüz boş yer tutuculardır.
-- 3B görüntüleyici her zaman koyu arka plan kullanır (tema seçiminden bağımsız).
+- Vana (valve) kategorisindeki bileşenler için hesap motoru henüz sayısal bir
+  korozyon/erozyon sonucu üretmiyor (bkz. orchestrate/assessComponent.ts::
+  VALVE_COMPONENT_TYPES, features/input/computeAssessment.ts::
+  VALVE_ASSESSMENT_UNSUPPORTED_MESSAGE_TR) — yalnızca boru/fitting bileşenleri
+  desteklenir.
+- Ölçek çubuğu kameraya göre otomatik güncellenmez; sahnedeki 1 metrelik sabit
+  bir referans çizgisidir.
+- Ana 3B görüntüleyici (boru/fitting + karşılaştırma görünümü) açık/koyu tema
+  seçimine göre arka planını uyarlar; vana sekmesindeki 3B önizleme ise henüz
+  tema seçimine bağlanmadığından her zaman koyu arka plan kullanır.
 
 Bu sınırlamaları "bug" sanıp kendiliğinden düzeltmeye çalışma — bunlar bilinen,
 sıradaki aşamaya bırakılmış konular.

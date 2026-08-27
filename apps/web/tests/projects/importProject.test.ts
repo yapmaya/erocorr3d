@@ -116,3 +116,45 @@ describe("parseEc3dFile", () => {
     expect(result.errorTr).toContain(".ec3d");
   });
 });
+
+describe("parseEc3dFile — dosya biçimi sürümü ve tutarsız referanslar", () => {
+  it("BİLİNMEYEN bir formatVersion'ı sessizce kabul ETMEZ", () => {
+    const { project, component, run } = buildFixturePackage();
+    const file = { ...buildEc3dFile(project, [component], [run]), formatVersion: 999 };
+    const result = parseEc3dFile(JSON.stringify(file, ec3dJsonReplacer));
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.errorTr).toContain("v999");
+  });
+
+  it("daha ESKİ bir formatVersion'ı da reddeder", () => {
+    const { project, component, run } = buildFixturePackage();
+    const file = { ...buildEc3dFile(project, [component], [run]), formatVersion: 0 };
+    const result = parseEc3dFile(JSON.stringify(file, ec3dJsonReplacer));
+
+    expect(result.ok).toBe(false);
+  });
+
+  it("hiçbir bileşene bağlı OLMAYAN çalıştırma kaydını içe aktarmaz ama SESSİZ de kalmaz", () => {
+    const { project, component, run } = buildFixturePackage();
+    const file = buildEc3dFile(project, [component], [{ ...run, componentId: "DOSYADA-OLMAYAN-ID" }]);
+    const result = parseEc3dFile(JSON.stringify(file, ec3dJsonReplacer));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data.assessmentRuns).toHaveLength(0);
+    expect(result.data.warningsTr.join(" ")).toContain("içe aktarılmadı");
+  });
+
+  it("geçerli bir çalıştırma kaydı, bileşenin YENİ id'sine yeniden bağlanır", () => {
+    const { project, component, run } = buildFixturePackage();
+    const result = parseEc3dFile(JSON.stringify(buildEc3dFile(project, [component], [run]), ec3dJsonReplacer));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data.assessmentRuns).toHaveLength(1);
+    expect(result.data.assessmentRuns[0]!.componentId).toBe(result.data.components[0]!.id);
+    expect(result.data.warningsTr).toHaveLength(0);
+  });
+});

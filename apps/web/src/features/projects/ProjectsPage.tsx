@@ -124,7 +124,7 @@ export function ProjectsPage() {
     }
     await loadProjects();
     await selectProject(result.projectId);
-    setImportMessage("Proje içe aktarıldı.");
+    setImportMessage(["Proje içe aktarıldı.", ...result.warningsTr].join(" "));
   };
 
   return (

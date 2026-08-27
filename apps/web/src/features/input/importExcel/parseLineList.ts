@@ -5,8 +5,13 @@
 // `OperatingCase` olarak eklenir (çoklu BİLEŞEN/proje listesi yönetimi bu
 // sürümde YOKTUR). SheetJS (`xlsx`) ile ayrıştırır — zaten proje
 // bağımlılığı.
+//
+// `xlsx` DİNAMİK import() edilir (bkz. P10) — bu, report/excel/
+// generateExcelReport.ts'in AYNI paketi dinamik yüklemesiyle birlikte,
+// `xlsx`in TÜM statik import'larını ortadan kaldırır; aksi halde bu
+// dosyadaki tek bir statik `import * as XLSX` bile paketi ana bundle'a geri
+// sokar (kullanıcı ne Excel içe aktarsın ne rapor alsın, yine de indirir).
 
-import * as XLSX from "xlsx";
 import type { OperatingCase } from "@erocorr3d/engine";
 
 export interface ParsedSheet {
@@ -15,6 +20,7 @@ export interface ParsedSheet {
 }
 
 export async function parseWorkbookFile(file: File): Promise<ParsedSheet> {
+  const XLSX = await import("xlsx");
   const buffer = await file.arrayBuffer();
   const workbook = XLSX.read(buffer, { type: "array" });
   const firstSheetName = workbook.SheetNames[0];

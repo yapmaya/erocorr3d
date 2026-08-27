@@ -18,8 +18,6 @@ import { useReportSettingsStore } from "../../store/reportSettingsStore";
 import { captureCurrentViewPng } from "../../store/viewer3dCaptureStore";
 import { useTranslation } from "../../i18n/translations";
 import { buildReportData } from "./reportData";
-import { generatePdfReport } from "./pdf/generatePdfReport";
-import { generateExcelReport } from "./excel/generateExcelReport";
 import { ReportSettingsModal } from "./ReportSettingsModal";
 
 const BUTTON_CLASS =
@@ -30,8 +28,16 @@ export function ReportButtons() {
   const entries = useAssessmentHistoryStore((s) => s.entries);
   const settings = useReportSettingsStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  // PDF (pdfmake) ve Excel (xlsx) üretim kodu artık dinamik import() ile
+  // yükleniyor (bkz. P10 — bu iki ağır bağımlılık, rapor almayan bir
+  // kullanıcının ilk yüklemesine hiç girmesin diye ayrı chunk'a taşındı).
+  // `generatingReport` yalnızca aynı anda ikinci bir tıklamayı (ikinci bir
+  // chunk indirmesini/indirmeyi) önlemek için — asıl üretim SAF DEĞİL, test
+  // edilmez (bkz. generatePdfReport.ts/generateExcelReport.ts dosya başı notları).
+  const [generatingReport, setGeneratingReport] = useState<"pdf" | "excel" | null>(null);
+  const [reportErrorTr, setReportErrorTr] = useState<string | null>(null);
 
-  const disabled = entries.length === 0;
+  const disabled = entries.length === 0 || generatingReport !== null;
 
   const buildData = () =>
     buildReportData({
@@ -53,17 +59,44 @@ export function ReportButtons() {
       chartPngs: {},
     });
 
+  const handlePdfClick = async () => {
+    setReportErrorTr(null);
+    setGeneratingReport("pdf");
+    try {
+      const { generatePdfReport } = await import("./pdf/generatePdfReport");
+      generatePdfReport(buildData());
+    } catch {
+      setReportErrorTr("PDF rapor bileşeni yüklenemedi — internet bağlantınızı kontrol edip tekrar deneyin.");
+    } finally {
+      setGeneratingReport(null);
+    }
+  };
+
+  const handleExcelClick = async () => {
+    setReportErrorTr(null);
+    setGeneratingReport("excel");
+    try {
+      const { generateExcelReport } = await import("./excel/generateExcelReport");
+      generateExcelReport(buildData());
+    } catch {
+      setReportErrorTr("Excel rapor bileşeni yüklenemedi — internet bağlantınızı kontrol edip tekrar deneyin.");
+    } finally {
+      setGeneratingReport(null);
+    }
+  };
+
   return (
     <div className="flex items-center gap-1.5">
-      <button type="button" disabled={disabled} onClick={() => generatePdfReport(buildData())} className={`${BUTTON_CLASS} disabled:cursor-not-allowed disabled:opacity-40`}>
+      <button type="button" disabled={disabled} onClick={() => void handlePdfClick()} className={`${BUTTON_CLASS} disabled:cursor-not-allowed disabled:opacity-40`}>
         {t("reportPdfButton")}
       </button>
-      <button type="button" disabled={disabled} onClick={() => generateExcelReport(buildData())} className={`${BUTTON_CLASS} disabled:cursor-not-allowed disabled:opacity-40`}>
+      <button type="button" disabled={disabled} onClick={() => void handleExcelClick()} className={`${BUTTON_CLASS} disabled:cursor-not-allowed disabled:opacity-40`}>
         {t("reportExcelButton")}
       </button>
       <button type="button" onClick={() => setSettingsOpen(true)} className={BUTTON_CLASS} title={t("reportSettingsButton")}>
         ⚙
       </button>
+      {reportErrorTr && <span className="text-[10px] text-red-600 dark:text-red-400">{reportErrorTr}</span>}
       {settingsOpen && <ReportSettingsModal onClose={() => setSettingsOpen(false)} />}
     </div>
   );

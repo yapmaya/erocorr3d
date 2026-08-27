@@ -3,9 +3,29 @@
 // Grafik verisini CSV olarak dışa aktarır — features/registry/RegistryPage.tsx'in
 // downloadTextFile deseniyle AYNI.
 
-function csvEscapeCell(value: string | number): string {
-  const text = String(value);
-  if (/[",\n]/.test(text)) {
+/**
+ * Excel/LibreOffice, bir CSV hücresi `=`, `+`, `-`, `@`, TAB veya CR ile
+ * başlıyorsa onu FORMÜL olarak yorumlar (CSV enjeksiyonu / DDE). Senaryo adı,
+ * bileşen etiketi gibi hücreler KULLANICI (veya içe aktarılan bir hat listesi)
+ * tarafından belirlendiğinden, `=cmd|'/c calc'!A1` gibi bir değer dosyayı açan
+ * kişide komut çalıştırabilir.
+ *
+ * ÖNEMLİ: hücreyi tırnak içine almak bunu ENGELLEMEZ — Excel tırnakları
+ * soyduktan sonra içeriğe bakar. Bu yüzden tek çare, değeri formül olmaktan
+ * çıkaran bir tek-tırnak öneki eklemektir (OWASP'ın önerdiği yöntem);
+ * hücre Excel'de yine okunabilir metin olarak görünür.
+ */
+const FORMULA_TRIGGER = /^[=+\-@\t\r]/;
+
+export function csvEscapeCell(value: string | number): string {
+  // Sayılar KULLANICI METNİ DEĞİLDİR — negatif sayıların başına tırnak
+  // koymak (-5 -> '-5) veriyi bozardı, bu yüzden yalnızca metinler korunur.
+  if (typeof value === "number") {
+    return String(value);
+  }
+
+  const text = FORMULA_TRIGGER.test(value) ? `'${value}` : value;
+  if (/[",\n\r]/.test(text)) {
     return `"${text.replace(/"/g, '""')}"`;
   }
   return text;

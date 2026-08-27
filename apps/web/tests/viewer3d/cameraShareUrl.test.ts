@@ -73,3 +73,36 @@ describe("buildShareUrl", () => {
     expect(decoded!.orthographic).toBe(true);
   });
 });
+
+describe("decodeCameraStateFromParams — bozuk/dejenere paylaşım bağlantıları", () => {
+  const paramsFor = (o: Record<string, string>) => new URLSearchParams(o);
+  const valid = { camPos: "1,2,3", camTarget: "0,0,0", camZoom: "1", camOrtho: "0" };
+
+  it("geçerli bir bağlantıyı KABUL eder (kontrol)", () => {
+    expect(decodeCameraStateFromParams(paramsFor(valid))).not.toBeNull();
+  });
+
+  it("zoom = 0 reddedilir (projeksiyon matrisini bozar)", () => {
+    expect(decodeCameraStateFromParams(paramsFor({ ...valid, camZoom: "0" }))).toBeNull();
+  });
+
+  it("negatif zoom reddedilir", () => {
+    expect(decodeCameraStateFromParams(paramsFor({ ...valid, camZoom: "-5" }))).toBeNull();
+  });
+
+  it("konum ile hedef AYNI ise reddedilir (sıfır uzunlukta bakış vektörü)", () => {
+    expect(decodeCameraStateFromParams(paramsFor({ ...valid, camPos: "0,0,0", camTarget: "0,0,0" }))).toBeNull();
+  });
+
+  it("boş bileşenli vektör ',,' sessizce [0,0,0] OLMAZ", () => {
+    expect(decodeCameraStateFromParams(paramsFor({ ...valid, camPos: ",," }))).toBeNull();
+  });
+
+  it("aşırı büyük koordinatlar reddedilir", () => {
+    expect(decodeCameraStateFromParams(paramsFor({ ...valid, camPos: "1e308,1e308,1e308" }))).toBeNull();
+  });
+
+  it("boş zoom değeri sessizce 0 OLMAZ", () => {
+    expect(decodeCameraStateFromParams(paramsFor({ ...valid, camZoom: "" }))).toBeNull();
+  });
+});

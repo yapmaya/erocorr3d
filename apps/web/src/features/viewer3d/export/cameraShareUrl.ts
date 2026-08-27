@@ -22,11 +22,19 @@ function formatVec3(v: [number, number, number]): string {
   return v.map((n) => n.toFixed(DECIMAL_PLACES)).join(",");
 }
 
+/** Kameranın sahnede makul kalacağı üst sınır (m) — 1e308 gibi bir değer projeksiyon matrisini NaN'a çevirir. */
+const MAX_ABS_COORDINATE_M = 1e6;
+
 function parseVec3(raw: string | null): [number, number, number] | null {
   if (!raw) return null;
-  const parts = raw.split(",").map(Number);
-  if (parts.length !== 3 || parts.some((n) => !Number.isFinite(n))) return null;
-  return [parts[0], parts[1], parts[2]];
+  const parts = raw.split(",");
+  if (parts.length !== 3) return null;
+  // `Number("")` = 0 (JS tuzağı): ",," gibi BOŞ bir değer sessizce [0,0,0]
+  // oluyordu. Boş/yalnızca-boşluk parçalar AÇIKÇA reddedilir.
+  if (parts.some((p) => p.trim() === "")) return null;
+  const numbers = parts.map(Number);
+  if (numbers.some((n) => !Number.isFinite(n) || Math.abs(n) > MAX_ABS_COORDINATE_M)) return null;
+  return [numbers[0]!, numbers[1]!, numbers[2]!];
 }
 
 /** Verilen (opsiyonel) taban `URLSearchParams` üzerine kamera alanlarını YAZAR — diğer query parametrelerine dokunmaz. */
@@ -44,8 +52,18 @@ export function decodeCameraStateFromParams(params: URLSearchParams): CameraShar
   const positionM = parseVec3(params.get(PARAM_POSITION));
   const targetM = parseVec3(params.get(PARAM_TARGET));
   const zoomRaw = params.get(PARAM_ZOOM);
-  const zoom = zoomRaw !== null ? Number(zoomRaw) : NaN;
+  const zoom = zoomRaw !== null && zoomRaw.trim() !== "" ? Number(zoomRaw) : NaN;
   if (!positionM || !targetM || !Number.isFinite(zoom)) return null;
+
+  // `zoom <= 0` three.js'in projeksiyon matrisini bozar (sıfıra bölme →
+  // NaN matris → BOŞ/siyah tuval). `Number.isFinite(0)` true olduğu için
+  // eski kontrol bunu YAKALAMIYORDU.
+  if (zoom <= 0) return null;
+
+  // Kamera konumu ile hedefi AYNI ise bakış vektörü sıfır uzunluktadır —
+  // OrbitControls bu durumda NaN üretir ve görüntüleyici kilitlenir.
+  if (positionM.every((v, i) => v === targetM[i])) return null;
+
   return { positionM, targetM, orthographic: params.get(PARAM_ORTHO) === "1", zoom };
 }
 

@@ -13,7 +13,8 @@
 // AYRI test edilir.
 
 import { computeCtlAtl, ENGINE_VERSION, GeometrySchema, MitigationSchema, OperatingProfileSchema, type Geometry } from "@erocorr3d/engine";
-import { createAssessmentWorkerClient } from "../../workers/assessmentWorkerClient";
+import { createAssessmentWorkerClient, WorkerFatalError } from "../../workers/assessmentWorkerClient";
+import { TimeoutError } from "../../lib/withTimeout";
 import { useProjectsStore } from "../../store/projectsStore";
 import type { AssessmentRunRecord, ProjectComponentRecord } from "./types";
 import { rankRiskiestComponents, type ComponentRiskInput, type ComponentRiskRanking } from "./rankRiskiestComponents";
@@ -69,9 +70,9 @@ export async function runBatchAnalysis(
         const mitigation = MitigationSchema.parse(component.mitigation);
         const operatingProfile = OperatingProfileSchema.parse(component.operatingProfile);
 
-        const assessment = await client.api.assessOne(geometry, mitigation, operatingProfile, component.componentLabel);
+        const assessment = await client.assessOne(geometry, mitigation, operatingProfile, component.componentLabel);
         const uninhibitedAssessment = mitigation.inhibitorUsed
-          ? await client.api.assessOne(geometry, { ...mitigation, inhibitorUsed: false }, operatingProfile, component.componentLabel)
+          ? await client.assessOne(geometry, { ...mitigation, inhibitorUsed: false }, operatingProfile, component.componentLabel)
           : assessment;
 
         const run: AssessmentRunRecord = {
@@ -103,6 +104,14 @@ export async function runBatchAnalysis(
           slcP50Mm: assessment.metalLoss.totalServiceLifeCorrosionMm.p50,
         });
       } catch (error) {
+        // Worker zaman aşımına uğradıysa (yanıt vermiyor) veya tamamen
+        // çöktüyse, kalan bileşenler için TEK TEK tekrar 30 sn beklemenin
+        // anlamı yok — worker artık ölü sayılır ve döngü burada durdurulur.
+        if (error instanceof TimeoutError || error instanceof WorkerFatalError) {
+          const remainingCount = components.length - i;
+          skippedReasonsTr.push(`Analiz motoru (worker) yanıt vermediği için kalan ${remainingCount} bileşen atlandı: ${error.message}`);
+          break;
+        }
         skippedReasonsTr.push(`${component.componentLabel}: hesap hatası — ${error instanceof Error ? error.message : "bilinmeyen hata"}`);
       }
     }

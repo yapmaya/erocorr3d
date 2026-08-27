@@ -12,6 +12,36 @@ import { Ec3dFileSchema } from "./ec3dSchema";
 import { ec3dJsonReviver } from "./ec3dSerialization";
 import type { AssessmentRunRecord, ProjectComponentRecord, ProjectRecord } from "./types";
 
+// `.ec3d` dosyaları GÜVENİLMEYEN kaynaklardan (kullanıcının diskinden) gelir.
+// Sınırsız boyutta bir dosya iki ayrı yerde ana thread'i kilitleyebilir:
+// `file.text()` ile TAMAMININ belleğe alınması ve `Ec3dFileSchema.safeParse`
+// ile HER kaydın tek tek doğrulanması. Ölçüldü: 50.000 bileşenli bir dosyanın
+// ayrıştırma+doğrulaması 12,5 sn sürüyor (bkz. proje düzeltme notları).
+//
+// Sınırlar KEYFİ DEĞİL: örnek proje bileşenleri (demoProjects.ts) JSON'a
+// çevrildiğinde ~1,7 KB/bileşen ölçüldü; bu depodaki gerçek kullanım senaryosu
+// (tek bir tesis/hat için onlarca-yüzlerce boru/vana bileşeni) bu sınırların
+// ÇOK altında kalır. Aşağıdaki sayılar, gerçek kullanıma 10-50 kat pay
+// bırakırken 50.000'lik patolojik/bozuk dosya senaryosunu reddeder:
+//   - MAX_EC3D_COMPONENTS: 5.000 bileşen ≈ ölçülen orana göre ~1,25 sn
+//     ayrıştırma+doğrulama — donma hissi yaratmayacak kadar hızlı.
+//   - MAX_EC3D_ASSESSMENT_RUNS: her bileşen zaman içinde birden çok kez
+//     yeniden hesaplanabildiği (geçmiş kaydı) için bileşen sınırının 4 katı.
+//   - MAX_EC3D_FILE_SIZE_BYTES: yukarıdaki sınırların ima ettiği dosya
+//     boyutundan (bileşen+çalıştırma başına birkaç KB) kayda değer ölçüde
+//     büyük — `file.text()` çağrılmadan ÖNCE, dosya içeriği hiç okunmadan
+//     `File.size` üzerinden kontrol edilir.
+export const MAX_EC3D_FILE_SIZE_BYTES = 50 * 1024 * 1024;
+export const MAX_EC3D_COMPONENTS = 5_000;
+export const MAX_EC3D_ASSESSMENT_RUNS = 20_000;
+
+/** Ham (henüz Zod ile doğrulanmamış) `.ec3d` JSON'ında verilen anahtarın dizi uzunluğunu okur — Zod'un TÜM öğeleri doğrulamaya çalışmasından ÖNCE sayı sınırını kontrol edebilmek için. */
+function readArrayLength(raw: unknown, key: string): number {
+  if (typeof raw !== "object" || raw === null) return 0;
+  const value = (raw as Record<string, unknown>)[key];
+  return Array.isArray(value) ? value.length : 0;
+}
+
 export interface ParsedEc3dImport {
   project: ProjectRecord;
   components: ProjectComponentRecord[];
@@ -33,6 +63,25 @@ export function parseEc3dFile(jsonText: string): ParseEc3dResult {
     raw = JSON.parse(jsonText, ec3dJsonReviver);
   } catch {
     return { ok: false, errorTr: "Dosya geçerli bir JSON değil — .ec3d dosyası bozuk olabilir." };
+  }
+
+  // Zod TÜM bileşen/çalıştırma kayıtlarını tek tek doğrulamaya çalışmadan
+  // ÖNCE (asıl 12,5 sn'lik yavaşlığın kaynağı budur) ham dizi uzunluklarını
+  // kontrol et — böylece patolojik bir dosya, pahalı doğrulamaya hiç
+  // girmeden hızlıca reddedilir.
+  const componentCount = readArrayLength(raw, "components");
+  if (componentCount > MAX_EC3D_COMPONENTS) {
+    return {
+      ok: false,
+      errorTr: `Dosyada çok fazla bileşen var (${componentCount}, sınır: ${MAX_EC3D_COMPONENTS}) — dosya bozuk olabilir veya bu boyuttaki bir projenin içe aktarılması tarayıcıyı kilitleyebilir.`,
+    };
+  }
+  const runCount = readArrayLength(raw, "assessmentRuns");
+  if (runCount > MAX_EC3D_ASSESSMENT_RUNS) {
+    return {
+      ok: false,
+      errorTr: `Dosyada çok fazla hesap çalıştırması var (${runCount}, sınır: ${MAX_EC3D_ASSESSMENT_RUNS}) — dosya bozuk olabilir veya bu boyuttaki bir projenin içe aktarılması tarayıcıyı kilitleyebilir.`,
+    };
   }
 
   const parsed = Ec3dFileSchema.safeParse(raw);
@@ -102,6 +151,15 @@ export function parseEc3dFile(jsonText: string): ParseEc3dResult {
 export async function importProjectFromFile(
   file: File,
 ): Promise<{ ok: true; projectId: string; warningsTr: string[] } | { ok: false; errorTr: string }> {
+  // `File.size` okumak dosya içeriğine DOKUNMAZ — bu yüzden aşırı büyük bir
+  // dosyayı, TAMAMINI belleğe alacak `file.text()` çağrılmadan ÖNCE reddeder.
+  if (file.size > MAX_EC3D_FILE_SIZE_BYTES) {
+    return {
+      ok: false,
+      errorTr: `Dosya çok büyük (${(file.size / (1024 * 1024)).toFixed(1)} MB, sınır: ${MAX_EC3D_FILE_SIZE_BYTES / (1024 * 1024)} MB) — dosya bozuk olabilir.`,
+    };
+  }
+
   const text = await file.text();
   const result = parseEc3dFile(text);
   if (!result.ok) return result;

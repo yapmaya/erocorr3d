@@ -1,8 +1,8 @@
 // apps/web/tests/projects/importProject.test.ts
 
 import { describe, expect, it } from "vitest";
-import { buildEc3dFile } from "../../src/features/projects/exportProject";
-import { parseEc3dFile } from "../../src/features/projects/importProject";
+import { buildEc3dFile, EC3D_FORMAT_VERSION } from "../../src/features/projects/exportProject";
+import { MAX_EC3D_ASSESSMENT_RUNS, MAX_EC3D_COMPONENTS, parseEc3dFile } from "../../src/features/projects/importProject";
 import { ec3dJsonReplacer } from "../../src/features/projects/ec3dSerialization";
 import { buildTestAssessmentHistoryEntry } from "../report/testFixtures";
 import type { AssessmentRunRecord, ProjectComponentRecord, ProjectRecord } from "../../src/features/projects/types";
@@ -156,5 +156,58 @@ describe("parseEc3dFile — dosya biçimi sürümü ve tutarsız referanslar", (
     expect(result.data.assessmentRuns).toHaveLength(1);
     expect(result.data.assessmentRuns[0]!.componentId).toBe(result.data.components[0]!.id);
     expect(result.data.warningsTr).toHaveLength(0);
+  });
+});
+
+describe("parseEc3dFile — büyük dosyaların ana thread'i kilitlemesini önleyen sayı sınırları", () => {
+  // Bilinçli olarak Zod'un doğrulayabileceği GERÇEK bileşen/çalıştırma nesneleri
+  // ÜRETMEZ — sınır kontrolü Zod'dan ÖNCE, ham dizi uzunluğuna bakarak çalışır
+  // (bkz. importProject.ts::readArrayLength), bu yüzden içerik önemsizdir ve
+  // test 50.000 gerçek kayıt üretmeden (yavaşlatmadan) MAX_EC3D_COMPONENTS/
+  // MAX_EC3D_ASSESSMENT_RUNS sınırının hemen ÜSTÜNÜ kullanabilir.
+  it("bileşen sayısı sınırı aşıldığında, pahalı Zod doğrulamasına girmeden reddeder", () => {
+    const raw = {
+      formatVersion: EC3D_FORMAT_VERSION,
+      exportedAt: Date.now(),
+      project: {},
+      components: new Array(MAX_EC3D_COMPONENTS + 1).fill({}),
+      assessmentRuns: [],
+    };
+    const result = parseEc3dFile(JSON.stringify(raw));
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.errorTr).toContain(String(MAX_EC3D_COMPONENTS));
+    expect(result.errorTr).toContain("bileşen");
+  });
+
+  it("çalıştırma kaydı sayısı sınırı aşıldığında reddeder", () => {
+    const raw = {
+      formatVersion: EC3D_FORMAT_VERSION,
+      exportedAt: Date.now(),
+      project: {},
+      components: [],
+      assessmentRuns: new Array(MAX_EC3D_ASSESSMENT_RUNS + 1).fill({}),
+    };
+    const result = parseEc3dFile(JSON.stringify(raw));
+
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.errorTr).toContain(String(MAX_EC3D_ASSESSMENT_RUNS));
+    expect(result.errorTr).toContain("çalıştırma");
+  });
+
+  it("sınırın altındaki makul boyutlu bir dosya, sayı sınırı yüzünden reddedilmez", () => {
+    const { project, component, run } = buildFixturePackage();
+    const file = buildEc3dFile(
+      project,
+      [component, { ...component, id: "comp-2" }],
+      [run, { ...run, id: "run-2" }],
+    );
+    const result = parseEc3dFile(JSON.stringify(file, ec3dJsonReplacer));
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data.components).toHaveLength(2);
   });
 });
